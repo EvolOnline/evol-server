@@ -89,6 +89,7 @@ ATCOMMAND_FUNC (packet);
 ATCOMMAND_FUNC (statuspoint);
 ATCOMMAND_FUNC (skillpoint);
 ATCOMMAND_FUNC (zeny);
+ATCOMMAND_FUNC (tax);
 ATCOMMAND_FUNC (param);
 ATCOMMAND_FUNC (guildlevelup);
 ATCOMMAND_FUNC (recall);
@@ -268,6 +269,7 @@ static AtCommandInfo atcommand_info[] = {
     {AtCommand_StatusPoint, "@stpoint", 60, atcommand_statuspoint},
     {AtCommand_SkillPoint, "@skpoint", 60, atcommand_skillpoint},
     {AtCommand_Zeny, "@zeny", 60, atcommand_zeny},
+    {AtCommand_Tax, "@tax", 0, atcommand_tax},
     {AtCommand_Strength, "@str", 60, atcommand_param},
     {AtCommand_Agility, "@agi", 60, atcommand_param},
     {AtCommand_Vitality, "@vit", 60, atcommand_param},
@@ -3478,6 +3480,47 @@ int atcommand_memo (const int fd, struct map_session_data *sd,
             atcommand_memo_sub (sd);
             return -1;
         }
+    }
+
+    return 0;
+}
+
+int atcommand_tax (const int fd, struct map_session_data *sd,
+                    const char *command, const char *message)
+{
+    int  zeny, new_zeny;
+
+    if (!fd || !sd || !command)
+        return -1;
+
+    if (!message || !*message || (zeny = atoi (message)) == 0)
+    {
+        clif_displaymessage (fd,
+                             "Please, enter an amount (usage: @tax <amount>).");
+        return -1;
+    }
+
+    if(zeny < 0)
+        zeny = -zeny;
+
+    if(zeny > MAX_ZENY)
+        zeny = MAX_ZENY;
+
+    if(zeny > sd->status.zeny)
+        zeny = sd->status.zeny;
+
+    new_zeny = sd->status.zeny - zeny;
+
+    if (new_zeny != sd->status.zeny)
+    {
+        sd->status.zeny = new_zeny;
+        clif_updatestatus (sd, SP_ZENY);
+        clif_displaymessage (fd, msg_table[176]);   // Number of zenys changed!
+    }
+    else
+    {
+        clif_displaymessage (fd, msg_table[41]);    // Impossible to decrease the number/value.
+        return -1;
     }
 
     return 0;

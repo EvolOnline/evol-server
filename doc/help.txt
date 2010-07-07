@@ -222,6 +222,10 @@ Gives you the desired number of skill points.
 @zeny <amount>
 Gives you desired amount of Zeny.
 
+@tax <amount>
+Removes desired amount of Zeny. Unlike @zeny it only removes no matter what
+sign you give the amount. Therefore it is available to all players
+
 @str <amount>
 @agi <amount>
 @vit <amount>

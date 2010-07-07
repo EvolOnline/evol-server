@@ -59,6 +59,7 @@ enum AtCommandType
     AtCommand_StatusPoint,
     AtCommand_SkillPoint,
     AtCommand_Zeny,
+    AtCommand_Tax,
     AtCommand_Param,
     AtCommand_Strength,
     AtCommand_Agility,
