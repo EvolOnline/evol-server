@@ -723,6 +723,13 @@ This section documents the operations API.
     but if reason is 1, then those experience points are NOT added to
     the pool of experience points that healers can draw from `player'.
 
+  + resurrect : entity * int * int * int -> ()
+    resurrect(player, regenerated_hp, regenerated_sp, flag) resurrect
+    `player'.  If flag is 0, regenerated_hp and regenerated_sp are
+    percentage of the maximum value but if flag is 1, then those 
+    values are the real hp and sp that will be assigned to `player'.
+
+
 
 Script API updates:
 -------------------

@@ -999,6 +999,43 @@ static int op_gain_exp (env_t * env __attribute__ ((unused)), int args_nr __attr
     return 0;
 }
 
+//UFB
+static int op_resurrect (env_t * env, int args_nr, val_t * args)
+{
+    character_t *sd = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
+
+	int perc_hp = (ARGINT (1) > 0) ? ( ARGINT (1) > 100) ? 100 : (ARGINT (1) / 100 ) : 50;
+	int perc_mp = (ARGINT (2) > 0) ? ( ARGINT (2) > 100) ? 100 : (ARGINT (2) / 100 ) : 50;
+
+    if (!sd || !pc_isdead(sd))
+        return 1;
+
+	// 3rd param == 1 then restore the char hp and sp in percentage
+	if(ARGINT (3) == 1){
+		sd->status.hp = sd->status.max_hp * perc_hp;
+		sd->status.sp = sd->status.max_sp * perc_mp;
+	}
+	else{
+		sd->status.hp = (ARGINT (1) > 0) ? ( (ARGINT (1) > sd->status.max_hp) ? sd->status.max_hp : ARGINT (1) ) : 1;
+		sd->status.sp = (ARGINT (2) > 0) ? ( (ARGINT (2) > sd->status.max_hp) ? sd->status.max_hp : ARGINT (2) ) : 1;
+	}
+
+    pc_setstand (sd);
+    if (battle_config.pc_invincible_time > 0)
+        pc_setinvincibletimer (sd, battle_config.pc_invincible_time);
+
+	//restore hp and sp and resurrect the char
+    clif_updatestatus (sd, SP_HP);
+    clif_updatestatus (sd, SP_SP);
+    clif_resurrection (&sd->bl, 1);
+	//bug fix for some clients that leave the char lying on the floor
+	pc_setpos (sd, sd->mapname, sd->bl.x, sd->bl.y, 3);
+	//message to display to che resurrected char
+    clif_displaymessage (sd->fd, "You've been revived! It's a miracle!");
+
+    return 0;
+}
+
 static op_t operations[] = {
     {"sfx", ".ii", op_sfx},
     {"instaheal", "eii", op_instaheal},
@@ -1024,6 +1061,7 @@ static op_t operations[] = {
     {"drop_item", "l.ii", op_drop_item_for},
     {"drop_item_for", "l.iiei", op_drop_item_for},
     {"gain_experience", "eiii", op_gain_exp},
+    {"resurrect", "eiii", op_resurrect},
     {NULL, NULL, NULL}
 };
 
