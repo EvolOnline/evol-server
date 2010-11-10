@@ -28,6 +28,8 @@ int chat_createchat (struct map_session_data *sd, int limit, int pub,
     struct chat_data *cd;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, pass);
+    nullpo_retr (0, title);
 
     cd = aCalloc (1, sizeof (struct chat_data));
 
@@ -71,6 +73,7 @@ int chat_joinchat (struct map_session_data *sd, int chatid, char *pass)
     struct chat_data *cd;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, pass);
 
     cd = (struct chat_data *) map_id2bl (chatid);
     if (cd == NULL)
@@ -113,7 +116,7 @@ int chat_leavechat (struct map_session_data *sd)
     nullpo_retr (1, sd);
 
     cd = (struct chat_data *) map_id2bl (sd->chatID);
-    if (cd == NULL)
+    if (cd == NULL || !cd->owner || !(*cd->owner))
         return 1;
 
     for (i = 0, leavechar = -1; i < cd->users; i++)
@@ -173,14 +176,15 @@ int chat_changechatowner (struct map_session_data *sd, char *nextownername)
     int  i, nextowner;
 
     nullpo_retr (1, sd);
+    nullpo_retr (1, nextownername);
 
     cd = (struct chat_data *) map_id2bl (sd->chatID);
-    if (cd == NULL || (struct block_list *) sd != (*cd->owner))
+    if (cd == NULL || (struct block_list *) sd != (*cd->owner) || !cd->usersd[0])
         return 1;
 
     for (i = 1, nextowner = -1; i < cd->users; i++)
     {
-        if (strcmp (cd->usersd[i]->status.name, nextownername) == 0)
+        if (cd->usersd[i] && strcmp (cd->usersd[i]->status.name, nextownername) == 0)
         {
             nextowner = i;
             break;
@@ -188,6 +192,9 @@ int chat_changechatowner (struct map_session_data *sd, char *nextownername)
     }
     if (nextowner < 0)          // ‚»‚ñ‚Èl‚Í‹‚È‚¢
         return -1;
+
+    if (!cd->usersd[nextowner])
+        return 1;
 
     clif_changechatowner (cd, cd->usersd[nextowner]);
     // ˆê’UÁ‚·
@@ -219,6 +226,8 @@ int chat_changechatstatus (struct map_session_data *sd, int limit, int pub,
     struct chat_data *cd;
 
     nullpo_retr (1, sd);
+    nullpo_retr (1, pass);
+    nullpo_retr (1, title);
 
     cd = (struct chat_data *) map_id2bl (sd->chatID);
     if (cd == NULL || (struct block_list *) sd != (*cd->owner))
@@ -248,6 +257,7 @@ int chat_kickchat (struct map_session_data *sd, char *kickusername)
     int  i, kickuser;
 
     nullpo_retr (1, sd);
+    nullpo_retr (1, kickusername);
 
     cd = (struct chat_data *) map_id2bl (sd->chatID);
     if (cd == NULL || (struct block_list *) sd != (*cd->owner))
@@ -255,7 +265,7 @@ int chat_kickchat (struct map_session_data *sd, char *kickusername)
 
     for (i = 0, kickuser = -1; i < cd->users; i++)
     {
-        if (strcmp (cd->usersd[i]->status.name, kickusername) == 0)
+        if (cd->usersd[i] && strcmp (cd->usersd[i]->status.name, kickusername) == 0)
         {
             kickuser = i;
             break;
@@ -279,6 +289,8 @@ int chat_createnpcchat (struct npc_data *nd, int limit, int pub, int trigger,
     struct chat_data *cd;
 
     nullpo_retr (1, nd);
+    nullpo_retr (1, title);
+    nullpo_retr (1, ev);
 
     cd = aCalloc (1, sizeof (struct chat_data));
 
