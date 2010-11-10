@@ -51,6 +51,8 @@ int battle_counttargeted (struct block_list *bl, struct block_list *src,
                           int target_lv)
 {
     nullpo_retr (0, bl);
+    nullpo_retr (0, src);
+
     if (bl->type == BL_PC)
         return pc_counttargeted ((struct map_session_data *) bl, src,
                                  target_lv);
@@ -907,9 +909,10 @@ int battle_get_def2 (struct block_list *bl)
 int battle_get_mdef2 (struct block_list *bl)
 {
     int  mdef2 = 0;
+    nullpo_retr (0, bl);
+
     struct status_change *sc_data = battle_get_sc_data (bl);
 
-    nullpo_retr (0, bl);
     if (bl->type == BL_MOB)
         mdef2 =
             ((struct mob_data *) bl)->stats[MOB_INT] +
@@ -1136,7 +1139,6 @@ int battle_get_dmotion (struct block_list *bl)
     struct status_change *sc_data;
 
     nullpo_retr (0, bl);
-    sc_data = battle_get_sc_data (bl);
     if (bl->type == BL_MOB && (struct mob_data *) bl)
     {
         ret = mob_db[((struct mob_data *) bl)->class].dmotion;
@@ -1151,6 +1153,8 @@ int battle_get_dmotion (struct block_list *bl)
     }
     else
         return 2000;
+
+    sc_data = battle_get_sc_data (bl);
 
     if ((sc_data && sc_data[SC_ENDURE].timer != -1) ||
         (bl->type == BL_PC
@@ -1256,7 +1260,7 @@ int battle_get_party_id (struct block_list *bl)
             return -md->master_id;
         return -md->bl.id;
     }
-    else if (bl->type == BL_SKILL && (struct skill_unit *) bl)
+    else if (bl->type == BL_SKILL && (struct skill_unit *) bl && ((struct skill_unit *) bl)->group)
         return ((struct skill_unit *) bl)->group->party_id;
     else
         return 0;
@@ -1269,7 +1273,7 @@ int battle_get_guild_id (struct block_list *bl)
         return ((struct map_session_data *) bl)->status.guild_id;
     else if (bl->type == BL_MOB && (struct mob_data *) bl)
         return ((struct mob_data *) bl)->class;
-    else if (bl->type == BL_SKILL && (struct skill_unit *) bl)
+    else if (bl->type == BL_SKILL && (struct skill_unit *) bl && ((struct skill_unit *) bl)->group)
         return ((struct skill_unit *) bl)->group->guild_id;
     else
         return 0;
@@ -1425,6 +1429,9 @@ struct battle_delay_damage_
 };
 int battle_delay_damage_sub (int tid, unsigned int tick, int id, int data)
 {
+    if (!data)
+        return 0;
+
     struct battle_delay_damage_ *dat = (struct battle_delay_damage_ *) data;
     if (dat && map_id2bl (id) == dat->src && dat->target->prev != NULL)
         battle_damage (dat->src, dat->target, dat->damage, dat->flag);
@@ -1435,13 +1442,13 @@ int battle_delay_damage_sub (int tid, unsigned int tick, int id, int data)
 int battle_delay_damage (unsigned int tick, struct block_list *src,
                          struct block_list *target, int damage, int flag)
 {
+    nullpo_retr (0, src);
+    nullpo_retr (0, target);
+
     struct battle_delay_damage_ *dat =
         (struct battle_delay_damage_ *) aCalloc (1,
                                                  sizeof (struct
                                                          battle_delay_damage_));
-
-    nullpo_retr (0, src);
-    nullpo_retr (0, target);
 
     dat->src = src;
     dat->target = target;
@@ -1456,11 +1463,14 @@ int battle_damage (struct block_list *bl, struct block_list *target,
                    int damage, int flag)
 {
     struct map_session_data *sd = NULL;
+
+//+++ may be need add this?
+//    nullpo_retr (0, bl);
+    nullpo_retr (0, target);    //blはNULLで呼ばれることがあるので他でチェック
+
     struct status_change *sc_data = battle_get_sc_data (target);
     short *sc_count;
     int  i;
-
-    nullpo_retr (0, target);    //blはNULLで呼ばれることがあるので他でチェック
 
     if (damage == 0)
         return 0;
@@ -1621,6 +1631,13 @@ int battle_calc_damage (struct block_list *src, struct block_list *bl,
     int  class;
 
     nullpo_retr (0, bl);
+    nullpo_retr (0, src);
+
+    sc_data = battle_get_sc_data (bl);
+    nullpo_retr (0, sc_data);
+
+    sc_count = battle_get_sc_count (bl);
+    nullpo_retr (0, sc_count);
 
     class = battle_get_class (bl);
     if (bl->type == BL_MOB)
@@ -1628,12 +1645,8 @@ int battle_calc_damage (struct block_list *src, struct block_list *bl,
     else
         sd = (struct map_session_data *) bl;
 
-    sc_data = battle_get_sc_data (bl);
-    sc_count = battle_get_sc_count (bl);
-
     if (sc_count != NULL && *sc_count > 0)
     {
-
         if (sc_data[SC_SAFETYWALL].timer != -1 && damage > 0
             && flag & BF_WEAPON && flag & BF_SHORT
             && skill_num != NPC_GUIDEDATTACK)
@@ -1861,11 +1874,12 @@ int battle_addmastery (struct map_session_data *sd, struct block_list *target,
                        int dmg, int type)
 {
     int  damage, skill;
+
+    nullpo_retr (0, sd);
+
     int  race = battle_get_race (target);
     int  weapon;
     damage = 0;
-
-    nullpo_retr (0, sd);
 
     // デーモンベイン(+3 ～ +30) vs 不死 or 悪魔 (死人は含めない？)
     if ((skill = pc_checkskill (sd, AL_DEMONBANE)) > 0
@@ -2015,21 +2029,9 @@ static struct Damage battle_calc_mob_weapon_attack (struct block_list *src,
                                                     int skill_num,
                                                     int skill_lv, int wflag)
 {
+    struct Damage wd;
     struct map_session_data *tsd = NULL;
     struct mob_data *md = (struct mob_data *) src, *tmd = NULL;
-    int  hitrate, flee, cri = 0, atkmin, atkmax;
-    int  luk, target_count = 1;
-    int  def1 = battle_get_def (target);
-    int  def2 = battle_get_def2 (target);
-    int  t_vit = battle_get_vit (target);
-    struct Damage wd;
-    int  damage, damage2 = 0, type, div_, blewcount =
-        skill_get_blewcount (skill_num, skill_lv);
-    int  flag, skill, ac_flag = 0, dmg_lv = 0;
-    int  t_mode = 0, t_race = 0, t_size = 1, s_race = 0, s_ele = 0;
-    struct status_change *sc_data, *t_sc_data;
-    short *sc_count;
-    short *option, *opt1, *opt2;
 
     //return前の処理があるので情報出力部のみ変更
     if (src == NULL || target == NULL || md == NULL)
@@ -2038,6 +2040,19 @@ static struct Damage battle_calc_mob_weapon_attack (struct block_list *src,
         memset (&wd, 0, sizeof (wd));
         return wd;
     }
+
+    int  hitrate, flee, cri = 0, atkmin, atkmax;
+    int  luk, target_count = 1;
+    int  def1 = battle_get_def (target);
+    int  def2 = battle_get_def2 (target);
+    int  t_vit = battle_get_vit (target);
+    int  damage, damage2 = 0, type, div_, blewcount =
+        skill_get_blewcount (skill_num, skill_lv);
+    int  flag, skill, ac_flag = 0, dmg_lv = 0;
+    int  t_mode = 0, t_race = 0, t_size = 1, s_race = 0, s_ele = 0;
+    struct status_change *sc_data, *t_sc_data;
+    short *sc_count;
+    short *option, *opt1, *opt2;
 
     s_race = battle_get_race (src);
     s_ele = battle_get_attack_element (src);
@@ -2672,15 +2687,24 @@ static struct Damage battle_calc_pc_weapon_attack (struct block_list *src,
                                                    int skill_num,
                                                    int skill_lv, int wflag)
 {
+    struct Damage wd;
     struct map_session_data *sd = (struct map_session_data *) src, *tsd =
         NULL;
+
+    //return前の処理があるので情報出力部のみ変更
+    if (src == NULL || target == NULL || sd == NULL)
+    {
+        nullpo_info (NLP_MARK);
+        memset (&wd, 0, sizeof (wd));
+        return wd;
+    }
+
     struct mob_data *tmd = NULL;
     int  hitrate, flee, cri = 0, atkmin, atkmax;
     int  dex, luk, target_count = 1;
     int  def1 = battle_get_def (target);
     int  def2 = battle_get_def2 (target);
     int  t_vit = battle_get_vit (target);
-    struct Damage wd;
     int  damage, damage2, damage3 = 0, damage4 = 0, type, div_, blewcount =
         skill_get_blewcount (skill_num, skill_lv);
     int  flag, skill, dmg_lv = 0;
@@ -2693,14 +2717,6 @@ static struct Damage battle_calc_pc_weapon_attack (struct block_list *src,
     int  da = 0, i, t_class, ac_flag = 0;
     int  idef_flag = 0, idef_flag_ = 0;
     int  target_distance;
-
-    //return前の処理があるので情報出力部のみ変更
-    if (src == NULL || target == NULL || sd == NULL)
-    {
-        nullpo_info (NLP_MARK);
-        memset (&wd, 0, sizeof (wd));
-        return wd;
-    }
 
     // アタッカー
     s_race = battle_get_race (src); //種族
@@ -4180,17 +4196,7 @@ struct Damage battle_calc_magic_attack (struct block_list *bl,
                                         struct block_list *target,
                                         int skill_num, int skill_lv, int flag)
 {
-    int  mdef1 = battle_get_mdef (target);
-    int  mdef2 = battle_get_mdef2 (target);
-    int  matk1, matk2, damage = 0, div_ = 1, blewcount =
-        skill_get_blewcount (skill_num, skill_lv), rdamage = 0;
     struct Damage md;
-    int  aflag;
-    int  normalmagic_flag = 1;
-    int  ele = 0, race = 7, t_ele = 0, t_race = 7, t_mode =
-        0, cardfix, t_class, i;
-    struct map_session_data *sd = NULL, *tsd = NULL;
-    struct mob_data *tmd = NULL;
 
     //return前の処理があるので情報出力部のみ変更
     if (bl == NULL || target == NULL)
@@ -4199,6 +4205,18 @@ struct Damage battle_calc_magic_attack (struct block_list *bl,
         memset (&md, 0, sizeof (md));
         return md;
     }
+
+    int  mdef1 = battle_get_mdef (target);
+    int  mdef2 = battle_get_mdef2 (target);
+    int  matk1, matk2, damage = 0, div_ = 1, blewcount =
+        skill_get_blewcount (skill_num, skill_lv), rdamage = 0;
+    int  aflag;
+    int  normalmagic_flag = 1;
+    int  ele = 0, race = 7, t_ele = 0, t_race = 7, t_mode =
+        0, cardfix, t_class, i;
+    struct map_session_data *sd = NULL, *tsd = NULL;
+    struct mob_data *tmd = NULL;
+
 
     matk1 = battle_get_matk1 (bl);
     matk2 = battle_get_matk2 (bl);
@@ -4515,17 +4533,7 @@ struct Damage battle_calc_misc_attack (struct block_list *bl,
                                        struct block_list *target,
                                        int skill_num, int skill_lv, int flag)
 {
-    int  int_ = battle_get_int (bl);
-//  int luk=battle_get_luk(bl);
-    int  dex = battle_get_dex (bl);
-    int  skill, ele, race, cardfix;
-    struct map_session_data *sd = NULL, *tsd = NULL;
-    int  damage = 0, div_ = 1, blewcount =
-        skill_get_blewcount (skill_num, skill_lv);
     struct Damage md;
-    int  damagefix = 1;
-
-    int  aflag = BF_MISC | BF_LONG | BF_SKILL;
 
     //return前の処理があるので情報出力部のみ変更
     if (bl == NULL || target == NULL)
@@ -4534,6 +4542,18 @@ struct Damage battle_calc_misc_attack (struct block_list *bl,
         memset (&md, 0, sizeof (md));
         return md;
     }
+
+    int  int_ = battle_get_int (bl);
+//  int luk=battle_get_luk(bl);
+    int  dex = battle_get_dex (bl);
+    int  skill, ele, race, cardfix;
+    struct map_session_data *sd = NULL, *tsd = NULL;
+    int  damage = 0, div_ = 1, blewcount =
+        skill_get_blewcount (skill_num, skill_lv);
+    int  damagefix = 1;
+
+    int  aflag = BF_MISC | BF_LONG | BF_SKILL;
+
 
     if (bl->type == BL_PC && (sd = (struct map_session_data *) bl))
     {
@@ -4702,6 +4722,9 @@ struct Damage battle_calc_attack (int attack_type,
 int battle_weapon_attack (struct block_list *src, struct block_list *target,
                           unsigned int tick, int flag)
 {
+    nullpo_retr (0, src);
+    nullpo_retr (0, target);
+
     struct map_session_data *sd = NULL;
     struct status_change *sc_data = battle_get_sc_data (src), *t_sc_data =
         battle_get_sc_data (target);
@@ -4710,8 +4733,7 @@ int battle_weapon_attack (struct block_list *src, struct block_list *target,
     int  damage, rdamage = 0;
     struct Damage wd;
 
-    nullpo_retr (0, src);
-    nullpo_retr (0, target);
+    wd.dmg_lv = 0;
 
     if (src->type == BL_PC)
         sd = (struct map_session_data *) src;
@@ -5223,7 +5245,7 @@ int battle_check_target (struct block_list *src, struct block_list *target,
         && ((struct map_session_data *) target)->invincible_timer != -1)
         return -1;
 
-    if (target->type == BL_SKILL)
+    if (target->type == BL_SKILL && ((struct skill_unit *) target)->group)
     {
         switch (((struct skill_unit *) target)->group->unit_id)
         {
