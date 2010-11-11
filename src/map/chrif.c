@@ -51,6 +51,12 @@ static int chrif_state;
  */
 void chrif_setuserid (char *id)
 {
+    if (!id)
+    {
+        userid[0] = '\0';
+        return;
+    }
+
     strncpy (userid, id, sizeof(userid)-1);
     userid[sizeof(userid)-1] = '\0';
 }
@@ -61,6 +67,12 @@ void chrif_setuserid (char *id)
  */
 void chrif_setpasswd (char *pwd)
 {
+    if (!pwd)
+    {
+        passwd[0] = '\0';
+        return;
+    }
+
     strncpy (passwd, pwd, sizeof(passwd)-1);
     passwd[sizeof(passwd)-1] = '\0';
 }
@@ -76,6 +88,12 @@ char *chrif_getpasswd ()
  */
 void chrif_setip (char *ip)
 {
+    if (!ip)
+    {
+        char_ip_str[0] = '\0';
+        char_ip = 0;
+        return;
+    }
     strncpy (char_ip_str, ip, sizeof(char_ip_str)-1);
     char_ip_str[sizeof(char_ip_str)-1] = '\0';
     char_ip = inet_addr (char_ip_str);
@@ -203,6 +221,7 @@ int chrif_changemapserver (struct map_session_data *sd, char *name, int x,
     int  i, s_ip;
 
     nullpo_retr (-1, sd);
+    nullpo_retr (-1, name);
 
     s_ip = 0;
     for (i = 0; i < fd_max; i++)
@@ -382,6 +401,8 @@ int chrif_searchcharid (int char_id)
  */
 int chrif_changegm (int id, const char *pass, int len)
 {
+    nullpo_retr (-1, pass);
+
     if (battle_config.etc_log)
         printf ("chrif_changegm: account: %d, password: '%s'.\n", id, pass);
 
@@ -401,6 +422,9 @@ int chrif_changegm (int id, const char *pass, int len)
 int chrif_changeemail (int id, const char *actual_email,
                        const char *new_email)
 {
+    nullpo_retr (-1, actual_email);
+    nullpo_retr (-1, new_email);
+
     if (battle_config.etc_log)
         printf
             ("chrif_changeemail: account: %d, actual_email: '%s', new_email: '%s'.\n",
@@ -430,6 +454,8 @@ int chrif_char_ask_name (int id, char *character_name, short operation_type,
                          int year, int month, int day, int hour, int minute,
                          int second)
 {
+    nullpo_retr (-1, character_name);
+
     WFIFOW (char_fd, 0) = 0x2b0e;
     WFIFOL (char_fd, 2) = id;   // account_id of who ask (for answer) -1 if nobody
     memcpy (WFIFOP (char_fd, 6), character_name, 24);
@@ -717,7 +743,7 @@ int chrif_saveaccountreg2 (struct map_session_data *sd)
     for (j = 0; j < sd->status.account_reg2_num; j++)
     {
         struct global_reg *reg = &sd->status.account_reg2[j];
-        if (reg->str[0] && reg->value != 0)
+        if (reg && reg->str[0] && reg->value != 0)
         {
             memcpy (WFIFOP (char_fd, p), reg->str, 32);
             WFIFOL (char_fd, p + 32) = reg->value;
@@ -1000,7 +1026,7 @@ int chrif_ragsrvinfo (int base_rate, int job_rate, int drop_rate)
 
 int chrif_char_offline (struct map_session_data *sd)
 {
-    if (char_fd < 0)
+    if (char_fd < 0 || !sd)
         return -1;
 
     WFIFOW (char_fd, 0) = 0x2b17;
@@ -1105,6 +1131,9 @@ void ladmin_itemfrob (int fd)
     int  dest_id = RFIFOL (fd, 6);
     struct block_list *bl = (struct block_list *) map_get_first_session ();
 
+    if (!bl)
+        return;
+
     // flooritems
     map_foreachobject (ladmin_itemfrob_c, 0 /* any object */ , source_id,
                        dest_id);
@@ -1124,6 +1153,9 @@ void ladmin_itemfrob (int fd)
 int chrif_parse (int fd)
 {
     int  packet_len, cmd;
+
+    if (!session[fd])
+        return 0;
 
     // only char-server can have an access to here.
     // so, if it isn't the char-server, we disconnect the session (fd != char_fd).
@@ -1149,7 +1181,7 @@ int chrif_parse (int fd)
             0x2af8 +
             (sizeof (packet_len_table) / sizeof (packet_len_table[0]))
             || packet_len_table[cmd - 0x2af8] == 0)
-        {
+        {   // need check cmd - 0x2af8 ?
 
             int  r = intif_parse (fd);  // intif‚É“n‚·
 
@@ -1288,6 +1320,7 @@ int check_connect_char_server (int tid, unsigned int tick, int id, int data)
         chrif_state = 0;
         if ((char_fd = make_connection (char_ip, char_port)) < 0)
             return 0;
+        // need check session[char_fd] ?
         session[char_fd]->func_parse = chrif_parse;
         realloc_fifo (char_fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
 
