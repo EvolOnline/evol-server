@@ -143,6 +143,9 @@ char talkie_mes[80];
  */
 void clif_setip (char *ip)
 {
+    if (!ip)
+        return;
+
     memcpy (map_ip_str, ip, 16);
     map_ip = inet_addr (map_ip_str);
 }
