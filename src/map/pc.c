@@ -359,7 +359,7 @@ int pc_setrestartvalue (struct map_session_data *sd, int type)
 
     /* removed exp penalty on spawn [Valaris] */
 
-    if (type & 2 && sd->status.class != 0 && battle_config.zeny_penalty > 0
+    if (type & 2 && sd->status.class > 5 && battle_config.zeny_penalty > 0
         && !map[sd->bl.m].flag.nozenypenalty)
     {
         int  zeny =
@@ -5303,7 +5303,7 @@ int pc_nextbaseexp (struct map_session_data *sd)
     if (sd->status.base_level >= MAX_LEVEL || sd->status.base_level <= 0)
         return 0;
 
-    if (sd->status.class == 0)
+    if (sd->status.class <= 5)
         i = 0;
     else if (sd->status.class <= 6)
         i = 1;
@@ -5348,7 +5348,7 @@ int pc_nextbaseafter (struct map_session_data *sd)
     if (sd->status.base_level >= MAX_LEVEL || sd->status.base_level <= 0)
         return 0;
 
-    if (sd->status.class == 0)
+    if (sd->status.class <= 5)
         i = 0;
     else if (sd->status.class <= 6)
         i = 1;
@@ -5379,7 +5379,7 @@ int pc_nextjobafter (struct map_session_data *sd)
     if (sd->status.job_level >= MAX_LEVEL || sd->status.job_level <= 0)
         return 0;
 
-    if (sd->status.class == 0)
+    if (sd->status.class <= 5)
         i = 7;
     else if (sd->status.class <= 6)
         i = 8;
@@ -6235,7 +6235,7 @@ int pc_setparam (struct map_session_data *sd, int type, int val)
             pc_heal (sd, sd->status.max_hp, sd->status.max_sp);
             break;
         case SP_JOBLEVEL:
-            if (sd->status.class == 0)
+            if (sd->status.class < 5)
                 up_level -= 40;
             if ((sd->status.class == 23)
                 || (sd->status.class >= 4001 && sd->status.class <= 4022))
