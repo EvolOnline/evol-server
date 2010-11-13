@@ -4,7 +4,7 @@ ifeq ($(shell uname -m), x86_64)
 M32=-m32
 endif
 
-STATIC=-static
+#STATIC=-static
 
 CC = gcc ${M32} ${STATIC}
 LEX=flex
