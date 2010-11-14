@@ -57,6 +57,8 @@ extern int char_fd;             // inter serverのfdはchar_fdを使う
 // Message for all GMs on all map servers
 int intif_GMmessage (char *mes, int len, int flag)
 {
+    nullpo_retr (0, mes);
+
     int  lp = (flag & 0x10) ? 8 : 4;
     WFIFOW (inter_fd, 0) = 0x3000;
     WFIFOW (inter_fd, 2) = lp + len;
@@ -72,6 +74,8 @@ int intif_wis_message (struct map_session_data *sd, char *nick, char *mes,
                        int mes_len)
 {
     nullpo_retr (0, sd);
+    nullpo_retr (0, nick);
+    nullpo_retr (0, mes);
 
     WFIFOW (inter_fd, 0) = 0x3001;
     WFIFOW (inter_fd, 2) = mes_len + 52;
@@ -105,6 +109,9 @@ int intif_wis_replay (int id, int flag)
 int intif_wis_message_to_gm (char *Wisp_name, int min_gm_level, char *mes,
                              int mes_len)
 {
+    nullpo_retr (0, Wisp_name);
+    nullpo_retr (0, mes);
+
     WFIFOW (inter_fd, 0) = 0x3003;
     WFIFOW (inter_fd, 2) = mes_len + 30;
     memcpy (WFIFOP (inter_fd, 4), Wisp_name, 24);
@@ -182,6 +189,8 @@ int intif_request_guild_storage (int account_id, int guild_id)
 
 int intif_send_guild_storage (int account_id, struct guild_storage *gstor)
 {
+    nullpo_retr (0, gstor);
+
     WFIFOW (inter_fd, 0) = 0x3019;
     WFIFOW (inter_fd, 2) = sizeof (struct guild_storage) + 12;
     WFIFOL (inter_fd, 4) = account_id;
@@ -195,6 +204,7 @@ int intif_send_guild_storage (int account_id, struct guild_storage *gstor)
 int intif_create_party (struct map_session_data *sd, char *name)
 {
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     WFIFOW (inter_fd, 0) = 0x3020;
     WFIFOL (inter_fd, 2) = sd->status.account_id;
@@ -293,6 +303,8 @@ int intif_break_party (int party_id)
 // パーティ会話送信
 int intif_party_message (int party_id, int account_id, char *mes, int len)
 {
+    nullpo_retr (0, mes);
+
 //  if(battle_config.etc_log)
 //      printf("intif_party_message: %s\n",mes);
     WFIFOW (inter_fd, 0) = 0x3027;
@@ -307,6 +319,8 @@ int intif_party_message (int party_id, int account_id, char *mes, int len)
 // パーティ競合チェック要求
 int intif_party_checkconflict (int party_id, int account_id, char *nick)
 {
+    nullpo_retr (0, nick);
+
     WFIFOW (inter_fd, 0) = 0x3028;
     WFIFOL (inter_fd, 2) = party_id;
     WFIFOL (inter_fd, 6) = account_id;
@@ -318,6 +332,7 @@ int intif_party_checkconflict (int party_id, int account_id, char *nick)
 // ギルド作成要求
 int intif_guild_create (const char *name, const struct guild_member *master)
 {
+    nullpo_retr (0, name);
     nullpo_retr (0, master);
 
     WFIFOW (inter_fd, 0) = 0x3030;
@@ -341,6 +356,8 @@ int intif_guild_request_info (int guild_id)
 // ギルドメンバ追加要求
 int intif_guild_addmember (int guild_id, struct guild_member *m)
 {
+    nullpo_retr (0, m);
+
     WFIFOW (inter_fd, 0) = 0x3032;
     WFIFOW (inter_fd, 2) = sizeof (struct guild_member) + 8;
     WFIFOL (inter_fd, 4) = guild_id;
@@ -353,6 +370,8 @@ int intif_guild_addmember (int guild_id, struct guild_member *m)
 int intif_guild_leave (int guild_id, int account_id, int char_id, int flag,
                        const char *mes)
 {
+    nullpo_retr (0, mes);
+
     WFIFOW (inter_fd, 0) = 0x3034;
     WFIFOL (inter_fd, 2) = guild_id;
     WFIFOL (inter_fd, 6) = account_id;
@@ -391,6 +410,8 @@ int intif_guild_break (int guild_id)
 // ギルド会話送信
 int intif_guild_message (int guild_id, int account_id, char *mes, int len)
 {
+    nullpo_retr (0, mes);
+
     WFIFOW (inter_fd, 0) = 0x3037;
     WFIFOW (inter_fd, 2) = len + 12;
     WFIFOL (inter_fd, 4) = guild_id;
@@ -415,6 +436,8 @@ int intif_guild_checkconflict (int guild_id, int account_id, int char_id)
 int intif_guild_change_basicinfo (int guild_id, int type, const void *data,
                                   int len)
 {
+    nullpo_retr (0, data);
+
     WFIFOW (inter_fd, 0) = 0x3039;
     WFIFOW (inter_fd, 2) = len + 10;
     WFIFOL (inter_fd, 4) = guild_id;
@@ -428,6 +451,8 @@ int intif_guild_change_basicinfo (int guild_id, int type, const void *data,
 int intif_guild_change_memberinfo (int guild_id, int account_id, int char_id,
                                    int type, const void *data, int len)
 {
+    nullpo_retr (0, data);
+
     WFIFOW (inter_fd, 0) = 0x303a;
     WFIFOW (inter_fd, 2) = len + 18;
     WFIFOL (inter_fd, 4) = guild_id;
@@ -442,6 +467,8 @@ int intif_guild_change_memberinfo (int guild_id, int account_id, int char_id,
 // ギルド役職変更要求
 int intif_guild_position (int guild_id, int idx, struct guild_position *p)
 {
+    nullpo_retr (0, p);
+
     WFIFOW (inter_fd, 0) = 0x303b;
     WFIFOW (inter_fd, 2) = sizeof (struct guild_position) + 12;
     WFIFOL (inter_fd, 4) = guild_id;
@@ -479,6 +506,9 @@ int intif_guild_alliance (int guild_id1, int guild_id2, int account_id1,
 // ギルド告知変更要求
 int intif_guild_notice (int guild_id, const char *mes1, const char *mes2)
 {
+    nullpo_retr (0, mes1);
+    nullpo_retr (0, mes2);
+
     WFIFOW (inter_fd, 0) = 0x303e;
     WFIFOL (inter_fd, 2) = guild_id;
     memcpy (WFIFOP (inter_fd, 6), mes1, 60);
@@ -490,6 +520,8 @@ int intif_guild_notice (int guild_id, const char *mes1, const char *mes2)
 // ギルドエンブレム変更要求
 int intif_guild_emblem (int guild_id, int len, const char *data)
 {
+    nullpo_retr (0, data);
+
     if (guild_id <= 0 || len < 0 || len > 2000)
         return 0;
     WFIFOW (inter_fd, 0) = 0x303f;
@@ -650,6 +682,14 @@ int intif_parse_LoadStorage (int fd)
         return 1;
     }
     stor = account2storage (RFIFOL (fd, 4));
+    if (!stor)
+    {                           // Already open.. lets ignore this update
+        if (battle_config.error_log)
+            printf
+                ("intif_parse_LoadStorage: storage not exist (User %d:%d)\n",
+                 sd->status.account_id, sd->status.char_id);
+        return 1;
+    }
     if (stor->storage_status == 1)
     {                           // Already open.. lets ignore this update
         if (battle_config.error_log)
@@ -931,11 +971,15 @@ int intif_parse_GuildBasicInfoChanged (int fd)
 {
     int  type = RFIFOW (fd, 8), guild_id = RFIFOL (fd, 4);
     void *data = RFIFOP (fd, 10);
+    if (!data)
+        return 0;
+
     struct guild *g = guild_search (guild_id);
+    if (!g)
+        return 0;
+
     short dw = *((short *) data);
     int  dd = *((int *) data);
-    if (g == NULL)
-        return 0;
     switch (type)
     {
         case GBI_EXP:
@@ -957,11 +1001,19 @@ int intif_parse_GuildMemberInfoChanged (int fd)
     int  type = RFIFOW (fd, 16), guild_id = RFIFOL (fd, 4);
     int  account_id = RFIFOL (fd, 8), char_id = RFIFOL (fd, 12);
     void *data = RFIFOP (fd, 18);
-    struct guild *g = guild_search (guild_id);
-    int  idx, dd = *((int *) data);
-    if (g == NULL)
+    if (!data)
         return 0;
+
+    struct guild *g = guild_search (guild_id);
+    if (!g)
+        return 0;
+
+    int  idx, dd = *((int *) data);
+
     idx = guild_getindex (g, account_id, char_id);
+    if (idx < 0 || idx > MAX_GUILD)
+        return 0;
+
     switch (type)
     {
         case GMI_POSITION:
