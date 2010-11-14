@@ -69,6 +69,11 @@ int guild_skill_get_max (int id)
 // ギルドスキルがあるか確認
 int guild_checkskill (struct guild *g, int id)
 {
+    nullpo_retr (0, g);
+
+    if (id < 10000 || id>= MAX_GUILDSKILL + 10000)
+        return 0;
+
     return g->skill[id - 10000].lv;
 }
 
@@ -172,8 +177,12 @@ struct guild *guild_search (int guild_id)
 
 int guild_searchname_sub (void *key, void *data, va_list ap)
 {
+    if (!key || !data)
+        return 0;
+
     struct guild *g = (struct guild *) data, **dst;
     char *str;
+
     str = va_arg (ap, char *);
     dst = va_arg (ap, struct guild **);
     if (strcmpi (g->name, str) == 0)
@@ -184,6 +193,9 @@ int guild_searchname_sub (void *key, void *data, va_list ap)
 // ギルド名検索
 struct guild *guild_searchname (char *str)
 {
+    if (!str)
+        return 0;
+
     struct guild *g = NULL;
     numdb_foreach (guild_db, guild_searchname_sub, str, &g);
     return g;
@@ -197,6 +209,8 @@ struct guild_castle *guild_castle_search (int gcid)
 // mapnameに対応したアジトのgcを返す
 struct guild_castle *guild_mapname2gc (char *mapname)
 {
+    nullpo_retr (NULL, mapname);
+
     int  i;
     struct guild_castle *gc = NULL;
     for (i = 0; i < MAX_GUILDCASTLE; i++)
@@ -254,6 +268,7 @@ int guild_getposition (struct map_session_data *sd, struct guild *g)
 void guild_makemember (struct guild_member *m, struct map_session_data *sd)
 {
     nullpo_retv (sd);
+    nullpo_retv (m);
 
     memset (m, 0, sizeof (struct guild_member));
     m->account_id = sd->status.account_id;
@@ -288,6 +303,7 @@ int guild_payexp_timer_sub (void *key, void *data, va_list ap)
     struct guild_expcache *c;
     struct guild *g;
 
+    nullpo_retr (0, key);
     nullpo_retr (0, ap);
     nullpo_retr (0, c = (struct guild_expcache *) data);
     nullpo_retr (0, dellist = va_arg (ap, int *));
@@ -329,6 +345,7 @@ int guild_create (struct map_session_data *sd, char *name)
     char pname[24];
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     strncpy (pname, name, 24);
     pname[23] = '\0';
@@ -425,6 +442,8 @@ int guild_npc_request_info (int guild_id, const char *event)
         return guild_request_info (guild_id);
 
     ev = (struct eventlist *) aCalloc (1, sizeof (struct eventlist));
+
+    //+++ may be need strncpy?
     memcpy (ev->name, event, sizeof (ev->name));
     ev->next =
         (struct eventlist *) numdb_search (guild_infoevent_db, guild_id);
@@ -573,11 +592,12 @@ int guild_invite (struct map_session_data *sd, int account_id)
 
     nullpo_retr (0, sd);
 
-    tsd = map_id2sd (account_id);
     g = guild_search (sd->status.guild_id);
+    nullpo_retr (0, g);
 
-    if (tsd == NULL || g == NULL)
-        return 0;
+    tsd = map_id2sd (account_id);
+    nullpo_retr (0, tsd);
+
     if (!battle_config.invite_request_check)
     {
         if (tsd->party_invite > 0 || tsd->trade_partner)
@@ -750,7 +770,7 @@ int guild_explusion (struct map_session_data *sd, int guild_id,
     if (sd->status.guild_id != guild_id)
         return 0;
 
-    if ((ps = guild_getposition (sd, g)) < 0
+    if ((ps = guild_getposition (sd, g)) < 0 || ps >= MAX_GUILDPOSITION
         || !(g->position[ps].mode & 0x0010))
         return 0;               // 処罰権限無し
 
@@ -894,7 +914,11 @@ int guild_recv_memberinfoshort (int guild_id, int account_id, int char_id,
                     char_id, guild_id, g->name);
         return 0;
     }
-    g->average_lv = alv / c;
+    if (c)
+        g->average_lv = alv / c;
+    else
+        g->average_lv = 1;
+
     g->connect_member = om;
 
     if (oldonline != online)    // オンライン状態が変わったので通知
@@ -959,6 +983,7 @@ int guild_change_position (struct map_session_data *sd, int idx,
     struct guild_position p;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     if (exp_mode > battle_config.guild_exp_limit)
         exp_mode = battle_config.guild_exp_limit;
@@ -973,6 +998,10 @@ int guild_change_position (struct map_session_data *sd, int idx,
 // ギルド役職変更通知
 int guild_position_changed (int guild_id, int idx, struct guild_position *p)
 {
+    nullpo_retr (0, p);
+    if (idx < 0 || idx >= MAX_GUILDPOSITION)
+        return 0;
+
     struct guild *g = guild_search (guild_id);
     if (g == NULL)
         return 0;
@@ -995,7 +1024,7 @@ int guild_change_notice (struct map_session_data *sd, int guild_id,
     if (g == NULL)
         return 0;
 
-    if ((ps = guild_getposition (sd, g)) < 0
+    if ((ps = guild_getposition (sd, g)) < 0 || ps >= MAX_GUILDPOSITION
         || !(g->position[ps].mode & 0x0010))
         return 0;
 
@@ -1008,6 +1037,9 @@ int guild_change_notice (struct map_session_data *sd, int guild_id,
 // ギルド告知変更通知
 int guild_notice_changed (int guild_id, const char *mes1, const char *mes2)
 {
+    nullpo_retr (0, mes1);
+    nullpo_retr (0, mes2);
+
     int  i;
     struct map_session_data *sd;
     struct guild *g = guild_search (guild_id);
@@ -1039,7 +1071,7 @@ int guild_change_emblem (struct map_session_data *sd, int len,
     if (g == NULL)
         return 0;
 
-    if ((ps = guild_getposition (sd, g)) < 0
+    if ((ps = guild_getposition (sd, g)) < 0 || ps >= MAX_GUILDPOSITION
         || !(g->position[ps].mode & 0x0010))
         return 0;
 
@@ -1050,6 +1082,8 @@ int guild_change_emblem (struct map_session_data *sd, int len,
 int guild_emblem_changed (int len, int guild_id, int emblem_id,
                           const char *data)
 {
+    nullpo_retr (0, data);
+
     int  i;
     struct map_session_data *sd;
     struct guild *g = guild_search (guild_id);
@@ -1084,7 +1118,9 @@ int guild_payexp (struct map_session_data *sd, int exp)
     if (sd->status.guild_id == 0
         || (g = guild_search (sd->status.guild_id)) == NULL)
         return 0;
-    if ((per = g->position[guild_getposition (sd, g)].exp_mode) <= 0)
+
+    int ps = guild_getposition (sd, g);
+    if (ps < 0 || ps >= MAX_GUILDPOSITION || (per = g->position[ps].exp_mode) <= 0)
         return 0;
     if (per > 100)
         per = 100;
@@ -1124,8 +1160,12 @@ int guild_skillup (struct map_session_data *sd, int skill_num)
     if (strcmp (sd->status.name, g->master))
         return 0;
 
+    idx = skill_num - 10000;
+    if (idx < 0 || idx >= MAX_GUILDSKILL)
+        return 0;
+
     if (g->skill_point > 0 &&
-        g->skill[(idx = skill_num - 10000)].id != 0 &&
+        g->skill[idx].id != 0 &&
         g->skill[idx].lv < guild_skill_get_max (skill_num))
     {
         intif_guild_skillup (g->guild_id, skill_num, sd->status.account_id);
@@ -1142,7 +1182,12 @@ int guild_skillupack (int guild_id, int skill_num, int account_id)
     if (g == NULL)
         return 0;
     if (sd != NULL)
+    {
+        if (skill_num < 10000 || skill_num >= MAX_GUILDSKILL + 10000)
+            return 0;
+
         clif_guild_skillup (sd, skill_num, g->skill[skill_num - 10000].lv);
+    }
     // 全員に通知
     for (i = 0; i < g->max_member; i++)
         if ((sd = g->member[i].sd) != NULL)
@@ -1168,9 +1213,7 @@ int guild_get_alliance_count (struct guild *g, int flag)
 // ギルド同盟要求
 int guild_reqalliance (struct map_session_data *sd, int account_id)
 {
-    struct map_session_data *tsd = map_id2sd (account_id);
-    struct guild *g[2];
-    int  i, ps;
+    nullpo_retr (0, sd);
 
     if (agit_flag)
     {                           // Disable alliance creation during woe [Valaris]
@@ -1179,7 +1222,9 @@ int guild_reqalliance (struct map_session_data *sd, int account_id)
         return 0;
     }                           // end addition [Valaris]
 
-    nullpo_retr (0, sd);
+    struct map_session_data *tsd = map_id2sd (account_id);
+    struct guild *g[2];
+    int  i, ps;
 
     if (tsd == NULL || tsd->status.guild_id <= 0)
         return 0;
@@ -1190,7 +1235,7 @@ int guild_reqalliance (struct map_session_data *sd, int account_id)
     if (g[0] == NULL || g[1] == NULL)
         return 0;
 
-    if ((ps = guild_getposition (sd, g[0])) < 0
+    if ((ps = guild_getposition (sd, g[0])) < 0 || ps >= MAX_GUILDPOSITION
         || !(g[0]->position[ps].mode & 0x0010))
         return 0;
 
@@ -1297,6 +1342,8 @@ int guild_reply_reqalliance (struct map_session_data *sd, int account_id,
 // ギルド関係解消
 int guild_delalliance (struct map_session_data *sd, int guild_id, int flag)
 {
+    nullpo_retr (0, sd);
+
     if (agit_flag)
     {                           // Disable alliance breaking during woe [Valaris]
         clif_displaymessage (sd->fd,
@@ -1307,14 +1354,12 @@ int guild_delalliance (struct map_session_data *sd, int guild_id, int flag)
     struct guild *g;
     int  ps;
 
-    nullpo_retr (0, sd);
-
     g = guild_search (sd->status.guild_id);
 
     if (g == NULL)
         return 0;
 
-    if ((ps = guild_getposition (sd, g)) < 0
+    if ((ps = guild_getposition (sd, g)) < 0 || ps >=  MAX_GUILDPOSITION
         || !(g->position[ps].mode & 0x0010))
         return 0;
 
@@ -1336,7 +1381,7 @@ int guild_opposition (struct map_session_data *sd, int account_id /*char_id*/)
     if (g == NULL || tsd == NULL)
         return 0;
 
-    if ((ps = guild_getposition (sd, g)) < 0
+    if ((ps = guild_getposition (sd, g)) < 0 || ps >=  MAX_GUILDPOSITION
         || !(g->position[ps].mode & 0x0010))
         return 0;
 
@@ -1510,6 +1555,7 @@ int guild_break (struct map_session_data *sd, char *name)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     if ((g = guild_search (sd->status.guild_id)) == NULL)
         return 0;
@@ -1769,7 +1815,7 @@ int guild_castlealldataload (int len, struct guild_castle *gc)
     // イベント付きで要求するデータ位置を探す(最後の占拠データ)
     for (i = 0; i < n; i++)
     {
-        if ((gc + i)->guild_id)
+        if ((gc + i) && (gc + i)->guild_id)
             ev = i;
     }
 
@@ -1814,6 +1860,7 @@ int guild_agit_end (void)
 
 int guild_gvg_eliminate_timer (int tid, unsigned int tick, int id, int data)
 {                               // Run One NPC_Event[OnAgitEliminate]
+    nullpo_retr (0, data);
     size_t len = strlen ((const char *) data);
     char *evname = (char *) aCalloc (len + 4, sizeof (char));
     int  c = 0;
@@ -1852,12 +1899,16 @@ int guild_agit_break (struct mob_data *md)
 //   How many castles does this guild have?
 int guild_checkcastles (struct guild *g)
 {
+    nullpo_retr (0, g);
+
     int  i, nb_cas = 0, id, cas_id = 0;
     struct guild_castle *gc;
     id = g->guild_id;
     for (i = 0; i < MAX_GUILDCASTLE; i++)
     {
         gc = guild_castle_search (i);
+        if (!gc)
+            continue;
         cas_id = gc->guild_id;
         if (g->guild_id == cas_id)
             nb_cas = nb_cas + 1;
@@ -1872,6 +1923,7 @@ int guild_isallied (struct guild *g, struct guild_castle *gc)
     int  i;
 
     nullpo_retr (0, g);
+    nullpo_retr (0, gc);
 
     if (g->guild_id == gc->guild_id)
         return 1;
