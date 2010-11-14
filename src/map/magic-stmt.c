@@ -14,6 +14,9 @@ int
 #ifdef DEBUG
 static void print_val (val_t * v)
 {
+    if (!v)
+        return;
+
     switch (v->ty)
     {
         case TY_UNDEF:
@@ -36,6 +39,9 @@ static void print_val (val_t * v)
 
 static void dump_env (env_t * env)
 {
+    if (!env || !env->base_env)
+        return;
+
     int  i;
     for (i = 0; i < env->base_env->vars_nr; i++)
     {
@@ -53,6 +59,9 @@ static void dump_env (env_t * env)
 
 static void clear_activation_record (cont_activation_record_t * ar)
 {
+    if (!ar)
+        return;
+
     switch (ar->ty)
     {
         case CONT_STACK_FOREACH:
@@ -79,6 +88,9 @@ invocation_timer_callback (int _, unsigned int __, int id, int data)
 
 static void clear_stack (invocation_t * invocation)
 {
+    if (!invocation)
+        return;
+
     int  i;
 
     for (i = 0; i < invocation->stack_size; i++)
@@ -89,6 +101,9 @@ static void clear_stack (invocation_t * invocation)
 
 void spell_free_invocation (invocation_t * invocation)
 {
+    if (!invocation)
+        return;
+
     if (invocation->status_change_refs)
     {
         free (invocation->status_change_refs);
@@ -119,6 +134,9 @@ void spell_free_invocation (invocation_t * invocation)
 static void
 char_set_weapon_icon (character_t * subject, int count, int icon, int look)
 {
+    if (!subject)
+        return;
+
     const int old_icon = subject->attack_spell_icon_override;
 
     subject->attack_spell_icon_override = icon;
@@ -143,6 +161,9 @@ char_set_weapon_icon (character_t * subject, int count, int icon, int look)
 
 static void char_set_attack_info (character_t * subject, int speed, int range)
 {
+    if (!subject)
+        return;
+
     subject->attack_spell_delay = speed;
     subject->attack_spell_range = range;
 
@@ -162,6 +183,9 @@ static void char_set_attack_info (character_t * subject, int speed, int range)
 
 void magic_stop_completely (character_t * c)
 {
+    if (!c)
+        return;
+
     int  i;
     // Zap all status change references to spells
     for (i = 0; i < MAX_STATUSCHANGE; i++)
@@ -185,6 +209,9 @@ void magic_stop_completely (character_t * c)
 /* Spell execution has finished normally or we have been notified by a finished skill timer */
 static void try_to_finish_invocation (invocation_t * invocation)
 {
+    if (!invocation)
+        return;
+
     if (invocation->status_change_refs_nr == 0 && !invocation->current_effect)
     {
         if (invocation->end_effect)
@@ -209,6 +236,8 @@ static int trigger_spell (int subject, int spell)
     invocation = spell_clone_effect (invocation);
 
     spell_bind ((character_t *) map_id2bl (subject), invocation);
+
+    //+++ need check invocation->env?
     magic_clear_var (&invocation->env->vars[VAR_CASTER]);
     invocation->env->vars[VAR_CASTER].ty = TY_ENTITY;
     invocation->env->vars[VAR_CASTER].v.v_int = subject;
@@ -220,6 +249,9 @@ static void entity_warp (entity_t * target, int destm, int destx, int desty);
 
 static void char_update (character_t * character)
 {
+    if (!character)
+        return;
+
     entity_warp ((entity_t *) character, character->bl.m, character->bl.x,
                  character->bl.y);
 }
@@ -234,12 +266,18 @@ static int timer_callback_effect (int _, unsigned int __, int id, int data)
 
 static void entity_effect (entity_t * entity, int effect_nr, int delay)
 {
+    if (!entity)
+        return;
+
     add_timer (gettick () + delay,
                &timer_callback_effect, entity->id, effect_nr);
 }
 
 void magic_unshroud (character_t * other_char)
 {
+    if (!other_char)
+        return;
+
     other_char->state.shroud_active = 0;
     // Now warp the caster out of and back into here to refresh everyone's display
     char_update (other_char);
@@ -263,6 +301,9 @@ static struct npc_data *local_spell_effect (int m, int x, int y, int effect,
     int  delay = 30000;         /* 1 minute should be enough for all interesting spell effects, I hope */
     struct npc_data *effect_npc = npc_spawn_text (m, x, y,
                                                   INVISIBLE_NPC, "", "?");
+    if (!effect_npc)
+        return NULL;
+
     int  effect_npc_id = effect_npc->bl.id;
 
     entity_effect (&effect_npc->bl, effect, tdelay);
@@ -274,6 +315,9 @@ static struct npc_data *local_spell_effect (int m, int x, int y, int effect,
 
 static int op_sfx (env_t * env, int args_nr, val_t * args)
 {
+    if (!env || !args)
+        return 1;
+
     int  delay = ARGINT (2);
 
     if (TY (0) == TY_ENTITY)
@@ -294,11 +338,17 @@ static int op_sfx (env_t * env, int args_nr, val_t * args)
 
 static int op_instaheal (env_t * env, int args_nr, val_t * args)
 {
+    if (!env || !args)
+        return 1;
+
     entity_t *caster = (VAR (VAR_CASTER).ty == TY_ENTITY)
         ? map_id2bl (VAR (VAR_CASTER).v.v_int) : NULL;
     entity_t *subject = ARGENTITY (0);
     if (!caster)
         caster = subject;
+
+    if (!caster || !subject)
+        return 1;
 
     if (caster->type == BL_PC && subject->type == BL_PC)
     {
@@ -314,6 +364,9 @@ static int op_instaheal (env_t * env, int args_nr, val_t * args)
 
 static int op_itemheal (env_t * env, int args_nr, val_t * args)
 {
+    if (!env || !args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
     if (subject->type == BL_PC)
     {
@@ -334,6 +387,9 @@ static int op_itemheal (env_t * env, int args_nr, val_t * args)
 
 static int op_shroud (env_t * env, int args_nr, val_t * args)
 {
+    if (!env || !args)
+        return 1;
+
     character_t *subject = ARGCHAR (0);
     int  arg = ARGINT (1);
 
@@ -352,6 +408,9 @@ static int op_shroud (env_t * env, int args_nr, val_t * args)
 
 static int op_reveal (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *subject = ARGCHAR (0);
 
     if (subject && subject->state.shroud_active)
@@ -362,6 +421,9 @@ static int op_reveal (env_t * env, int args_nr, val_t * args)
 
 static int op_message (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *subject = ARGCHAR (0);
 
     if (subject)
@@ -383,11 +445,17 @@ timer_callback_kill_npc (int timer_id, unsigned int odelay, int npc_id,
 
 static int op_messenger_npc (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     struct npc_data *npc;
     location_t *loc = &ARGLOCATION (0);
 
     npc = npc_spawn_text (loc->m, loc->x, loc->y,
                           ARGINT (1), ARGSTR (2), ARGSTR (3));
+
+    if (!npc)
+        return 1;
 
     add_timer (gettick () + ARGINT (4),
                &timer_callback_kill_npc, npc->bl.id, 0);
@@ -397,9 +465,11 @@ static int op_messenger_npc (env_t * env, int args_nr, val_t * args)
 
 static void entity_warp (entity_t * target, int destm, int destx, int desty)
 {
+    if (!target)
+        return;
+
     if (target->type == BL_PC || target->type == BL_MOB)
     {
-
         switch (target->type)
         {
             case BL_PC:
@@ -436,7 +506,13 @@ static void entity_warp (entity_t * target, int destm, int destx, int desty)
 
 static int op_move (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
+    if (!subject)
+        return 1;
+
     int  dir = ARGDIR (1);
 
     int  newx = subject->x + heading_x[dir];
@@ -450,7 +526,13 @@ static int op_move (env_t * env, int args_nr, val_t * args)
 
 static int op_warp (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
+    if (!subject)
+        return 1;
+
     location_t *loc = &ARGLOCATION (1);
 
     entity_warp (subject, loc->m, loc->x, loc->y);
@@ -460,7 +542,12 @@ static int op_warp (env_t * env, int args_nr, val_t * args)
 
 static int op_banish (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
+    if (!subject)
+        return 1;
 
     if (subject->type == BL_MOB)
     {
@@ -476,6 +563,9 @@ static int op_banish (env_t * env, int args_nr, val_t * args)
 static void
 record_status_change (invocation_t * invocation, int bl_id, int sc_id)
 {
+    if (!invocation)
+        return;
+
     int  index = invocation->status_change_refs_nr++;
     status_change_ref_t *cr;
 
@@ -496,7 +586,13 @@ record_status_change (invocation_t * invocation, int bl_id, int sc_id)
 
 static int op_status_change (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
+    if (!subject)
+        return 1;
+
     int  invocation_id = VAR (VAR_INVOCATION).ty == TY_INVOCATION
         ? VAR (VAR_INVOCATION).v.v_int : 0;
     invocation_t *invocation = (invocation_t *) map_id2bl (invocation_id);
@@ -513,7 +609,12 @@ static int op_status_change (env_t * env, int args_nr, val_t * args)
 
 static int op_stop_status_change (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *subject = ARGENTITY (0);
+    if (!subject)
+        return 1;
 
     skill_status_change_end (subject, ARGINT (1), -1);
 
@@ -522,7 +623,13 @@ static int op_stop_status_change (env_t * env, int args_nr, val_t * args)
 
 static int op_override_attack (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *psubject = ARGENTITY (0);
+    if (!psubject)
+        return 1;
+
     int  charges = ARGINT (1);
     int  attack_delay = ARGINT (2);
     int  attack_range = ARGINT (3);
@@ -564,8 +671,14 @@ static int op_override_attack (env_t * env, int args_nr, val_t * args)
 
 static int op_create_item (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     struct item item;
     entity_t *entity = ARGENTITY (0);
+    if (!entity)
+        return 1;
+
     character_t *subject;
     int  stackable;
     int  count = ARGINT (2);
@@ -593,9 +706,18 @@ static int op_create_item (env_t * env, int args_nr, val_t * args)
 
 static int op_aggravate (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *victim = ARGENTITY (2);
+    if (!victim)
+        return 1;
+
     int  mode = ARGINT (1);
     entity_t *target = ARGENTITY (0);
+    if (!target)
+        return 1;
+
     struct mob_data *other;
 
     if (target->type == BL_MOB)
@@ -624,9 +746,21 @@ static int op_aggravate (env_t * env, int args_nr, val_t * args)
 
 static int op_spawn (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     area_t *area = ARGAREA (0);
+    if (!area)
+        return 1;
+
     entity_t *owner_e = ARGENTITY (1);
+    if (!owner_e)
+        return 1;
+
     int  monster_id = ARGINT (2);
+    if (monster_id < 0 || monster_id >= 2001)
+        return 1;
+
     int  monster_attitude = ARGINT (3);
     int  monster_count = ARGINT (4);
     int  monster_lifetime = ARGINT (5);
@@ -712,8 +846,17 @@ static char *get_invocation_name (env_t * env)
 
 static int op_injure (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *caster = ARGENTITY (0);
+    if (!caster)
+        return 1;
+
     entity_t *target = ARGENTITY (1);
+    if (!target)
+        return 1;
+
     int  damage_caused = ARGINT (2);
     int  mp_damage = ARGINT (3);
     int  target_hp = battle_get_hp (target);
@@ -756,7 +899,13 @@ static int op_injure (env_t * env, int args_nr, val_t * args)
 
 static int op_emote (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     entity_t *victim = ARGENTITY (0);
+    if (!victim)
+        return 1;
+
     int  emotion = ARGINT (1);
     clif_emotion (victim, emotion);
 
@@ -765,6 +914,9 @@ static int op_emote (env_t * env, int args_nr, val_t * args)
 
 static int op_set_script_variable (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *c = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
 
     if (!c)
@@ -777,6 +929,9 @@ static int op_set_script_variable (env_t * env, int args_nr, val_t * args)
 
 static int op_set_hair_colour (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *c = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
 
     if (!c)
@@ -789,6 +944,9 @@ static int op_set_hair_colour (env_t * env, int args_nr, val_t * args)
 
 static int op_set_hair_style (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *c = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
 
     if (!c)
@@ -801,6 +959,9 @@ static int op_set_hair_style (env_t * env, int args_nr, val_t * args)
 
 static int op_drop_item_for (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     struct item item;
     int  stackable;
     location_t *loc = &ARGLOCATION (0);
@@ -826,6 +987,9 @@ static int op_drop_item_for (env_t * env, int args_nr, val_t * args)
 
 static int op_gain_exp (env_t * env, int args_nr, val_t * args)
 {
+    if (!args)
+        return 1;
+
     character_t *c = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
 
     if (!c)
@@ -868,12 +1032,18 @@ static int operation_count;
 
 int compare_operations (const void *lhs, const void *rhs)
 {
+    if (!lhs || !rhs)
+        return 0;
+
     return strcmp (((op_t *) lhs)->name, ((op_t *) rhs)->name);
 }
 
 op_t *magic_get_op (char *name, int *index)
 {
     op_t key;
+
+    if (!index)
+        return 0;
 
     if (!operations_sorted)
     {
@@ -913,7 +1083,7 @@ spell_effect_report_termination (int invocation_id, int bl_id, int sc_id,
     for (i = 0; i < invocation->status_change_refs_nr; i++)
     {
         status_change_ref_t *cr = &invocation->status_change_refs[i];
-        if (cr->sc_type == sc_id && cr->bl_id == bl_id)
+        if (cr && cr->sc_type == sc_id && cr->bl_id == bl_id)
         {
             index = i;
             break;
@@ -923,7 +1093,7 @@ spell_effect_report_termination (int invocation_id, int bl_id, int sc_id,
     if (index == -1)
     {
         entity_t *entity = map_id2bl (bl_id);
-        if (entity->type == BL_PC)
+        if (entity && entity->type == BL_PC)
             fprintf (stderr,
                      "[magic] INTERNAL ERROR: spell-effect-report-termination:  tried to terminate on unexpected bl %d, sc %d\n",
                      bl_id, sc_id);
@@ -942,7 +1112,7 @@ spell_effect_report_termination (int invocation_id, int bl_id, int sc_id,
 
 static effect_t *return_to_stack (invocation_t * invocation)
 {
-    if (!invocation->stack_size)
+    if (!invocation || !invocation->stack_size)
         return NULL;
     else
     {
@@ -958,6 +1128,7 @@ static effect_t *return_to_stack (invocation_t * invocation)
 
                 for (i = 0; i < ar->c.c_proc.args_nr; i++)
                 {
+                    //+++ need check ar->c.c_proc.formals[i]?
                     val_t *var =
                         &invocation->env->vars[ar->c.c_proc.formals[i]];
                     magic_clear_var (var);
@@ -973,6 +1144,7 @@ static effect_t *return_to_stack (invocation_t * invocation)
             case CONT_STACK_FOREACH:
             {
                 int  entity_id;
+                //+++ need check ar->c.c_foreach.id?
                 val_t *var = &invocation->env->vars[ar->c.c_foreach.id];
 
                 do
@@ -985,6 +1157,7 @@ static effect_t *return_to_stack (invocation_t * invocation)
                         return ret;
                     }
 
+                    //need check ar->c.c_foreach.index++?
                     entity_id =
                         ar->c.c_foreach.entities[ar->c.c_foreach.index++];
                 }
@@ -1026,8 +1199,12 @@ static cont_activation_record_t *add_stack_entry (invocation_t * invocation,
                                                   int ty,
                                                   effect_t * return_location)
 {
+    if (!invocation || !invocation->stack)
+        return 0;
+
     cont_activation_record_t *ar =
         invocation->stack + invocation->stack_size++;
+
     if (invocation->stack_size >= MAX_STACK_SIZE)
     {
         fprintf (stderr,
@@ -1044,9 +1221,21 @@ static cont_activation_record_t *add_stack_entry (invocation_t * invocation,
 
 static int find_entities_in_area_c (entity_t * target, va_list va)
 {
+    if (!va || !target)
+        return 0;
+
     int *entities_allocd_p = va_arg (va, int *);
+    if (!entities_allocd_p)
+        return 0;
+
     int *entities_nr_p = va_arg (va, int *);
+    if (!entities_nr_p)
+        return 0;
+
     int **entities_p = va_arg (va, int **);
+    if (!entities_p)
+        return 0;
+
     int  filter = va_arg (va, int);
 
 /* The following macro adds an entity to the result list: */
@@ -1121,6 +1310,9 @@ static void
 find_entities_in_area (area_t * area, int *entities_allocd_p,
                        int *entities_nr_p, int **entities_p, int filter)
 {
+    if (!area || !entities_allocd_p || !entities_nr_p || !entities_p)
+        return;
+
     switch (area->ty)
     {
         case AREA_UNION:
@@ -1146,6 +1338,9 @@ find_entities_in_area (area_t * area, int *entities_allocd_p,
 static effect_t *run_foreach (invocation_t * invocation, effect_t * foreach,
                               effect_t * return_location)
 {
+    if (!invocation || !foreach)
+        return return_location;
+
     val_t area;
     int  filter = foreach->e.e_foreach.filter;
     int  id = foreach->e.e_foreach.id;
@@ -1189,7 +1384,11 @@ static effect_t *run_foreach (invocation_t * invocation, effect_t * foreach,
         for (i = entities_nr - 1; i >= 0; i--)
         {
             int  random_index = rand () % (i + 1);
-            entities[i] = entities_collect[shuffle_board[random_index]];
+            if (shuffle_board[random_index] >= 0 && shuffle_board[random_index] < entities_allocd)
+                entities[i] = entities_collect[shuffle_board[random_index]];
+            else
+                entities[i] = 0;
+
             shuffle_board[random_index] = shuffle_board[i]; // thus, we are guaranteed only to use unused indices
         }
 
@@ -1214,6 +1413,9 @@ static effect_t *run_foreach (invocation_t * invocation, effect_t * foreach,
 static effect_t *run_for (invocation_t * invocation, effect_t * for_,
                           effect_t * return_location)
 {
+    if (!invocation || !for_)
+        return return_location;
+
     cont_activation_record_t *ar;
     int  id = for_->e.e_for.id;
     val_t start;
@@ -1248,7 +1450,13 @@ static effect_t *run_for (invocation_t * invocation, effect_t * for_,
 static effect_t *run_call (invocation_t * invocation,
                            effect_t * return_location)
 {
+    if (!invocation || !invocation->env)
+        return return_location;
+
     effect_t *current = invocation->current_effect;
+    if (!current)
+        return return_location;
+
     cont_activation_record_t *ar;
     int  args_nr = current->e.e_call.args_nr;
     int *formals = current->e.e_call.formals;
@@ -1256,11 +1464,15 @@ static effect_t *run_call (invocation_t * invocation,
     int  i;
 
     ar = add_stack_entry (invocation, CONT_STACK_PROC, return_location);
+    if (!ar)
+        return return_location;
+
     ar->c.c_proc.args_nr = args_nr;
     ar->c.c_proc.formals = formals;
     ar->c.c_proc.old_actuals = old_actuals;
     for (i = 0; i < args_nr; i++)
     {
+        //+++ need check formals[i]
         val_t *env_val = &invocation->env->vars[formals[i]];
         val_t result;
         magic_copy_var (&old_actuals[i], env_val);
@@ -1347,12 +1559,24 @@ static void print_cfg (int i, effect_t * e)
  */
 static int spell_run (invocation_t * invocation, int allow_delete)
 {
+    if (!invocation)
+        return 0;
+
+//+++ need many checks in this function
+
     const int invocation_id = invocation->bl.id;
 #define REFRESH_INVOCATION invocation = (invocation_t *) map_id2bl(invocation_id); if (!invocation) return 0;
 
 #ifdef DEBUG
-    fprintf (stderr, "Resuming execution:  invocation of `%s'\n",
-             invocation->spell->name);
+    if (invocation->spell)
+    {
+        fprintf (stderr, "Resuming execution:  invocation of `%s'\n",
+                 invocation->spell->name);
+    }
+    else
+    {
+        fprintf (stderr, "Resuming execution:  invocation of null\n");
+    }
     print_cfg (1, invocation->current_effect);
 #endif
     while (invocation->current_effect)
@@ -1518,6 +1742,8 @@ extern void spell_update_location (invocation_t * invocation);
 void spell_execute_d (invocation_t * invocation, int allow_deletion)
 {
     int  delta;
+    if (!invocation)
+        return;
 
     spell_update_location (invocation);
     delta = spell_run (invocation, allow_deletion);
@@ -1546,6 +1772,9 @@ void spell_execute (invocation_t * invocation)
 
 void spell_execute_script (invocation_t * invocation)
 {
+    if (!invocation)
+        return;
+
     if (invocation->script_pos)
         spell_execute_d (invocation, 1);
     /* Otherwise the script-within-the-spell has been terminated by some other means.
