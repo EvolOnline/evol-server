@@ -51,10 +51,17 @@ void itemdb_reload (void);
 // name = item alias, so we should find items aliases first. if not found then look for "jname" (full name)
 int itemdb_searchname_sub (void *key, void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     struct item_data *item = (struct item_data *) data, **dst;
     char *str;
     str = va_arg (ap, char *);
+    if (!str)
+        return 0;
     dst = va_arg (ap, struct item_data **);
+    if (!dst)
+        return 0;
 //  if( strcmpi(item->name,str)==0 || strcmp(item->jname,str)==0 ||
 //      memcmp(item->name,str,24)==0 || memcmp(item->jname,str,24)==0 )
     if (strcmpi (item->name, str) == 0) //by lupus
@@ -68,10 +75,17 @@ int itemdb_searchname_sub (void *key, void *data, va_list ap)
  */
 int itemdb_searchjname_sub (void *key, void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     struct item_data *item = (struct item_data *) data, **dst;
     char *str;
     str = va_arg (ap, char *);
+    if (!str)
+        return 0;
     dst = va_arg (ap, struct item_data **);
+    if (!dst)
+        return 0;
     if (strcmpi (item->jname, str) == 0)
         *dst = item;
     return 0;
@@ -273,7 +287,8 @@ static int itemdb_read_itemslottable (void)
     {
         int  nameid, equip;
         sscanf (p, "%d#%d#", &nameid, &equip);
-        itemdb_search (nameid)->equip = equip;
+        if (itemdb_search (nameid))
+            itemdb_search (nameid)->equip = equip;
         p = strchr (p, 10);
         if (!p)
             break;
@@ -295,7 +310,7 @@ static int itemdb_read_itemslottable (void)
 static int itemdb_readdb (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2028];
     int  ln = 0, lines = 0;
     int  nameid, j;
     char *str[32], *p, *np;
@@ -316,7 +331,7 @@ static int itemdb_readdb (void)
         }
 
         lines = 0;
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             lines++;
             if (line[0] == '/' && line[1] == '/')
@@ -344,6 +359,9 @@ static int itemdb_readdb (void)
 
             //ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Gender,Loc,wLV,eLV,View
             id = itemdb_search (nameid);
+            if (!id)
+                continue;
+
             memcpy (id->name, str[1], 24);
             memcpy (id->jname, str[2], 24);
             id->type = atoi (str[3]);
@@ -402,7 +420,7 @@ static int itemdb_readdb (void)
 static int itemdb_read_randomitem ()
 {
     FILE *fp;
-    char line[1024];
+    char line[2028];
     int  ln = 0;
     int  nameid, i, j;
     char *str[10], *p;
@@ -443,7 +461,7 @@ static int itemdb_read_randomitem ()
             continue;
         }
 
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             if (line[0] == '/' && line[1] == '/')
                 continue;
@@ -493,7 +511,7 @@ static int itemdb_read_randomitem ()
 static int itemdb_read_itemavail (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2028];
     int  ln = 0;
     int  nameid, j, k;
     char *str[10], *p;
@@ -504,7 +522,7 @@ static int itemdb_read_itemavail (void)
         return -1;
     }
 
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         struct item_data *id;
         if (line[0] == '/' && line[1] == '/')
@@ -558,8 +576,8 @@ static int itemdb_read_itemnametable (void)
     {
         int  nameid;
         char buf2[64];
-
-        if (sscanf (p, "%d#%[^#]#", &nameid, buf2) == 2)
+        buf[63] = 0;
+        if (sscanf (p, "%d#%63[^#]#", &nameid, buf2) == 2)
         {
 
 #ifdef ITEMDB_OVERRIDE_NAME_VERBOSE
@@ -603,9 +621,10 @@ static int itemdb_read_cardillustnametable (void)
     for (p = buf; p - buf < s;)
     {
         int  nameid;
-        char buf2[64];
+        char buf2[68];
+        buf2[63] = 0;
 
-        if (sscanf (p, "%d#%[^#]#", &nameid, buf2) == 2)
+        if (sscanf (p, "%d#%63[^#]#", &nameid, buf2) == 2)
         {
             strcat (buf2, ".bmp");
             memcpy (itemdb_search (nameid)->cardillustname, buf2, 64);
@@ -630,7 +649,7 @@ static int itemdb_read_cardillustnametable (void)
 static int itemdb_read_noequip (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2028];
     int  ln = 0;
     int  nameid, j;
     char *str[32], *p;
@@ -641,7 +660,7 @@ static int itemdb_read_noequip (void)
         printf ("can't read db/item_noequip.txt\n");
         return -1;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
