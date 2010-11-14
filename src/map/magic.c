@@ -10,6 +10,9 @@
 static char *magic_preprocess_message (character_t * character, char *start,
                                        char *end)
 {
+    if (!character)
+        return 0;
+
     if (character->state.shroud_active
         && character->state.shroud_disappears_on_talk)
         magic_unshroud (character);
@@ -17,6 +20,9 @@ static char *magic_preprocess_message (character_t * character, char *start,
     if (character->state.shroud_active
         && character->state.shroud_hides_name_talking)
     {
+        if (!start || !end)
+            return 0;
+
         int  len = strlen (end);
         strcpy (start, "? ");
         memmove (start + 2, end, len + 1);
@@ -32,6 +38,9 @@ static char *magic_preprocess_message (character_t * character, char *start,
  * `*parameter' may point within that copy or be NULL. */
 static char *magic_tokenise (char *src, char **parameter)
 {
+    if (!src)
+        return 0;
+
     char *retval = strdup (src);
     char *seeker = retval;
 
@@ -56,6 +65,9 @@ static char *magic_tokenise (char *src, char **parameter)
 
 int magic_message (character_t * caster, char *spell_, size_t spell_len)
 {
+    if (!caster || !spell_)
+        return 0;
+
     if (pc_isdead (caster))
         return 0;
 
@@ -64,7 +76,7 @@ int magic_message (character_t * caster, char *spell_, size_t spell_len)
     char *source_invocation =
         1 + invocation_base + strlen (caster->status.name);
     spell_t *spell;
-    char *parameter;
+    char *parameter = 0;
     char *spell_invocation;
 
     if (!source_invocation)
