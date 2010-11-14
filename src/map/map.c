@@ -309,6 +309,9 @@ int map_countnearpc (int m, int x, int y)
             if (bx < 0 || bx >= map[m].bxs)
                 continue;
             bl = map[m].block[bx + by * map[m].bxs];
+            if (!bl)
+                continue;
+
             for (; bl; bl = bl->next)
             {
                 if (bl->type == BL_PC)
@@ -343,6 +346,12 @@ int map_count_oncell (int m, int x, int y)
             count++;
     }
     bl = map[m].block_mob[bx + by * map[m].bxs];
+    if (!bl)
+    {
+        if (!count)
+            count = 1;
+        return count;
+    }
     c = map[m].block_mob_count[bx + by * map[m].bxs];
     for (i = 0; i < c && bl; i++, bl = bl->next)
     {
@@ -363,6 +372,9 @@ int map_count_oncell (int m, int x, int y)
 void map_foreachinarea (int (*func) (struct block_list *, va_list), int m,
                         int x0, int y0, int x1, int y1, int type, ...)
 {
+    if (!func)
+        return;
+
     int  bx, by;
     struct block_list *bl = NULL;
     va_list ap = NULL;
@@ -442,6 +454,9 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
                             int x0, int y0, int x1, int y1, int dx, int dy,
                             int type, ...)
 {
+    if (!func)
+        return;
+
     int  bx, by;
     struct block_list *bl = NULL;
     va_list ap = NULL;
@@ -592,6 +607,9 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
 void map_foreachincell (int (*func) (struct block_list *, va_list), int m,
                         int x, int y, int type, ...)
 {
+    if (!func)
+        return;
+
     int  bx, by;
     struct block_list *bl = NULL;
     va_list ap = NULL;
@@ -685,6 +703,9 @@ int map_addobject (struct block_list *bl)
  */
 int map_delobjectnofree (int id, int type)
 {
+    if (id < 0 || id >= MAX_FLOORITEM)
+        return 0;
+
     if (object[id] == NULL)
         return 0;
 
@@ -719,6 +740,9 @@ int map_delobjectnofree (int id, int type)
  */
 int map_delobject (int id, int type)
 {
+    if (id < 0 || id >= MAX_FLOORITEM)
+        return 0;
+
     struct block_list *obj = object[id];
 
     if (obj == NULL)
@@ -741,6 +765,9 @@ int map_delobject (int id, int type)
 void map_foreachobject (int (*func) (struct block_list *, va_list), int type,
                         ...)
 {
+    if (!func)
+        return;
+
     int  i;
     int  blockcount = bl_list_count;
     va_list ap = NULL;
@@ -766,7 +793,7 @@ void map_foreachobject (int (*func) (struct block_list *, va_list), int type,
     map_freeblock_lock ();
 
     for (i = blockcount; i < bl_list_count; i++)
-        if (bl_list[i]->prev || bl_list[i]->next)
+        if (bl_list[i] && (bl_list[i]->prev || bl_list[i]->next))
             func (bl_list[i], ap);
 
     map_freeblock_unlock ();
@@ -871,6 +898,8 @@ int map_addflooritem_any (struct item *item_data, int amount, int m, int x,
     struct flooritem_data *fitem = NULL;
 
     nullpo_retr (0, item_data);
+    nullpo_retr (0, owners);
+    nullpo_retr (0, owner_protection);
 
     if ((xy = map_searchrandfreecell (m, x, y, dispersal)) < 0)
         return 0;
@@ -1024,6 +1053,9 @@ int map_addflooritem (struct item *item_data, int amount, int m, int x, int y,
  */
 void map_addchariddb (int charid, char *name)
 {
+    if (!name)
+        return;
+
     struct charid2nick *p = NULL;
     int  req = 0;
 
@@ -1227,7 +1259,7 @@ static struct map_session_data *map_get_session (int i)
     struct map_session_data *d;
 
     if (i >= 0 && i < fd_max
-        && session[i] && (d = session[i]->session_data) && d->state.auth)
+        && session[i] && (d = session[i]->session_data) && d && d->state.auth)
         return d;
 
     return NULL;
@@ -1266,6 +1298,8 @@ struct map_session_data *map_get_first_session ()
 
 struct map_session_data *map_get_next_session (struct map_session_data *d)
 {
+    if (!d)
+        return 0;
     return map_get_session_forward (d->fd + 1);
 }
 
@@ -1276,6 +1310,8 @@ struct map_session_data *map_get_last_session ()
 
 struct map_session_data *map_get_prev_session (struct map_session_data *d)
 {
+    if (!d)
+        return 0;
     return map_get_session_backward (d->fd - 1);
 }
 
@@ -1287,18 +1323,18 @@ struct map_session_data *map_get_prev_session (struct map_session_data *d)
  */
 struct map_session_data *map_nick2sd (char *nick)
 {
+    if (nick == NULL)
+        return NULL;
+
     int  i, quantity = 0, nicklen;
     struct map_session_data *sd = NULL;
     struct map_session_data *pl_sd = NULL;
-
-    if (nick == NULL)
-        return NULL;
 
     nicklen = strlen (nick);
 
     for (i = 0; i < fd_max; i++)
     {
-        if (session[i] && (pl_sd = session[i]->session_data)
+        if (session[i] && (pl_sd = session[i]->session_data) && pl_sd
             && pl_sd->state.auth)
         {
             // Without case sensitive check (increase the number of similar character names found)
@@ -1357,9 +1393,11 @@ int map_foreachiddb (int (*func) (void *, void *, va_list), ...)
  */
 int map_addnpc (int m, struct npc_data *nd)
 {
-    int  i;
-    if (m < 0 || m >= map_num)
+    if (m < 0 || m >= map_num || !nd)
         return -1;
+
+    int  i;
+
     for (i = 0; i < map[m].npc_num && i < MAX_NPC_PER_MAP; i++)
         if (map[m].npc[i] == NULL)
             break;
@@ -1416,6 +1454,9 @@ void map_removenpc (void)
  */
 int map_mapname2mapid (char *name)
 {
+    if (!name)
+        return -1;
+
     struct map_data *md = NULL;
 
     md = strdb_search (map_db, name);
@@ -1430,6 +1471,9 @@ int map_mapname2mapid (char *name)
  */
 int map_mapname2ipport (char *name, int *ip, int *port)
 {
+    if (!name || !ip || !port)
+        return -1;
+
     struct map_data_other_server *mdos = NULL;
 
     mdos = strdb_search (map_db, name);
@@ -1567,6 +1611,9 @@ int map_setcell (int m, int x, int y, int t)
  */
 int map_setipport (char *name, unsigned long ip, int port)
 {
+    if (!name)
+        return 0;
+
     struct map_data *md = NULL;
     struct map_data_other_server *mdos = NULL;
 
@@ -1619,6 +1666,9 @@ static struct
 
 static int map_waterheight (char *mapname)
 {
+    if (!mapname)
+        return NO_WATER;
+
     if (waterlist)
     {
         int  i;
@@ -1631,7 +1681,10 @@ static int map_waterheight (char *mapname)
 
 static void map_readwater (char *watertxt)
 {
-    char line[1024], w1[1024];
+    if (!watertxt)
+        return;
+
+    char line[2028], w1[2028];
     FILE *fp = NULL;
     int  n = 0;
 
@@ -1643,12 +1696,12 @@ static void map_readwater (char *watertxt)
     }
     if (waterlist == NULL)
         waterlist = aCalloc (MAX_MAP_PER_SERVER, sizeof (*waterlist));
-    while (fgets (line, 1020, fp) && n < MAX_MAP_PER_SERVER)
+    while (fgets (line, 2020, fp) && n < MAX_MAP_PER_SERVER)
     {
         int  wh, count;
         if (line[0] == '/' && line[1] == '/')
             continue;
-        if ((count = sscanf (line, "%s%d", w1, &wh)) < 1)
+        if ((count = sscanf (line, "%2000s%d", w1, &wh)) < 1)
         {
             continue;
         }
@@ -1825,6 +1878,9 @@ int map_readallmap (void)
  */
 int map_addmap (char *mapname)
 {
+    if (!mapname)
+        return 1;
+
     if (strcmpi (mapname, "clear") == 0)
     {
         map_num = 0;
@@ -1847,6 +1903,9 @@ int map_addmap (char *mapname)
  */
 int map_delmap (char *mapname)
 {
+    if (!mapname)
+        return 0;
+
     int  i;
 
     if (strcmpi (mapname, "all") == 0)
@@ -1920,6 +1979,9 @@ static void map_set_logfile (char *filename)
 
 void map_write_log (char *format, ...)
 {
+    if (!format)
+        return;
+
     struct timeval tv;
     va_list args;
     va_start (args, format);
@@ -1943,7 +2005,10 @@ void map_write_log (char *format, ...)
  */
 int map_config_read (char *cfgName)
 {
-    char line[1024], w1[1024], w2[1024];
+    if (!cfgName)
+        exit(1);
+
+    char line[2028], w1[2028], w2[2028];
     FILE *fp;
     struct hostent *h = NULL;
 
@@ -1957,7 +2022,7 @@ int map_config_read (char *cfgName)
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) == 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) == 2)
         {
             if (strcmpi (w1, "userid") == 0)
             {
@@ -2181,6 +2246,9 @@ void map_helpscreen ()
 
 int compare_item (struct item *a, struct item *b)
 {
+    if (!a || !b)
+        return 0;
+
     return ((a->nameid == b->nameid) &&
             (a->identify == b->identify) &&
             (a->refine == b->refine) &&
@@ -2272,8 +2340,10 @@ int do_init (int argc, char *argv[])
 
 int map_scriptcont (struct map_session_data *sd, int id)
 {
-    struct block_list *bl = map_id2bl (id);
+    if (!sd)
+        return 0;
 
+    struct block_list *bl = map_id2bl (id);
     if (!bl)
         return 0;
 
