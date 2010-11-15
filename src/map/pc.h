@@ -192,6 +192,7 @@ struct pc_base_job pc_calc_base_job (int b_class);  //“]¶‚â—{qE‚ÌŒ³‚ÌE‹Æ‚ğ•Ô
 int  pc_read_gm_account (int fd);
 int  pc_setinvincibletimer (struct map_session_data *sd, int);
 int  pc_delinvincibletimer (struct map_session_data *sd);
+int  pc_delattacktimer (struct map_session_data *sd);
 int  pc_addspiritball (struct map_session_data *sd, int, int);
 int  pc_delspiritball (struct map_session_data *sd, int, int);
 int  pc_logout (struct map_session_data *sd);   // [fate] Player logs out

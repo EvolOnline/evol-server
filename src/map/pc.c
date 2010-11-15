@@ -92,6 +92,8 @@ static unsigned int equip_pos[11] =
     0x0002, 0x8000
 };
 
+int pc_attack_timer (int tid, unsigned int tick, int id, int data);
+
 //static struct dbt *gm_account_db;
 static struct gm_account *gm_account = NULL;
 static int GM_num = 0;
@@ -207,6 +209,19 @@ int pc_delinvincibletimer (struct map_session_data *sd)
         delete_timer (sd->invincible_timer, pc_invincible_timer);
         sd->invincible_timer = -1;
     }
+    return 0;
+}
+
+int pc_delattacktimer (struct map_session_data *sd)
+{
+    nullpo_retr (0, sd);
+
+    if (sd->attacktimer != -1)
+    {
+        delete_timer (sd->attacktimer, pc_attack_timer);
+        sd->attacktimer = -1;
+    }
+
     return 0;
 }
 
@@ -4810,7 +4825,9 @@ int pc_attack_timer (int tid, unsigned int tick, int id, int data)
             printf ("pc_attack_timer %d != %d\n", sd->attacktimer, tid);
         return 0;
     }
-    sd->attacktimer = -1;
+    if (sd->attacktimer != -1)
+        pc_delattacktimer (sd);
+//    sd->attacktimer = -1;
 
     if (sd->bl.prev == NULL)
         return 0;
@@ -4860,6 +4877,11 @@ int pc_attack_timer (int tid, unsigned int tick, int id, int data)
         return 0;               // cannot attack yet
 
     attack_spell_delay = sd->attack_spell_delay;
+    if (attack_spell_delay < battle_config.max_aspd)
+    {
+        attack_spell_delay = battle_config.max_aspd;
+    }
+
     if (sd->attack_spell_override   // [Fate] If we have an active attack spell, use that
         && spell_attack (id, sd->attacktarget))
     {
