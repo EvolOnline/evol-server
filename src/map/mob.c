@@ -57,6 +57,9 @@ static int mob_unlocktarget (struct mob_data *md, int tick);
  */
 int mobdb_searchname (const char *str)
 {
+    if (!str)
+        return 0;
+
     int  i;
 
     for (i = 0; i < sizeof (mob_db) / sizeof (mob_db[0]); i++)
@@ -93,6 +96,10 @@ static void mob_init (struct mob_data *md);
 int mob_spawn_dataset (struct mob_data *md, const char *mobname, int class)
 {
     nullpo_retr (0, md);
+    nullpo_retr (0, mobname);
+
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
 
     if (strcmp (mobname, "--en--") == 0)
         memcpy (md->name, mob_db[class].name, 24);
@@ -186,14 +193,14 @@ static int mutation_base[MOB_XP_BONUS] = {
  */
 static void mob_mutate (struct mob_data *md, int stat, int intensity)   // intensity: positive: strengthen, negative: weaken.  256 = 100%.
 {
+    if (!md || stat < 0 || stat >= MOB_XP_BONUS || intensity == 0)
+        return;
+
     int  old_stat;
     int  new_stat;
     int  real_intensity;        // relative intensity 
     const int mut_base = mutation_base[stat];
     int  sign = 1;
-
-    if (!md || stat < 0 || stat >= MOB_XP_BONUS || intensity == 0)
-        return;
 
     while (intensity > mutation_scale[stat])
     {
@@ -261,6 +268,9 @@ static void mob_mutate (struct mob_data *md, int stat, int intensity)   // inten
 // This calculates the exp of a given mob
 int mob_gen_exp (struct mob_db *mob)
 {
+    if (!mob)
+        return 1;
+
     if (mob->max_hp <= 1)
         return 1;
     double mod_def = 100 - mob->def;
@@ -291,6 +301,9 @@ int mob_gen_exp (struct mob_db *mob)
 
 static void mob_init (struct mob_data *md)
 {
+    if (!md)
+        return;
+
     int  i;
     const int class = md->class;
     const int mutations_nr = mob_db[class].mutations_nr;
@@ -342,6 +355,9 @@ int mob_once_spawn (struct map_session_data *sd, char *mapname,
                     int x, int y, const char *mobname, int class, int amount,
                     const char *event)
 {
+    if (!mapname)
+        return 0;
+
     struct mob_data *md = NULL;
     int  m, count, lv = 255, r = class;
 
@@ -450,11 +466,18 @@ int mob_once_spawn_area (struct map_session_data *sd, char *mapname,
                          const char *mobname, int class, int amount,
                          const char *event)
 {
+    if (!mapname)
+        return 0;
+
     int  x, y, i, c, max, lx = -1, ly = -1, id = 0;
     int  m;
 
     if (strcmp (mapname, "this") == 0)
+    {
+        if (!sd)
+            return 0;
         m = sd->bl.m;
+    }
     else
         m = map_mapname2mapid (mapname);
 
@@ -499,6 +522,9 @@ int mob_spawn_guardian (struct map_session_data *sd, char *mapname,
                         int x, int y, const char *mobname, int class,
                         int amount, const char *event, int guardian)
 {
+    if (!mapname)
+        return 0;
+
     struct mob_data *md = NULL;
     int  m, count = 1, lv = 255;
 
@@ -613,56 +639,89 @@ int mob_spawn_guardian (struct map_session_data *sd, char *mapname,
  */
 int mob_get_viewclass (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].view_class;
 }
 
 int mob_get_sex (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].sex;
 }
 
 short mob_get_hair (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].hair;
 }
 
 short mob_get_hair_color (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].hair_color;
 }
 
 short mob_get_weapon (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].weapon;
 }
 
 short mob_get_shield (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].shield;
 }
 
 short mob_get_head_top (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].head_top;
 }
 
 short mob_get_head_mid (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].head_mid;
 }
 
 short mob_get_head_buttom (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].head_buttom;
 }
 
 short mob_get_clothes_color (int class) // Add for player monster dye - Valaris
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].clothes_color; // End
 }
 
 int mob_get_equip (int class)   // mob equip [Valaris]
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     return mob_db[class].equip;
 }
 
@@ -696,7 +755,7 @@ static int calc_next_walk_step (struct mob_data *md)
 {
     nullpo_retr (0, md);
 
-    if (md->walkpath.path_pos >= md->walkpath.path_len)
+    if (md->walkpath.path_pos < 0 || md->walkpath.path_pos >= md->walkpath.path_len)
         return -1;
     if (md->walkpath.path[md->walkpath.path_pos] & 1)
         return battle_get_speed (&md->bl) * 14 / 10;
@@ -720,7 +779,7 @@ static int mob_walk (struct mob_data *md, unsigned int tick, int data)
     nullpo_retr (0, md);
 
     md->state.state = MS_IDLE;
-    if (md->walkpath.path_pos >= md->walkpath.path_len
+    if (md->walkpath.path_pos < 0 || md->walkpath.path_pos >= md->walkpath.path_len
         || md->walkpath.path_pos != data)
         return 0;
 
@@ -1344,6 +1403,8 @@ static int distance (int x0, int y0, int x1, int y1)
  */
 int mob_stopattack (struct mob_data *md)
 {
+    nullpo_retr (0, md);
+
     md->target_id = 0;
     md->state.targettype = NONE_ATTACKABLE;
     md->attacked_id = 0;
@@ -2581,6 +2642,8 @@ const static double damage_bonus_factor[DAMAGE_BONUS_COUNT + 1] = {
 int mob_damage (struct block_list *src, struct mob_data *md, int damage,
                 int type)
 {
+    nullpo_retr (0, md);
+
     int  i, count, minpos, mindmg;
     struct map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
     struct
@@ -2920,7 +2983,11 @@ int mob_damage (struct block_list *src, struct mob_data *md, int damage,
 //eAthena's exp formula rather than jAthena's
 //      per=(double)md->dmglog[i].dmg*256*(9+(double)((count > 6)? 6:count))/10/(double)max_hp;
             // [Fate] The above is the old formula.  We do a more involved computation below.
-            per = (double) md->dmglog[i].dmg * 256 / (double) max_hp;   // 256 = 100% of the score
+            if (max_hp)
+                per = (double) md->dmglog[i].dmg * 256 / (double) max_hp;   // 256 = 100% of the score
+            else
+                per = 1;
+
             per *= damage_bonus_factor[count > DAMAGE_BONUS_COUNT ? DAMAGE_BONUS_COUNT : count];    // Bonus for party attack
             if (per > 512)
                 per = 512;      // [Fate] Retained from before.  The maximum a single individual can get is double the original value.
@@ -3311,6 +3378,9 @@ int mob_heal (struct mob_data *md, int heal)
  */
 int mob_warpslave_sub (struct block_list *bl, va_list ap)
 {
+    nullpo_retr (0, bl);
+    nullpo_retr (0, ap);
+
     struct mob_data *md = (struct mob_data *) bl;
     int  id, x, y;
     id = va_arg (ap, int);
@@ -3329,6 +3399,7 @@ int mob_warpslave_sub (struct block_list *bl, va_list ap)
  */
 int mob_warpslave (struct mob_data *md, int x, int y)
 {
+    nullpo_retr (0, md);
 //printf("warp slave\n");
     map_foreachinarea (mob_warpslave_sub, md->bl.m,
                        x - AREA_SIZE, y - AREA_SIZE,
@@ -3424,13 +3495,15 @@ int mob_warp (struct mob_data *md, int m, int x, int y, int type)
  */
 int mob_countslave_sub (struct block_list *bl, va_list ap)
 {
+    nullpo_retr (0, bl);
+    nullpo_retr (0, ap);
+
     int  id, *c;
     struct mob_data *md;
 
     id = va_arg (ap, int);
-
-    nullpo_retr (0, bl);
     nullpo_retr (0, ap);
+
     nullpo_retr (0, c = va_arg (ap, int *));
     nullpo_retr (0, md = (struct mob_data *) bl);
 
@@ -3547,9 +3620,9 @@ static int mob_counttargeted_sub (struct block_list *bl, va_list ap)
     int  id, *c, target_lv;
     struct block_list *src;
 
+    nullpo_retr (0, ap);
     id = va_arg (ap, int);
     nullpo_retr (0, bl);
-    nullpo_retr (0, ap);
     nullpo_retr (0, c = va_arg (ap, int *));
 
     src = va_arg (ap, struct block_list *);
@@ -3597,6 +3670,9 @@ int mob_counttargeted (struct mob_data *md, struct block_list *src,
  */
 int mob_skillid2skillidx (int class, int skillid)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return -1;
+
     int  i;
     struct mob_skill *ms = mob_db[class].skill;
 
@@ -3871,6 +3947,8 @@ int mobskill_use_id (struct mob_data *md, struct block_list *target,
     int  skill_id, skill_lv, forcecast = 0;
 
     nullpo_retr (0, md);
+    if (skill_idx < 0 || skill_idx >= MAX_MOBSKILL)
+        return 0;
     nullpo_retr (0, ms = &mob_db[md->class].skill[skill_idx]);
 
     if (target == NULL && (target = map_id2bl (md->target_id)) == NULL)
@@ -4008,6 +4086,8 @@ int mobskill_use_pos (struct mob_data *md,
     int  skill_id, skill_lv;
 
     nullpo_retr (0, md);
+    if (skill_idx < 0 || skill_idx >= MAX_MOBSKILL)
+        return 0;
     nullpo_retr (0, ms = &mob_db[md->class].skill[skill_idx]);
 
     if (md->bl.prev == NULL)
@@ -4112,6 +4192,9 @@ int mob_getfriendhpltmaxrate_sub (struct block_list *bl, va_list ap)
         return 0;
     rate = va_arg (ap, int);
     fr = va_arg (ap, struct mob_data **);
+    if (!fr)
+        return 0;
+
     if (md->hp < mob_db[md->class].max_hp * rate / 100)
         (*fr) = md;
     return 0;
@@ -4150,6 +4233,9 @@ int mob_getfriendstatus_sub (struct block_list *bl, va_list ap)
     cond1 = va_arg (ap, int);
     cond2 = va_arg (ap, int);
     fr = va_arg (ap, struct mob_data **);
+    if (!fr)
+        return 0;
+
     if (cond2 == -1)
     {
         int  j;
@@ -4471,6 +4557,9 @@ int mobskill_deltimer (struct mob_data *md)
  */
 static int mob_makedummymobdb (int class)
 {
+    if (class < 0 || class >= (sizeof (mob_db) / sizeof (mob_db[0])))
+        return 0;
+
     int  i;
 
     sprintf (mob_db[class].name, "mob%d", class);
@@ -4528,7 +4617,7 @@ static int mob_makedummymobdb (int class)
 static int mob_readdb (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2024];
     char *filename[] = { "db/mob_db.txt", "db/mob_db2.txt" };
     int  i;
 
@@ -4544,7 +4633,7 @@ static int mob_readdb (void)
                 continue;
             return -1;
         }
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             int  class, i;
             char *str[57], *p, *np;
@@ -4708,7 +4797,7 @@ static int mob_readdb (void)
 static int mob_readdb_mobavail (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2024];
     int  ln = 0;
     int  class, j, k;
     char *str[20], *p, *np;
@@ -4719,7 +4808,7 @@ static int mob_readdb_mobavail (void)
         return -1;
     }
 
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
@@ -4780,7 +4869,7 @@ static int mob_readdb_mobavail (void)
 static int mob_read_randommonster (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2024];
     char *str[10], *p;
     int  i, j;
 
@@ -4799,7 +4888,7 @@ static int mob_read_randommonster (void)
             printf ("can't read %s\n", mobfile[i]);
             return -1;
         }
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             int  class, per;
             if (line[0] == '/' && line[1] == '/')
@@ -4834,7 +4923,7 @@ static int mob_read_randommonster (void)
 static int mob_readskilldb (void)
 {
     FILE *fp;
-    char line[1024];
+    char line[2028];
     int  i;
 
     const struct
@@ -4956,7 +5045,7 @@ static int mob_readskilldb (void)
                 printf ("can't read %s\n", filename[x]);
             continue;
         }
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             char *sp[20], *p;
             int  mob_id;
