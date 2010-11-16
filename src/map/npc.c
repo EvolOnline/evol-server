@@ -61,18 +61,20 @@ static struct tm ev_tm_b;       // ���v�C�x���g�p
  */
 int npc_enable_sub (struct block_list *bl, va_list ap)
 {
-    struct map_session_data *sd;
     struct npc_data *nd;
-    char *name = (char *) aCalloc (50, sizeof (char));
 
     nullpo_retr (0, bl);
     nullpo_retr (0, ap);
     nullpo_retr (0, nd = va_arg (ap, struct npc_data *));
+
+    struct map_session_data *sd;
+
     if (bl->type == BL_PC && (sd = (struct map_session_data *) bl))
     {
-
         if (nd->flag & 1)       // �����������Ă���
             return 1;
+
+        char name[51 * sizeof (char)];
 
         memcpy (name, nd->name, sizeof(nd->name));
         if (sd->areanpc_id == nd->bl.id)
@@ -80,12 +82,14 @@ int npc_enable_sub (struct block_list *bl, va_list ap)
         sd->areanpc_id = nd->bl.id;
         npc_event (sd, strcat (name, "::OnTouch"), 0);
     }
-    free (name);
+//    free (name);
     return 0;
 }
 
 int npc_enable (const char *name, int flag)
 {
+    nullpo_retr (0, name);
+
     struct npc_data *nd = strdb_search (npcname_db, name);
     if (nd == NULL)
         return 0;
@@ -186,6 +190,8 @@ int npc_event_timer (int tid, unsigned int tick, int id, int data)
 
 int npc_timer_event (const char *eventname) // Added by RoVeRT
 {
+    nullpo_retr (0, eventname);
+
     struct event_data *ev = strdb_search (ev_db, eventname);
     struct npc_data *nd;
 //  int xs,ys;
@@ -252,6 +258,9 @@ int npc_timer(int tid,unsigned int tick,int id,int data)	// Added by RoVeRT
  */
 int npc_event_export (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+    nullpo_retr (0, ap);
+
     char *lname = (char *) key;
     int  pos = (int) data;
     struct npc_data *nd = va_arg (ap, struct npc_data *);
@@ -296,6 +305,9 @@ int npc_event_export (void *key, void *data, va_list ap)
  */
 int npc_event_doall_sub (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+    nullpo_retr (0, ap);
+
     char *p = (char *) key;
     int  rid, argc;
     argrec_t *argv;
@@ -304,7 +316,7 @@ int npc_event_doall_sub (void *key, void *data, va_list ap)
     const char *name;
 
     nullpo_retr (0, ev = (struct event_data *) data);
-    nullpo_retr (0, ap);
+    nullpo_retr (0, ev->nd);
     nullpo_retr (0, c = va_arg (ap, int *));
 
     name = va_arg (ap, const char *);
@@ -324,6 +336,8 @@ int npc_event_doall_sub (void *key, void *data, va_list ap)
 
 int npc_event_doall_l (const char *name, int rid, int argc, argrec_t * args)
 {
+    nullpo_retr (0, name);
+
     int  c = 0;
     char buf[64] = "::";
 
@@ -343,13 +357,16 @@ int npc_event_do_sub (void *key, void *data, va_list ap)
     argrec_t *argv;
 
     nullpo_retr (0, ev = (struct event_data *) data);
+    nullpo_retr (0, ev->nd);
     nullpo_retr (0, ap);
     nullpo_retr (0, c = va_arg (ap, int *));
 
     name = va_arg (ap, const char *);
+    nullpo_retr (0, name);
     rid = va_arg (ap, int);
     argc = va_arg (ap, int);
     argv = va_arg (ap, argrec_t *);
+    nullpo_retr (0, argv);
 
     if (p && strcasecmp (name, p) == 0)
     {
@@ -363,6 +380,7 @@ int npc_event_do_sub (void *key, void *data, va_list ap)
 
 int npc_event_do_l (const char *name, int rid, int argc, argrec_t * args)
 {
+    nullpo_retr (0, name);
     int  c = 0;
 
     if (*name == ':' && name[1] == ':')
@@ -387,6 +405,7 @@ int npc_event_do_clock (int tid, unsigned int tick, int id, int data)
 
     time (&timer);
     t = gmtime (&timer);
+    nullpo_retr (0, t);
 
     if (t->tm_min != ev_tm_b.tm_min)
     {
@@ -429,6 +448,9 @@ int npc_event_do_oninit (void)
  */
 int npc_addeventtimer (struct npc_data *nd, int tick, const char *name)
 {
+    nullpo_retr (0, nd);
+    nullpo_retr (0, name);
+
     int  i;
     for (i = 0; i < MAX_EVENTTIMER; i++)
         if (nd->eventtimer[i] == -1)
@@ -454,6 +476,8 @@ int npc_addeventtimer (struct npc_data *nd, int tick, const char *name)
 
 int npc_deleventtimer (struct npc_data *nd, const char *name)
 {
+    nullpo_retr (0, nd);
+
     int  i;
     for (i = 0; i < MAX_EVENTTIMER; i++)
         if (nd->eventtimer[i] != -1 && strcmp ((char
@@ -471,6 +495,8 @@ int npc_deleventtimer (struct npc_data *nd, const char *name)
 
 int npc_cleareventtimer (struct npc_data *nd)
 {
+    nullpo_retr (0, nd);
+
     int  i;
     for (i = 0; i < MAX_EVENTTIMER; i++)
         if (nd->eventtimer[i] != -1)
@@ -484,19 +510,25 @@ int npc_cleareventtimer (struct npc_data *nd)
 
 int npc_do_ontimer_sub (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+    nullpo_retr (0, data);
+
     char *p = (char *) key;
     struct event_data *ev = (struct event_data *) data;
+    nullpo_retr (0, ev->nd);
+
     int *c = va_arg (ap, int *);
+    nullpo_retr (0, c);
 //  struct map_session_data *sd=va_arg(ap,struct map_session_data *);
     int  option = va_arg (ap, int);
     int  tick = 0;
-    char temp[10];
+    char temp[11];
     char event[50];
 
     if (ev->nd->bl.id == (int) *c && (p = strchr (p, ':')) && p
         && strncasecmp ("::OnTimer", p, 8) == 0)
     {
-        sscanf (&p[9], "%s", temp);
+        sscanf (&p[9], "%10s", temp);
         tick = atoi (temp);
 
         strcpy (event, ev->nd->name);
@@ -527,11 +559,16 @@ int npc_do_ontimer (int npc_id, struct map_session_data *sd, int option)
  */
 int npc_timerevent_import (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+
     char *lname = (char *) key;
     int  pos = (int) data;
     struct npc_data *nd = va_arg (ap, struct npc_data *);
+    nullpo_retr (0, nd);
+
     int  t = 0, i = 0;
 
+    //+++ need check lname[i]?
     if (sscanf (lname, "OnTimer%d%n", &t, &i) == 1 && lname[i] == ':')
     {
         // �^�C�}�[�C�x���g
@@ -686,6 +723,8 @@ int npc_settimerevent_tick (struct npc_data *nd, int newtimer)
 int npc_event (struct map_session_data *sd, const char *eventname,
                int mob_kill)
 {
+    nullpo_retr (0, eventname);
+
     struct event_data *ev = strdb_search (ev_db, eventname);
     struct npc_data *nd;
     int  xs, ys;
@@ -694,6 +733,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
     if (sd == NULL)
     {
         printf ("npc_event nullpo?\n");
+        return 0;
     }
 
     if (ev == NULL && eventname
@@ -772,16 +812,23 @@ int npc_event (struct map_session_data *sd, const char *eventname,
 
 int npc_command_sub (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+    nullpo_retr (0, data);
+
     char *p = (char *) key;
     struct event_data *ev = (struct event_data *) data;
+    nullpo_retr (0, ev->nd);
+
     char *npcname = va_arg (ap, char *);
+    nullpo_retr (0, npcname);
     char *command = va_arg (ap, char *);
-    char temp[100];
+    nullpo_retr (0, command);
+    char temp[101];
 
     if (strcmp (ev->nd->name, npcname) == 0 && (p = strchr (p, ':')) && p
         && strncasecmp ("::OnCommand", p, 10) == 0)
     {
-        sscanf (&p[11], "%s", temp);
+        sscanf (&p[11], "%100s", temp);
 
         if (strcmp (command, temp) == 0)
             run_script (ev->nd->u.scr.script, ev->pos, 0, ev->nd->bl.id);
@@ -813,6 +860,9 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
 
     for (i = 0; i < map[m].npc_num; i++)
     {
+        if (!map[m].npc[i])
+            continue;
+
         if (map[m].npc[i]->flag & 1)
         {                       // �����������Ă���
             f = 0;
@@ -848,6 +898,8 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
         }
         return 1;
     }
+    nullpo_retr (1, map[m].npc[i]);
+
     switch (map[m].npc[i]->bl.subtype)
     {
         case WARP:
@@ -928,6 +980,7 @@ int npc_click (struct map_session_data *sd, int id)
     }
 
     nd = (struct npc_data *) map_id2bl (id);
+    nullpo_retr (1, nd);
 
     if (nd->flag & 1)           // �����������Ă���
         return 1;
@@ -972,6 +1025,7 @@ int npc_scriptcont (struct map_session_data *sd, int id)
     }
 
     nd = (struct npc_data *) map_id2bl (id);
+    nullpo_retr (1, nd);
 
     if (!nd /* NPC was disposed? */  || nd->bl.subtype == MESSAGE)
     {
@@ -999,6 +1053,8 @@ int npc_buysellsel (struct map_session_data *sd, int id, int type)
         return 1;
 
     nd = (struct npc_data *) map_id2bl (id);
+    nullpo_retr (1, nd);
+
     if (nd->bl.subtype != SHOP)
     {
         if (battle_config.error_log)
@@ -1039,6 +1095,7 @@ int npc_buylist (struct map_session_data *sd, int n,
         return 3;
 
     nd = (struct npc_data *) map_id2bl (sd->npc_shopid);
+    nullpo_retr (3, nd);
     if (nd->bl.subtype != SHOP)
         return 3;
 
@@ -1232,6 +1289,9 @@ void npc_clearsrcfile ()
  */
 void npc_addsrcfile (char *name)
 {
+    if (!name)
+        return;
+
     struct npc_src_list *new;
     size_t len;
 
@@ -1259,6 +1319,9 @@ void npc_addsrcfile (char *name)
  */
 void npc_delsrcfile (char *name)
 {
+    if (!name || !npc_src_first)
+        return;
+
     struct npc_src_list *p = npc_src_first, *pp = NULL, **lp = &npc_src_first;
 
     if (strcmpi (name, "all") == 0)
@@ -1286,14 +1349,17 @@ void npc_delsrcfile (char *name)
  */
 int npc_parse_warp (char *w1, char *w2, char *w3, char *w4)
 {
+    if (!w1 || !w2 || !w3 || !w4)
+        return 1;
+
     int  x, y, xs, ys, to_x, to_y, m;
     int  i, j;
     char mapname[24], to_mapname[24];
     struct npc_data *nd;
 
     // �����̌��`�F�b�N
-    if (sscanf (w1, "%[^,],%d,%d", mapname, &x, &y) != 3 ||
-        sscanf (w4, "%d,%d,%[^,],%d,%d", &xs, &ys, to_mapname, &to_x,
+    if (sscanf (w1, "%23[^,],%d,%d", mapname, &x, &y) != 3 ||
+        sscanf (w4, "%d,%d,%23[^,],%d,%d", &xs, &ys, to_mapname, &to_x,
                 &to_y) != 5)
     {
         printf ("bad warp line : %s\n", w3);
@@ -1362,6 +1428,9 @@ int npc_parse_warp (char *w1, char *w2, char *w3, char *w4)
  */
 static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
 {
+    if (!w1 || !w2 || !w3 || !w4)
+        return 1;
+
     char *p;
     int  x, y, dir, m;
     int  max = 100, pos = 0;
@@ -1369,7 +1438,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
     struct npc_data *nd;
 
     // �����̌��`�F�b�N
-    if (sscanf (w1, "%[^,],%d,%d,%d", mapname, &x, &y, &dir) != 4 ||
+    if (sscanf (w1, "%23[^,],%d,%d,%d", mapname, &x, &y, &dir) != 4 ||
         strchr (w4, ',') == NULL)
     {
         printf ("bad shop line : %s\n", w3);
@@ -1391,7 +1460,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
         if (sscanf (p, "%d:%d", &nameid, &value) == 2)
         {
         }
-        else if (sscanf (p, "%s :%d", name, &value) == 2)
+        else if (sscanf (p, "%23s :%d", name, &value) == 2)
         {
             id = itemdb_searchname (name);
             if (id == NULL)
@@ -1409,8 +1478,8 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
             {
                 if (id == NULL)
                     id = itemdb_search (nameid);
-                value = id->value_buy * abs (value);
-
+                if (id)
+                    value = id->value_buy * abs (value);
             }
             nd->u.shop_item[pos].value = value;
             pos++;
@@ -1462,6 +1531,8 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
  */
 int npc_convertlabel_db (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, key);
+
     char *lname = (char *) key;
     int  pos = (int) data;
     struct npc_data *nd;
@@ -1505,6 +1576,9 @@ int npc_convertlabel_db (void *key, void *data, va_list ap)
 static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
                              char *first_line, FILE * fp, int *lines)
 {
+    if (!w1 || !w2 || !w3 || !w4)
+        return 1;
+
     int  x, y, dir = 0, m, xs = 0, ys = 0, class = 0;   // [Valaris] thanks to fov
     char mapname[24];
     unsigned char *srcbuf = NULL, *script;
@@ -1529,7 +1603,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
     else
     {
         // �����̌��`�F�b�N
-        if (sscanf (w1, "%[^,],%d,%d,%d", mapname, &x, &y, &dir) != 4 ||
+        if (sscanf (w1, "%23[^,],%d,%d,%d", mapname, &x, &y, &dir) != 4 ||
             (strcmp (w2, "script") == 0 && strchr (w4, ',') == NULL))
         {
             printf ("bad script line : %s\n", w3);
@@ -1591,7 +1665,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
 
         char srcname[128];
         struct npc_data *nd2;
-        if (sscanf (w2, "duplicate(%[^)])", srcname) != 1)
+        if (sscanf (w2, "duplicate(%127[^)])", srcname) != 1)
         {
             printf ("bad duplicate name! : %s", w2);
             return 0;
@@ -1617,7 +1691,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
     }
     else if (sscanf (w4, "%d,%d,%d", &class, &xs, &ys) == 3)
     {
-        // �ڐG�^NPC
+       // �ڐG�^NPC
         int  i, j;
 
         if (xs >= 0)
@@ -1627,7 +1701,6 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
 
         if (class >= 0)
         {
-
             for (i = 0; i < ys; i++)
             {
                 for (j = 0; j < xs; j++)
@@ -1817,10 +1890,13 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
 static int npc_parse_function (char *w1, char *w2, char *w3, char *w4,
                                char *first_line, FILE * fp, int *lines)
 {
+    if (!w1 || !w2 || !w3 || !w4 || !first_line || !fp || !lines)
+        return 1;
+
     char *srcbuf = NULL, *script;
     int  srcsize = 65536;
     int  startline = 0;
-    char line[1024];
+    char line[2024];
     int  i;
 //  struct dbt *label_db;
     char *p;
@@ -1839,7 +1915,7 @@ static int npc_parse_function (char *w1, char *w2, char *w3, char *w4,
         for (i = strlen (srcbuf) - 1; i >= 0 && isspace (srcbuf[i]); i--);
         if (i >= 0 && srcbuf[i] == '}')
             break;
-        if (!fgets (line, 1020, fp))
+        if (!fgets (line, 2020, fp))
             break;
         (*lines)++;
         if (feof (fp))
@@ -1890,6 +1966,9 @@ static int npc_parse_function (char *w1, char *w2, char *w3, char *w4,
  */
 int npc_parse_mob (char *w1, char *w2, char *w3, char *w4)
 {
+    if (!w1 || !w2 || !w3 || !w4)
+        return 1;
+
     int  m, x, y, xs, ys, class, num, delay1, delay2;
     int  i;
     char mapname[24];
@@ -1899,7 +1978,7 @@ int npc_parse_mob (char *w1, char *w2, char *w3, char *w4)
     xs = ys = 0;
     delay1 = delay2 = 0;
     // �����̌��`�F�b�N
-    if (sscanf (w1, "%[^,],%d,%d,%d,%d", mapname, &x, &y, &xs, &ys) < 3 ||
+    if (sscanf (w1, "%23[^,],%d,%d,%d,%d", mapname, &x, &y, &xs, &ys) < 3 ||
         sscanf (w4, "%d,%d,%d,%d,%s", &class, &num, &delay1, &delay2,
                 eventname) < 2)
     {
@@ -1977,6 +2056,9 @@ int npc_parse_mob (char *w1, char *w2, char *w3, char *w4)
  */
 static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
 {
+    if (!w1 || !w2 || !w3 || !w4)
+        return 1;
+
     int  m;
     char mapname[24], savemap[16];
     int  savex, savey;
@@ -1985,7 +2067,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
 
     // �����̌��`�F�b�N
 //  if (    sscanf(w1,"%[^,],%d,%d,%d",mapname,&x,&y,&dir) != 4 )
-    if (sscanf (w1, "%[^,]", mapname) != 1)
+    if (sscanf (w1, "%23[^,]", mapname) != 1)
         return 1;
 
     m = map_mapname2mapid (mapname);
@@ -2001,7 +2083,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
             map[m].save.x = -1;
             map[m].save.y = -1;
         }
-        else if (sscanf (w4, "%[^,],%d,%d", savemap, &savex, &savey) == 3)
+        else if (sscanf (w4, "%15[^,],%d,%d", savemap, &savex, &savey) == 3)
         {
             memcpy (map[m].save.map, savemap, 16);
             map[m].save.x = savex;
@@ -2055,7 +2137,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
     }
     else if (strcmpi (w3, "pvp_nightmaredrop") == 0)
     {
-        if (sscanf (w4, "%[^,],%[^,],%d", drop_arg1, drop_arg2, &drop_per) ==
+        if (sscanf (w4, "%15[^,],%15[^,],%d", drop_arg1, drop_arg2, &drop_per) ==
             3)
         {
             int  i;
@@ -2154,7 +2236,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
 static int ev_db_final (void *key, void *data, va_list ap)
 {
     free (data);
-    if (strstr (key, "::") != NULL)
+    if (key && strstr (key, "::") != NULL)
         free (key);
     return 0;
 }
@@ -2167,6 +2249,9 @@ static int npcname_db_final (void *key, void *data, va_list ap)
 struct npc_data *npc_spawn_text (int m, int x, int y,
                                  int class, char *name, char *message)
 {
+    if (!message)
+        return 0;
+
     struct npc_data *retval =
         (struct npc_data *) aCalloc (1, sizeof (struct npc_data));
     retval->bl.id = npc_get_new_npc_id ();
@@ -2196,6 +2281,9 @@ struct npc_data *npc_spawn_text (int m, int x, int y,
 
 static void npc_free_internal (struct npc_data *nd)
 {
+    if (!nd)
+        return;
+
     struct chat_data *cd;
 
     if (nd->chat_id && (cd = (struct chat_data *) map_id2bl (nd->chat_id)))
@@ -2230,6 +2318,9 @@ static void npc_free_internal (struct npc_data *nd)
 
 void npc_propagate_update (struct npc_data *nd)
 {
+    if (!nd)
+        return;
+
     map_foreachinarea (npc_enable_sub,
                        nd->bl.m,
                        nd->bl.x - nd->u.scr.xs, nd->bl.y - nd->u.scr.ys,
@@ -2239,6 +2330,9 @@ void npc_propagate_update (struct npc_data *nd)
 
 void npc_free (struct npc_data *nd)
 {
+    if (!nd)
+        return;
+
     clif_clearchar (&nd->bl, 0);
     npc_propagate_update (nd);
     map_deliddb (&nd->bl);
@@ -2286,6 +2380,9 @@ int do_final_npc (void)
 
 void ev_release (struct dbn *db, int which)
 {
+    if (!db)
+        return;
+
     if (which & 0x1)
         free (db->key);
     if (which & 0x2)
@@ -2300,7 +2397,7 @@ int do_init_npc (void)
 {
     struct npc_src_list *nsl;
     FILE *fp;
-    char line[1024];
+    char line[2024];
     int  m, lines;
 
     ev_db = strdb_init (24);
@@ -2324,7 +2421,7 @@ int do_init_npc (void)
             exit (1);
         }
         lines = 0;
-        while (fgets (line, 1020, fp))
+        while (fgets (line, 2020, fp))
         {
             char w1[1024], w2[1024], w3[1024], w4[1024], mapname[1024];
             int  i, j, w4pos, count;
@@ -2353,17 +2450,17 @@ int do_init_npc (void)
             }
             // �ŏ��̓^�u���؂��Ń`�F�b�N���Ă݂āA�_���Ȃ��X�y�[�X���؂��Ŋm�F
             if ((count =
-                 sscanf (line, "%[^\t]\t%[^\t]\t%[^\t\r\n]\t%n%[^\t\r\n]", w1,
+                 sscanf (line, "%1023[^\t]\t%1023[^\t]\t%1023[^\t\r\n]\t%n%1023[^\t\r\n]", w1,
                          w2, w3, &w4pos, w4)) < 3
                 && (count =
-                    sscanf (line, "%s%s%s%n%s", w1, w2, w3, &w4pos, w4)) < 3)
+                    sscanf (line, "%1023s%1023s%1023s%n%1023s", w1, w2, w3, &w4pos, w4)) < 3)
             {
                 continue;
             }
             // �}�b�v�̑��݊m�F
             if (strcmp (w1, "-") != 0 && strcmpi (w1, "function") != 0)
             {
-                sscanf (w1, "%[^,]", mapname);
+                sscanf (w1, "%1023[^,]", mapname);
                 m = map_mapname2mapid (mapname);
                 if (strlen (mapname) > 16 || m < 0)
                 {
