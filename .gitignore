@@ -9,4 +9,5 @@ eathena-monitor
 magic-interpreter-parser.h
 magic-interpreter-parser.c
 magic-interpreter-lexer.c
-
+make1.txt
+make2.txt
