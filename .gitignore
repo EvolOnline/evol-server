@@ -1,7 +1,7 @@
 # files generated during make
 *.o
 char-server
-ladmin
+/ladmin
 login-server
 map-server
 GNUmakefile
