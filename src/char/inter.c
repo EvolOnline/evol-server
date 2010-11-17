@@ -29,6 +29,9 @@ struct accreg
 };
 
 int  party_share_level = 10;
+int  db_count = 5*2;
+// 10 minutes (if each 15 sec db saved)
+int  db_skip_count = 40;
 
 // 送信パケット長リスト
 int  inter_send_packet_length[] = {
@@ -168,14 +171,14 @@ int inter_accreg_save ()
     FILE *fp;
     int  lock;
 
-    if ((fp = lock_fopen (accreg_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (accreg_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_accreg: cant write [%s] !!! data is lost !!!\n",
                 accreg_txt);
         return 1;
     }
     numdb_foreach (accreg_db, inter_accreg_save_sub, fp);
-    lock_fclose (fp, accreg_txt, &lock);
+    lock_fclose (fp, accreg_txt, &lock, &index_db);
 //  printf("inter: %s saved.\n", accreg_txt);
 
     return 0;
@@ -240,6 +243,18 @@ int inter_config_read (const char *cfgName)
         else if (strcmpi (w1, "inter_log_filename") == 0)
         {
             strncpy (inter_log_filename, w2, sizeof (inter_log_filename));
+        }
+        else if (strcmpi (w1, "db_count") == 0)
+        {
+            db_count = atoi (w2) * 2;
+            if (db_count < 0)
+                db_count = 0;
+        }
+        else if (strcmpi (w1, "db_skip_count") == 0)
+        {
+            db_skip_count = atoi (w2);
+            if (db_skip_count <= 0)
+                db_skip_count = 1;
         }
         else if (strcmpi (w1, "import") == 0)
         {

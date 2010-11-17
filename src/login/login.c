@@ -43,6 +43,7 @@ int  subneti[4];
 int  subnetmaski[4];
 char update_host[128] = "";
 char main_server[20] = "";
+int index_db = 0;
 
 char account_filename[1024] = "save/account.txt";
 char GM_account_filename[1024] = "conf/GM_account.txt";
@@ -124,6 +125,9 @@ int  admin_state = 0;
 char admin_pass[24] = "";
 char gm_pass[64] = "";
 int  level_new_gm = 60;
+int  db_count = 5*2;
+int  db_skip_count = 0;
+int  temp_cnt = 0;
 
 static struct dbt *gm_account_db;
 
@@ -1006,7 +1010,7 @@ void mmo_auth_sync (void)
     }
 
     // Data save
-    fp = lock_fopen (account_filename, &lock);
+    fp = lock_fopen (account_filename, &lock, &index_db);
     if (fp == NULL)
         return;
     fprintf (fp,
@@ -1041,7 +1045,7 @@ void mmo_auth_sync (void)
     }
     fprintf (fp, "%d\t%%newid%%\n", account_id_count);
 
-    lock_fclose (fp, account_filename, &lock);
+    lock_fclose (fp, account_filename, &lock, &index_db);
 
     return;
 }
@@ -1063,6 +1067,16 @@ int check_auth_sync (int tid, unsigned int tick, int id, int data)
         {
             return 0;
         }
+    }
+
+    temp_cnt ++;
+    if (temp_cnt > db_skip_count)
+    {
+        temp_cnt = 0;
+        index_db ++;
+
+        if (index_db > db_count)
+            index_db = 0;
     }
 
     // This can take a lot of time. Fork a child to handle the work and return at once
@@ -2710,6 +2724,7 @@ int parse_admin (int fd)
                     return 0;
                 WFIFOW (fd, 0) = 0x793f;
                 WFIFOL (fd, 2) = -1;
+
                 account_name = RFIFOP (fd, 2);
                 account_name[23] = '\0';
                 remove_control_chars (account_name);
@@ -2742,7 +2757,7 @@ int parse_admin (int fd)
                                 struct timeval tv;
                                 if ((fp2 =
                                      lock_fopen (GM_account_filename,
-                                                 &lock)) != NULL)
+                                                 &lock, 0)) != NULL)
                                 {
                                     if ((fp =
                                          fopen_ (GM_account_filename,
@@ -2831,7 +2846,7 @@ int parse_admin (int fd)
                                     }
                                     if (lock_fclose
                                         (fp2, GM_account_filename,
-                                         &lock) == 0)
+                                         &lock, 0) == 0)
                                     {
                                         WFIFOL (fd, 2) = acc;
                                         login_log
@@ -4365,6 +4380,14 @@ int login_config_read (const char *cfgName)
             {
                 strncpy (admin_pass, w2, sizeof (admin_pass));
                 admin_pass[sizeof (admin_pass) - 1] = '\0';
+            }
+            else if (strcmpi (w1, "db_count") == 0)
+            {
+                db_count = atoi(w2) * 2;
+            }
+            else if (strcmpi (w1, "db_skip_count") == 0)
+            {
+                db_skip_count = atoi(w2);
             }
             else if (strcmpi (w1, "ladminallowip") == 0)
             {

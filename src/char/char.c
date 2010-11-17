@@ -40,6 +40,8 @@ int  server_fd[MAX_MAP_SERVERS];
 int  server_freezeflag[MAX_MAP_SERVERS];    // Map-server anti-freeze system. Counter. 5 ok, 4...0 freezed
 int  anti_freeze_enable = 0;
 int  ANTI_FREEZE_INTERVAL = 6;
+int index_db = 0;
+int temp_cnt = 0;
 
 int  login_fd, char_fd;
 char userid[24];
@@ -782,7 +784,7 @@ void mmo_char_sync (void)
     }
 
     // Data save
-    fp = lock_fopen (char_txt, &lock);
+    fp = lock_fopen (char_txt, &lock, &index_db);
     if (fp == NULL)
     {
         printf ("WARNING: Server can't not save characters.\n");
@@ -797,13 +799,13 @@ void mmo_char_sync (void)
             fprintf (fp, "%s" RETCODE, line);
         }
         fprintf (fp, "%d\t%%newid%%" RETCODE, char_id_count);
-        lock_fclose (fp, char_txt, &lock);
+        lock_fclose (fp, char_txt, &lock, &index_db);
     }
 
     // Data save (backup)
     if (backup_txt_flag)
     {                           // The backup_txt file was created because char deletion bug existed. Now it's finish and that take a lot of time to create a second file when there are a lot of characters. => option By [Yor]
-        fp = lock_fopen (backup_txt, &lock);
+        fp = lock_fopen (backup_txt, &lock, &index_db);
         if (fp == NULL)
         {
             printf
@@ -820,7 +822,7 @@ void mmo_char_sync (void)
             fprintf (fp, "%s" RETCODE, line);
         }
         fprintf (fp, "%d\t%%newid%%" RETCODE, char_id_count);
-        lock_fclose (fp, backup_txt, &lock);
+        lock_fclose (fp, backup_txt, &lock, &index_db);
     }
 
     return;
@@ -841,6 +843,15 @@ int mmo_char_sync_timer (int tid, unsigned int tick, int id, int data)
         {
             return 0;
         }
+    }
+
+    temp_cnt ++;
+    if (temp_cnt > db_skip_count)
+    {
+        temp_cnt = 0;
+        index_db ++;
+        if (index_db > db_count)
+            index_db = 0;
     }
 
     // This can take a lot of time. Fork a child to handle the work and return at once

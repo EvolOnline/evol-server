@@ -68,6 +68,7 @@ static struct dbt *mapreg_db = NULL;
 static struct dbt *mapregstr_db = NULL;
 static int mapreg_dirty = -1;
 char mapreg_txt[256] = "save/mapreg.txt";
+static int index_db = 0;
 #define MAPREG_AUTOSAVE_INTERVAL	(10*1000)
 
 static struct dbt *scriptlabel_db = NULL;
@@ -103,6 +104,7 @@ static struct Script_Config
     int  warn_cmd_mismatch_paramnum;
     int  check_cmdcount;
     int  check_gotocount;
+    int  db_count;
 } script_config;
 static int parse_cmd_if = 0;
 static int parse_cmd;
@@ -7917,12 +7919,16 @@ static int script_save_mapreg ()
     FILE *fp;
     int  lock;
 
-    if ((fp = lock_fopen (mapreg_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (mapreg_txt, &lock, &index_db)) == NULL)
         return -1;
     numdb_foreach (mapreg_db, script_save_mapreg_intsub, fp);
     numdb_foreach (mapregstr_db, script_save_mapreg_strsub, fp);
-    lock_fclose (fp, mapreg_txt, &lock);
+    lock_fclose (fp, mapreg_txt, &lock, &index_db);
     mapreg_dirty = 0;
+
+    index_db ++;
+    if (index_db > script_config.db_count)
+        index_db = 0;
     return 0;
 }
 
@@ -7973,6 +7979,7 @@ int script_config_read (char *cfgName)
     script_config.warn_cmd_mismatch_paramnum = 1;
     script_config.check_cmdcount = 8192;
     script_config.check_gotocount = 512;
+    script_config.db_count = 5*2;
 
     fp = fopen_ (cfgName, "r");
     if (fp == NULL)
@@ -7984,14 +7991,18 @@ int script_config_read (char *cfgName)
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
-        i = sscanf (line, "%[^:]: %[^\r\n]", w1, w2);
+        i = sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2);
         if (i != 2)
             continue;
         if (strcmpi (w1, "refine_posword") == 0)
         {
             set_posword (w2);
         }
-        if (strcmpi (w1, "import") == 0)
+        else if (strcmpi (w1, "db_count") == 0)
+        {
+            script_config.db_count = atoi(w2) * 2;
+        }
+        else if (strcmpi (w1, "import") == 0)
         {
             script_config_read (w2);
         }

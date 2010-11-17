@@ -593,7 +593,7 @@ int inter_guild_save ()
     FILE *fp;
     int  lock;
 
-    if ((fp = lock_fopen (guild_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (guild_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_guild: cant write [%s] !!! data is lost !!!\n",
                 guild_txt);
@@ -601,17 +601,18 @@ int inter_guild_save ()
     }
     numdb_foreach (guild_db, inter_guild_save_sub, fp);
 //  fprintf(fp, "%d\t%%newid%%\n", guild_newid);
-    lock_fclose (fp, guild_txt, &lock);
+    lock_fclose (fp, guild_txt, &lock, &index_db);
+
 //  printf("int_guild: %s saved.\n", guild_txt);
 
-    if ((fp = lock_fopen (castle_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (castle_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_guild: cant write [%s] !!! data is lost !!!\n",
                 castle_txt);
         return 1;
     }
     numdb_foreach (castle_db, inter_castle_save_sub, fp);
-    lock_fclose (fp, castle_txt, &lock);
+    lock_fclose (fp, castle_txt, &lock, &index_db);
 
     return 0;
 }

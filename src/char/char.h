@@ -28,5 +28,6 @@ int  mapif_send (int fd, unsigned char *buf, unsigned int len);
 int  char_log (char *fmt, ...);
 
 extern int autosave_interval;
+extern int index_db;
 
 #endif

@@ -157,7 +157,7 @@ int inter_party_save ()
     FILE *fp;
     int  lock;
 
-    if ((fp = lock_fopen (party_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (party_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_party: cant write [%s] !!! data is lost !!!\n",
                 party_txt);
@@ -165,7 +165,7 @@ int inter_party_save ()
     }
     numdb_foreach (party_db, inter_party_save_sub, fp);
 //  fprintf(fp, "%d\t%%newid%%\n", party_newid);
-    lock_fclose (fp, party_txt, &lock);
+    lock_fclose (fp, party_txt, &lock, &index_db);
 //  printf("int_party: %s saved.\n", party_txt);
 
     return 0;

@@ -384,15 +384,16 @@ int inter_storage_save ()
     if (!storage_db)
         return 1;
 
-    if ((fp = lock_fopen (storage_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (storage_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_storage: cant write [%s] !!! data is lost !!!\n",
                 storage_txt);
         return 1;
     }
     numdb_foreach (storage_db, inter_storage_save_sub, fp);
-    lock_fclose (fp, storage_txt, &lock);
+    lock_fclose (fp, storage_txt, &lock, &index_db);
 //  printf("int_storage: %s saved.\n",storage_txt);
+
     return 0;
 }
 
@@ -422,15 +423,16 @@ int inter_guild_storage_save ()
     if (!guild_storage_db)
         return 1;
 
-    if ((fp = lock_fopen (guild_storage_txt, &lock)) == NULL)
+    if ((fp = lock_fopen (guild_storage_txt, &lock, &index_db)) == NULL)
     {
         printf ("int_storage: cant write [%s] !!! data is lost !!!\n",
                 guild_storage_txt);
         return 1;
     }
     numdb_foreach (guild_storage_db, inter_guild_storage_save_sub, fp);
-    lock_fclose (fp, guild_storage_txt, &lock);
+    lock_fclose (fp, guild_storage_txt, &lock, &index_db);
 //  printf("int_storage: %s saved.\n",guild_storage_txt);
+
     return 0;
 }
 
