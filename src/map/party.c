@@ -60,10 +60,15 @@ struct party *party_search (int party_id)
 
 int party_searchname_sub (void *key, void *data, va_list ap)
 {
+    nullpo_retr (0, data);
+    nullpo_retr (0, ap);
+
     struct party *p = (struct party *) data, **dst;
     char *str;
     str = va_arg (ap, char *);
+    nullpo_retr (0, str);
     dst = va_arg (ap, struct party **);
+    nullpo_retr (0, dst);
     if (strcmpi (p->name, str) == 0)
         *dst = p;
     return 0;
@@ -72,6 +77,7 @@ int party_searchname_sub (void *key, void *data, va_list ap)
 // パーティ名検索
 struct party *party_searchname (char *str)
 {
+    nullpo_retr (0, str);
     struct party *p = NULL;
     numdb_foreach (party_db, party_searchname_sub, str, &p);
     return p;
@@ -103,6 +109,8 @@ int party_create (struct map_session_data *sd, char *name)
 /* Relay the result of a party creation request. */
 int party_created (int account_id, int fail, int party_id, char *name)
 {
+    nullpo_retr (0, name);
+
     struct map_session_data *sd;
     sd = map_id2sd (account_id);
 
@@ -239,12 +247,12 @@ int party_recv_info (struct party *sp)
 /* Process party invitation from sd to account_id. */
 int party_invite (struct map_session_data *sd, int account_id)
 {
+    nullpo_retr (0, sd);
+
     struct map_session_data *tsd = map_id2sd (account_id);
     struct party *p = party_search (sd->status.party_id);
     int  i;
     int  full = 1; /* Indicates whether or not there's room for one more. */
-
-    nullpo_retr (0, sd);
 
     if (!tsd || !p || !tsd->fd)
         return 0;
@@ -519,6 +527,8 @@ int party_optionchanged (int party_id, int account_id, int exp, int item,
 int party_recv_movemap (int party_id, int account_id, char *map, int online,
                         int lv)
 {
+    nullpo_retr (0, map);
+
     struct party *p;
     int  i;
     if ((p = party_search (party_id)) == NULL)
@@ -617,6 +627,8 @@ int party_send_logout (struct map_session_data *sd)
 // パーティメッセージ送信
 int party_send_message (struct map_session_data *sd, char *mes, int len)
 {
+    nullpo_retr (0, sd);
+
     if (sd->status.party_id == 0)
         return 0;
     intif_party_message (sd->status.party_id, sd->status.account_id, mes,
@@ -716,6 +728,7 @@ int party_send_hp_check (struct block_list *bl, va_list ap)
 
     party_id = va_arg (ap, int);
     flag = va_arg (ap, int *);
+    nullpo_retr (0, flag);
 
     if (sd->status.party_id == party_id)
     {
