@@ -271,13 +271,13 @@ int path_blownpos (int m, int x0, int y0, int dx, int dy, int count)
 int path_search (struct walkpath_data *wpd, int m, int x0, int y0, int x1,
                  int y1, int flag)
 {
+    nullpo_retr (0, wpd);
+
     int  heap[MAX_HEAP + 1];
     struct tmp_path tp[MAX_WALKPATH * MAX_WALKPATH];
     int  i, rp, x, y;
     struct map_data *md;
     int  dx, dy;
-
-    nullpo_retr (0, wpd);
 
     if (!map[m].gat)
         return -1;
