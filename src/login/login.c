@@ -136,6 +136,7 @@ pid_t pid = 0; // For forked DB writes
 
 #define VERSION_2_UPDATEHOST 0x01   // client supports updatehost
 #define VERSION_2_SERVERORDER 0x02  // send servers in forward order
+
 //------------------------------
 // Writing function of logs file
 //------------------------------
@@ -1936,7 +1937,7 @@ int parse_fromchar (int fd)
                                         login_log
                                             ("Char-server '%s': Ban request (account: %d, new final date of banishment: %d (%s), ip: %s)."
                                              RETCODE, server[id].name, acc,
-                                             timestamp,
+                                             (int)timestamp,
                                              (timestamp ==
                                               0 ? "no banishment" : tmpstr),
                                              ip);
@@ -3060,7 +3061,7 @@ int parse_admin (int fd)
                         memcpy (WFIFOP (fd, 6), auth_dat[i].userid, 24);
                         login_log
                             ("'ladmin': Change of a validity limit (account: %s, new validity: %d (%s), ip: %s)"
-                             RETCODE, auth_dat[i].userid, timestamp,
+                             RETCODE, auth_dat[i].userid, (int)timestamp,
                              (timestamp == 0 ? "unlimited" : tmpstr), ip);
                         auth_dat[i].connect_until_time = timestamp;
                         WFIFOL (fd, 2) = auth_dat[i].account_id;
@@ -3070,7 +3071,7 @@ int parse_admin (int fd)
                         memcpy (WFIFOP (fd, 6), account_name, 24);
                         login_log
                             ("'ladmin': Attempt to change the validity limit of an unknown account (account: %s, received validity: %d (%s), ip: %s)"
-                             RETCODE, account_name, timestamp,
+                             RETCODE, account_name, (int)timestamp,
                              (timestamp == 0 ? "unlimited" : tmpstr), ip);
                     }
                     WFIFOL (fd, 30) = timestamp;
@@ -3101,7 +3102,7 @@ int parse_admin (int fd)
                         WFIFOL (fd, 2) = auth_dat[i].account_id;
                         login_log
                             ("'ladmin': Change of the final date of a banishment (account: %s, new final date of banishment: %d (%s), ip: %s)"
-                             RETCODE, auth_dat[i].userid, timestamp,
+                             RETCODE, auth_dat[i].userid, (int)timestamp,
                              (timestamp == 0 ? "no banishment" : tmpstr), ip);
                         if (auth_dat[i].ban_until_time != timestamp)
                         {
@@ -3126,7 +3127,7 @@ int parse_admin (int fd)
                         memcpy (WFIFOP (fd, 6), account_name, 24);
                         login_log
                             ("'ladmin': Attempt to change the final date of a banishment of an unknown account (account: %s, received final date of banishment: %d (%s), ip: %s)"
-                             RETCODE, account_name, timestamp,
+                             RETCODE, account_name, (int)timestamp,
                              (timestamp == 0 ? "no banishment" : tmpstr), ip);
                     }
                     WFIFOL (fd, 30) = timestamp;
@@ -3186,7 +3187,7 @@ int parse_admin (int fd)
                                                                           32),
                                  (short) RFIFOW (fd, 34), (short) RFIFOW (fd,
                                                                           36),
-                                 timestamp,
+                                 (int)timestamp,
                                  (timestamp == 0 ? "no banishment" : tmpstr),
                                  ip);
                             if (auth_dat[i].ban_until_time != timestamp)
@@ -3213,16 +3214,16 @@ int parse_admin (int fd)
                                       gmtime (&auth_dat[i].ban_until_time));
                             login_log
                                 ("'ladmin': Impossible to adjust the final date of a banishment (account: %s, %d (%s) + (%+d y %+d m %+d d %+d h %+d mn %+d s) -> ???, ip: %s)"
-                                 RETCODE, auth_dat[i].userid,
+                                 RETCODE,
+                                 auth_dat[i].userid,
                                  auth_dat[i].ban_until_time,
-                                 (auth_dat[i].ban_until_time ==
-                                  0 ? "no banishment" : tmpstr),
-                                 (short) RFIFOW (fd, 26), (short) RFIFOW (fd,
-                                                                          28),
-                                 (short) RFIFOW (fd, 30), (short) RFIFOW (fd,
-                                                                          32),
-                                 (short) RFIFOW (fd, 34), (short) RFIFOW (fd,
-                                                                          36),
+                                 (auth_dat[i].ban_until_time == 0 ? "no banishment" : tmpstr),
+                                 (short) RFIFOW (fd, 26),
+                                 (short) RFIFOW (fd, 28),
+                                 (short) RFIFOW (fd, 30),
+                                 (short) RFIFOW (fd, 32),
+                                 (short) RFIFOW (fd, 34),
+                                 (short) RFIFOW (fd, 36),
                                  ip);
                         }
                         WFIFOL (fd, 30) =
@@ -4505,6 +4506,8 @@ int login_config_read (const char *cfgName)
                         break;
                     case 3:
                         strcpy (date_format, "%Y-%m-%d %H:%M:%S");  // 2004-12-31 23:59:59
+                        break;
+                    default:
                         break;
                 }
             }

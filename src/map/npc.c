@@ -921,6 +921,8 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
             free (name);
             break;
         }
+        default:
+            break;
     }
     return 0;
 }
@@ -1001,6 +1003,8 @@ int npc_click (struct map_session_data *sd, int id)
                 clif_scriptmes (sd, id, nd->u.message);
                 clif_scriptclose (sd, id);
             }
+            break;
+        default:
             break;
     }
 
@@ -1129,6 +1133,8 @@ int npc_buylist (struct map_session_data *sd, int n,
                 break;
             case ADDITEM_OVERAMOUNT:
                 return 2;
+            default:
+                break;
         }
 
         w += itemdb_weight (item_list[i * 2 + 1]) * item_list[i * 2];

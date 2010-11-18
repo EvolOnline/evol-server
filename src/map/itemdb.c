@@ -261,6 +261,8 @@ int itemdb_isdropable (int nameid)
         case 2634:             //Œ‹¥w—Ö
         case 2635:             //Œ‹¥w—Ö
             return 0;
+        default:
+            break;
     }
 
     return 1;

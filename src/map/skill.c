@@ -1000,6 +1000,8 @@ int skill_get_unit_id (int id, int flag)
             return 0xb6;        /* フォグウォール */
         case PF_SPIDERWEB:
             return 0xb7;        /* スパイダーウェッブ */
+        default:
+            break;
     }
     return 0;
     /*
@@ -1417,6 +1419,8 @@ int skill_additional_effect (struct block_list *src, struct block_list *bl,
             skill_status_change_start (src, SkillStatusChangeTable[skillid],
                                        skilllv, 0, 0, 0,
                                        skill_get_time2 (skillid, skilllv), 0);
+            break;
+        default:
             break;
     }
 
@@ -2407,6 +2411,8 @@ static int skill_timerskill (int tid, unsigned int tick, int id, int data)
                 else
                     skill_unitsetting (src, skl->skill_id, skl->skill_lv,
                                        skl->x, skl->y, 0);
+                break;
+            default:
                 break;
         }
     }
@@ -3612,8 +3618,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
         case SN_SIGHT:         /* トゥルーサイト */
         case WS_MELTDOWN:      /* メルトダウン */
         case ST_REJECTSWORD:   /* リジェクトソード */
-        case HW_MAGICPOWER:    /* 魔法力増幅 */
-        case PF_MEMORIZE:      /* メモライズ */
+        case HW_MAGICPOWER:
+        case PF_MEMORIZE:
             clif_skill_nodamage (src, bl, skillid, skilllv, 1);
             skill_status_change_start (bl, SkillStatusChangeTable[skillid],
                                        skilllv, 0, 0, 0,

@@ -1249,8 +1249,10 @@ char *job_name (int class)
             return "Baby Peco Crusader";
         case 4045:
             return "Super Baby";
+        default:
+            return "Unknown Job";
     }
-    return "Unknown Job";
+//    return "Unknown Job";
 }
 
 //-------------------------------------------------------------
@@ -2859,6 +2861,8 @@ int parse_frommap (int fd)
                                 }
                                 else
                                     WFIFOW (fd, 32) = 2;    // answer: 0-login-server resquest done, 1-player not found, 2-gm level too low, 3-login-server offline
+                                break;
+                            default:
                                 break;
                         }
                     }

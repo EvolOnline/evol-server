@@ -2019,6 +2019,8 @@ int battle_addmastery (struct map_session_data *sd, struct block_list *target,
             }
             break;
         }
+        default:
+            break;
     }
     damage = dmg + damage;
     return (damage);
@@ -2438,6 +2440,8 @@ static struct Damage battle_calc_mob_weapon_attack (struct block_list *src,
                     break;
                 case AS_SPLASHER:  /* ベナムスプラッシャー */
                     damage = damage * (200 + 20 * skill_lv) / 100;
+                    break;
+                default:
                     break;
             }
         }
@@ -3555,6 +3559,8 @@ static struct Damage battle_calc_pc_weapon_attack (struct block_list *src,
                                              battle_get_element (target));
                     }
                     break;
+                default:
+                    break;
             }
         }
         if (da == 2)
@@ -4374,6 +4380,8 @@ struct Damage battle_calc_magic_attack (struct block_list *bl,
                             ("battle_calc_magic_attack(): napalmvulcan enemy count=0 !\n");
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -4633,6 +4641,8 @@ struct Damage battle_calc_misc_attack (struct block_list *bl,
             damage =
                 (100 + 50 * skill_lv +
                  (dex / 10 + int_ / 2 + skill * 3 + 40) * 2);
+            break;
+        default:
             break;
     }
 
@@ -5009,6 +5019,8 @@ int battle_weapon_attack (struct block_list *src, struct block_list *target,
                                                                    tick,
                                                                    flag);
                                 break;
+                            default:
+                                break;
                         }
                     }
                     if (!f)
@@ -5049,6 +5061,8 @@ int battle_weapon_attack (struct block_list *src, struct block_list *target,
                                                            [SC_AUTOSPELL].val2,
                                                            skilllv, tick,
                                                            flag);
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -5102,6 +5116,8 @@ int battle_weapon_attack (struct block_list *src, struct block_list *target,
                                                                    skilllv,
                                                                    tick,
                                                                    flag);
+                                break;
+                            default:
                                 break;
                         }
                     }

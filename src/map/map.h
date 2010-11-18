@@ -756,7 +756,7 @@ int  map_quit (struct map_session_data *);
 int  map_addnpc (int, struct npc_data *);
 
 extern FILE *map_logfile;
-void map_write_log (char *format, ...);
+void map_write_log (char *format, ...) __attribute__((__format__(__printf__, 1, 2)));
 #define MAP_LOG(format, args...) {if (map_logfile) map_write_log(format, ##args);}
 
 #define MAP_LOG_PC(sd, fmt, args...) MAP_LOG("PC%d %d:%d,%d " fmt, sd->status.char_id, sd->bl.m, sd->bl.x, sd->bl.y, ## args)
@@ -814,7 +814,7 @@ int  path_blownpos (int m, int x0, int y0, int dx, int dy, int count);
 
 int  map_who (int fd);
 
-void map_helpscreen ();         // [Valaris]
+void map_helpscreen () __attribute__((noreturn));         // [Valaris]
 int  map_delmap (char *mapname);
 
 #endif

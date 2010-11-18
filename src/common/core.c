@@ -55,6 +55,8 @@ static void sig_proc (int sn)
         case SIGCHLD:
             wait (&i);
             break;
+        default:
+            break;
     }
 }
 

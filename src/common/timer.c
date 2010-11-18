@@ -338,6 +338,8 @@ int do_timer (unsigned int tick)
                     timer_data[i].type &= ~TIMER_REMOVE_HEAP;
                     push_timer_heap (i);
                     break;
+                default:
+                    break;
             }
         }
     }

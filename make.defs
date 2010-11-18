@@ -17,7 +17,10 @@ else
 MAKE = make
 endif
 
-OPT = -pipe -g -fno-strict-aliasing -O2 -Wall
+#-Wredundant-decls -Wmissing-format-attribute -Wswitch-default 
+OPT = -pipe -g -fno-strict-aliasing -O2 -Wall -Wunreachable-code -Wmissing-field-initializers -Wabi \
+-Wdisabled-optimization -Wuninitialized -Wvolatile-register-var -Winvalid-pch \
+-Wnormalized=nfkc -Wmissing-noreturn -Waddress
 
 ifeq ($(findstring CYGWIN,$(PLATFORM)), CYGWIN)
 OS_TYPE = -DCYGWIN

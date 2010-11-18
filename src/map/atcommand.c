@@ -559,6 +559,8 @@ char *job_name (int class)
             return "Baby Peco Crusader";
         case 4045:
             return "Super Baby";
+        default:
+            break;
     }
     return "Unknown Job";
 }
@@ -8330,6 +8332,8 @@ atcommand_storeall (const int fd, struct map_session_data *sd,
                 clif_displaymessage (fd,
                                      "You can't open the storage currently.");
                 return 1;
+            default:
+                break;
         }
     }
     for (i = 0; i < MAX_INVENTORY; i++)

@@ -279,6 +279,8 @@ int clif_send_sub (struct block_list *bl, va_list ap)
                 && sd->chatID == ((struct map_session_data *) src_bl)->chatID)
                 return 0;
             break;
+        default:
+            break;
     }
 
     if (session[sd->fd] != NULL)
@@ -4117,6 +4119,8 @@ int clif_pcoutsight (struct block_list *bl, va_list ap)
         case BL_SKILL:
             clif_clearchar_skillunit ((struct skill_unit *) bl, sd->fd);
             break;
+        default:
+            break;
     }
     return 0;
 }
@@ -4154,6 +4158,8 @@ int clif_pcinsight (struct block_list *bl, va_list ap)
             break;
         case BL_SKILL:
             clif_getareachar_skillunit (sd, (struct skill_unit *) bl);
+            break;
+        default:
             break;
     }
 

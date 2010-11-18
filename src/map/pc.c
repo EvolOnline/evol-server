@@ -1135,7 +1135,8 @@ int pc_calc_skilltree (struct map_session_data *sd)
                 case 4043:
                     c = 4029;
                     break;
-
+                default:
+                    break;
             }
         }
     }
@@ -5472,6 +5473,8 @@ int pc_statusup (struct map_session_data *sd, int type)
         case SP_LUK:
             val = sd->status.luk;
             break;
+        default:
+            break;
     }
 
     need = pc_need_status_point (sd, type);
@@ -5501,6 +5504,8 @@ int pc_statusup (struct map_session_data *sd, int type)
             break;
         case SP_LUK:
             val = ++sd->status.luk;
+            break;
+        default:
             break;
     }
     sd->status.status_point -= need;
@@ -5586,6 +5591,8 @@ int pc_statusup2 (struct map_session_data *sd, int type, int val)
             else
                 val = sd->status.luk + val;
             sd->status.luk = val;
+            break;
+        default:
             break;
     }
     clif_updatestatus (sd, type - SP_STR + SP_USTR);
@@ -6220,6 +6227,8 @@ int pc_readparam (struct map_session_data *sd, int type)
         case SP_FAME:
             val = sd->fame;
             break;
+        default:
+            break;
     }
 
     return val;
@@ -6355,6 +6364,8 @@ int pc_setparam (struct map_session_data *sd, int type, int val)
             break;
         case SP_FAME:
             sd->fame = val;
+            break;
+        default:
             break;
     }
     clif_updatestatus (sd, type);
@@ -6778,6 +6789,8 @@ int pc_changelook (struct map_session_data *sd, int type, int val)
             sd->status.shield = val;
             break;
         case LOOK_SHOES:
+            break;
+        default:
             break;
     }
     clif_changelook (&sd->bl, type, val);

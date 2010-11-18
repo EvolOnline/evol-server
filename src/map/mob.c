@@ -1084,6 +1084,8 @@ int mob_changestate (struct mob_data *md, int state, int type)
             md->hp = md->target_id = md->attacked_id = 0;
             md->state.targettype = NONE_ATTACKABLE;
             break;
+        default:
+            break;
     }
 
     return 0;
@@ -3795,6 +3797,8 @@ int mobskill_castend_id (int tid, unsigned int tick, int id, int data)
                 skill_castend_nodamage_id (&md->bl, bl, md->skillid,
                                            md->skilllv, tick, 0);
             break;
+        default:
+            break;
     }
 
     return 0;
@@ -3860,6 +3864,8 @@ int mobskill_castend_pos (int tid, unsigned int tick, int id, int data)
             case AL_WARP:
                 range = 1;
                 break;
+            default:
+                break;
         }
         if (range >= 0)
         {
@@ -3889,6 +3895,8 @@ int mobskill_castend_pos (int tid, unsigned int tick, int id, int data)
                 break;
             case AL_WARP:
                 range = 0;
+                break;
+            default:
                 break;
         }
         if (range >= 0)
@@ -4021,6 +4029,8 @@ int mobskill_use_id (struct mob_data *md, struct block_list *target,
         case SA_MAGICROD:
         case SA_SPELLBREAKER:
             forcecast = 1;
+            break;
+        default:
             break;
     }
 
@@ -4360,6 +4370,8 @@ int mobskill_use (struct mob_data *md, unsigned int tick, int event)
                 case MSC_SKILLUSED:    // specificated skill used
                     flag = ((event & 0xffff) == MSC_SKILLUSED
                             && ((event >> 16) == c2 || c2 == 0));
+                    break;
+                default:
                     break;
             }
         }

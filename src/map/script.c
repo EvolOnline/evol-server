@@ -1323,6 +1323,8 @@ unsigned char *parse_expr (unsigned char *p)
         case '}':
             disp_error_message ("unexpected char", p);
             exit (1);
+        default:
+            break;
     }
     p = parse_subexpr (p, -1);
 #ifdef DEBUG_FUNCIN
@@ -4537,6 +4539,8 @@ int buildin_getnpctimer (struct script_state *st)
         case 2:
             val = nd->u.scr.timeramount;
             break;
+        default:
+            break;
     }
     push_val (st->stack, C_INT, val);
     return 0;
@@ -4658,6 +4662,8 @@ int buildin_getusers (struct script_state *st)
             break;
         case 1:
             val = map_getusers ();
+            break;
+        default:
             break;
     }
     push_val (st->stack, C_INT, val);
@@ -5247,6 +5253,8 @@ int buildin_getwaitingroomstate (struct script_state *st)
         case 16:
             push_str (st->stack, C_CONSTSTR, cd->npc_event);
             return 0;
+        default:
+            break;
     }
     push_val (st->stack, C_INT, val);
     return 0;
@@ -5431,6 +5439,8 @@ int buildin_setmapflag (struct script_state *st)
             case MF_RAIN:      // [Valaris]
                 map[m].flag.rain = 1;
                 break;
+            default:
+                break;
         }
     }
 
@@ -5503,7 +5513,8 @@ int buildin_removemapflag (struct script_state *st)
             case MF_RAIN:      // [Valaris]
                 map[m].flag.rain = 0;
                 break;
-
+            default:
+                break;
         }
     }
 
@@ -7036,6 +7047,8 @@ int buildin_getlook (struct script_state *st)
             break;
         case LOOK_SHOES:       //9
             break;
+        default:
+            break;
     }
 
     push_val (st->stack, C_INT, val);
@@ -7070,6 +7083,8 @@ int buildin_getsavepoint (struct script_state *st)
             break;
         case 2:
             push_val (st->stack, C_INT, y);
+            break;
+        default:
             break;
     }
     return 0;
@@ -7417,6 +7432,8 @@ void op_2num (struct script_state *st, int op, int i1, int i2)
         case C_L_SHIFT:
             i1 = i1 << i2;
             break;
+        default:
+            break;
     }
     push_val (st->stack, C_INT, i1);
 }
@@ -7474,6 +7491,8 @@ void op_1num (struct script_state *st, int op)
             break;
         case C_LNOT:
             i1 = !i1;
+            break;
+        default:
             break;
     }
     push_val (st->stack, C_INT, i1);

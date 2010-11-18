@@ -1526,6 +1526,8 @@ int map_check_dir (int s_dir, int t_dir)
             if (t_dir == 6 || t_dir == 0 || t_dir == 7)
                 return 0;
             break;
+        default:
+            break;
     }
     return 1;
 }
@@ -2189,6 +2191,8 @@ static int cleanup_sub (struct block_list *bl, va_list ap)
         case BL_SPELL:
             spell_free_invocation ((struct invocation *) bl);
             break;
+        default:
+            break;
     }
 
     return 0;
@@ -2353,6 +2357,8 @@ int map_scriptcont (struct map_session_data *sd, int id)
             return npc_scriptcont (sd, id);
         case BL_SPELL:
             spell_execute_script ((struct invocation *) bl);
+            break;
+        default:
             break;
     }
 

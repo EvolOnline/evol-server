@@ -219,7 +219,7 @@ int  atcommand_recall (const int fd, struct map_session_data *sd, const char *co
 int  atcommand_config_read (const char *cfgName);
 int  msg_config_read (const char *cfgName);
 
-void log_atcommand (struct map_session_data *sd, const char *fmt, ...);
-void gm_log (const char *fmt, ...);
+void log_atcommand (struct map_session_data *sd, const char *fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
+void gm_log (const char *fmt, ...) __attribute__((__format__(__printf__, 1, 2)));
 
 #endif

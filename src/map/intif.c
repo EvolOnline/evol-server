@@ -991,6 +991,8 @@ int intif_parse_GuildBasicInfoChanged (int fd)
         case GBI_SKILLPOINT:
             g->skill_point = dd;
             break;
+        default:
+            break;
     }
     return 0;
 }
@@ -1022,6 +1024,8 @@ int intif_parse_GuildMemberInfoChanged (int fd)
             break;
         case GMI_EXP:
             g->member[idx].exp = dd;
+            break;
+        default:
             break;
     }
     return 0;

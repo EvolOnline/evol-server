@@ -530,6 +530,8 @@ int chrif_char_ask_name_answer (int fd)
                                      "Login-server is offline. Impossible to block the the player '%s'.",
                                      player_name);
                             break;
+                        default:
+                            break;
                     }
                     break;
                 case 2:        // ban
@@ -550,6 +552,8 @@ int chrif_char_ask_name_answer (int fd)
                             sprintf (output,
                                      "Login-server is offline. Impossible to ban the the player '%s'.",
                                      player_name);
+                            break;
+                        default:
                             break;
                     }
                     break;
@@ -572,6 +576,8 @@ int chrif_char_ask_name_answer (int fd)
                                      "Login-server is offline. Impossible to unblock the the player '%s'.",
                                      player_name);
                             break;
+                        default:
+                            break;
                     }
                     break;
                 case 4:        // unban
@@ -592,6 +598,8 @@ int chrif_char_ask_name_answer (int fd)
                             sprintf (output,
                                      "Login-server is offline. Impossible to unban the the player '%s'.",
                                      player_name);
+                            break;
+                        default:
                             break;
                     }
                     break;
@@ -614,7 +622,11 @@ int chrif_char_ask_name_answer (int fd)
                                      "Login-server is offline. Impossible to change the sex of the the player '%s'.",
                                      player_name);
                             break;
+                        default:
+                            break;
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -1111,6 +1123,10 @@ static int ladmin_itemfrob_c2 (struct block_list *bl, int source_id,
             FIX (item->item_data);
             break;
         }
+
+        default:
+            break;
+
     }
 #undef FIX
 #undef IFIX
