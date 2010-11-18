@@ -130,7 +130,8 @@ int tmw_ShorterStrlen (char *s1, char *s2)
 }
 
 // Returns true if more than 50% of input message is caps or punctuation
-int tmw_CheckChatLameness (struct map_session_data *sd, char *message)
+int tmw_CheckChatLameness (struct map_session_data *sd __attribute__ ((unused)),
+                           char *message)
 {
     int  count, lame;
 

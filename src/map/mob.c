@@ -963,7 +963,8 @@ static int mob_check_attack (struct mob_data *md)
  * Attack processing of mob
  *------------------------------------------
  */
-static int mob_attack (struct mob_data *md, unsigned int tick, int data)
+static int mob_attack (struct mob_data *md, unsigned int tick,
+                       int data __attribute__ ((unused)))
 {
     struct block_list *tbl = NULL;
 
@@ -1202,7 +1203,9 @@ int mob_walktoxy (struct mob_data *md, int x, int y, int easy)
  * mob spawn with delay (timer function)
  *------------------------------------------
  */
-static int mob_delayspawn (int tid, unsigned int tick, int m, int n)
+static int mob_delayspawn (int tid __attribute__ ((unused)),
+                           unsigned int tick __attribute__ ((unused)),
+                           int m, int n __attribute__ ((unused)))
 {
     mob_spawn (m);
     return 0;
@@ -2374,7 +2377,9 @@ static int mob_ai_sub_foreachclient (struct map_session_data *sd, va_list ap)
  * Serious processing for mob in PC field of view   (interval timer function)
  *------------------------------------------
  */
-static int mob_ai_hard (int tid, unsigned int tick, int id, int data)
+static int mob_ai_hard (int tid __attribute__ ((unused)),
+                        unsigned int tick, int id __attribute__ ((unused)),
+                        int data __attribute__ ((unused)))
 {
     clif_foreachclient (mob_ai_sub_foreachclient, tick);
 
@@ -2385,7 +2390,8 @@ static int mob_ai_hard (int tid, unsigned int tick, int id, int data)
  * Negligent mode MOB AI (PC is not in near)
  *------------------------------------------
  */
-static int mob_ai_sub_lazy (void *key, void *data, va_list app)
+static int mob_ai_sub_lazy (void *key __attribute__ ((unused)),
+                            void *data, va_list app)
 {
     struct mob_data *md = data;
     unsigned int tick;
@@ -2453,7 +2459,9 @@ static int mob_ai_sub_lazy (void *key, void *data, va_list app)
  * Negligent processing for mob outside PC field of view   (interval timer function)
  *------------------------------------------
  */
-static int mob_ai_lazy (int tid, unsigned int tick, int id, int data)
+static int mob_ai_lazy (int tid __attribute__ ((unused)), unsigned int tick,
+                        int id __attribute__ ((unused)),
+                        int data __attribute__ ((unused)))
 {
     map_foreachiddb (mob_ai_sub_lazy, tick);
 
@@ -2484,7 +2492,9 @@ struct delay_item_drop2
  * item drop with delay (timer function)
  *------------------------------------------
  */
-static int mob_delay_item_drop (int tid, unsigned int tick, int id, int data)
+static int mob_delay_item_drop (int tid __attribute__ ((unused)),
+                                unsigned int tick __attribute__ ((unused)),
+                                int id, int data __attribute__ ((unused)))
 {
     struct delay_item_drop *ditem;
     struct item temp_item;
@@ -2523,7 +2533,9 @@ static int mob_delay_item_drop (int tid, unsigned int tick, int id, int data)
  * item drop (timer function)-lootitem with delay
  *------------------------------------------
  */
-static int mob_delay_item_drop2 (int tid, unsigned int tick, int id, int data)
+static int mob_delay_item_drop2 (int tid __attribute__ ((unused)),
+                                 unsigned int tick __attribute__ ((unused)),
+                                 int id, int data __attribute__ ((unused)))
 {
     struct delay_item_drop2 *ditem;
     int  flag;
@@ -2587,7 +2599,7 @@ int mob_catch_delete (struct mob_data *md, int type)
     return 0;
 }
 
-int mob_timer_delete (int tid, unsigned int tick, int id, int data)
+int mob_timer_delete (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id, int data __attribute__ ((unused)))
 {
     struct block_list *bl = map_id2bl (id);
     struct mob_data *md;
@@ -3698,7 +3710,7 @@ int mob_skillid2skillidx (int class, int skillid)
  * スキル使用（詠唱完了、ID指定）
  *------------------------------------------
  */
-int mobskill_castend_id (int tid, unsigned int tick, int id, int data)
+int mobskill_castend_id (int tid, unsigned int tick, int id, int data __attribute__ ((unused)))
 {
     struct mob_data *md = NULL;
     struct block_list *bl;
@@ -3808,7 +3820,7 @@ int mobskill_castend_id (int tid, unsigned int tick, int id, int data)
  * スキル使用（詠唱完了、場所指定）
  *------------------------------------------
  */
-int mobskill_castend_pos (int tid, unsigned int tick, int id, int data)
+int mobskill_castend_pos (int tid, unsigned int tick, int id, int data __attribute__ ((unused)))
 {
     struct mob_data *md = NULL;
     struct block_list *bl;

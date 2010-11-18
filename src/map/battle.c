@@ -1427,7 +1427,9 @@ struct battle_delay_damage_
     int  damage;
     int  flag;
 };
-int battle_delay_damage_sub (int tid, unsigned int tick, int id, int data)
+int battle_delay_damage_sub (int tid __attribute__ ((unused)),
+                             unsigned int tick __attribute__ ((unused)),
+                             int id, int data)
 {
     if (!data)
         return 0;
@@ -1621,8 +1623,8 @@ int battle_attr_fix (int damage, int atk_elem, int def_elem)
  *------------------------------------------
  */
 int battle_calc_damage (struct block_list *src, struct block_list *bl,
-                        int damage, int div_, int skill_num, int skill_lv,
-                        int flag)
+                        int damage, int div_, int skill_num,
+                        int skill_lv __attribute__ ((unused)), int flag)
 {
     struct map_session_data *sd = NULL;
     struct mob_data *md = NULL;

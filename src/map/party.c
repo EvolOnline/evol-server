@@ -30,7 +30,8 @@ int  party_send_xyhp_timer (int tid, unsigned int tick, int id, int data);
  * 終了
  *------------------------------------------
  */
-static int party_db_final (void *key, void *data, va_list ap)
+static int party_db_final (void *key __attribute__ ((unused)),
+                           void *data, va_list ap __attribute__ ((unused)))
 {
     free (data);
     return 0;
@@ -58,7 +59,8 @@ struct party *party_search (int party_id)
     return numdb_search (party_db, party_id);
 }
 
-int party_searchname_sub (void *key, void *data, va_list ap)
+int party_searchname_sub (void *key __attribute__ ((unused)),
+                          void *data, va_list ap)
 {
     nullpo_retr (0, data);
     nullpo_retr (0, ap);
@@ -394,7 +396,7 @@ int party_member_added (int party_id, int account_id, int flag)
 
 // パーティ除名要求
 int party_removemember (struct map_session_data *sd, int account_id,
-                        char *name)
+                        char *name __attribute__ ((unused)))
 {
     struct party *p;
     int  i;
@@ -657,7 +659,8 @@ int party_check_conflict (struct map_session_data *sd)
 }
 
 // 位置やＨＰ通知用
-int party_send_xyhp_timer_sub (void *key, void *data, va_list ap)
+int party_send_xyhp_timer_sub (void *key __attribute__ ((unused)),
+                               void *data, va_list ap __attribute__ ((unused)))
 {
     struct party *p = (struct party *) data;
     int  i;
@@ -689,7 +692,9 @@ int party_send_xyhp_timer_sub (void *key, void *data, va_list ap)
 }
 
 // 位置やＨＰ通知
-int party_send_xyhp_timer (int tid, unsigned int tick, int id, int data)
+int party_send_xyhp_timer (int tid __attribute__ ((unused)),
+                           unsigned int tick, int id __attribute__ ((unused)),
+                           int data __attribute__ ((unused)))
 {
     numdb_foreach (party_db, party_send_xyhp_timer_sub, tick);
     return 0;

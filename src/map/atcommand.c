@@ -1739,7 +1739,8 @@ int atcommand_whogm (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_save (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command,
+                    const char *message __attribute__ ((unused)))
 {
     nullpo_retr (-1, sd);
     nullpo_retr (-1, sd->mapname);
@@ -1760,7 +1761,8 @@ int atcommand_save (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_load (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command,
+                    const char *message __attribute__ ((unused)))
 {
     int  m;
 
@@ -1840,7 +1842,8 @@ int atcommand_speed (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_storage (const int fd, struct map_session_data *sd,
-                       const char *command, const char *message)
+                       const char *command,
+                       const char *message __attribute__ ((unused)))
 {
     struct storage *stor;       //changes from Freya/Yor
 
@@ -1870,7 +1873,8 @@ int atcommand_storage (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_guildstorage (const int fd, struct map_session_data *sd,
-                            const char *command, const char *message)
+                            const char *command,
+                            const char *message __attribute__ ((unused)))
 {
     struct storage *stor;       //changes from Freya/Yor
 
@@ -1983,7 +1987,8 @@ int atcommand_option (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_hide (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command,
+                    const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2008,7 +2013,8 @@ int atcommand_hide (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_die (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+                   const char *command,
+                   const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2068,7 +2074,8 @@ int atcommand_kill (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_alive (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+                     const char *command,
+                     const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2236,7 +2243,8 @@ int atcommand_item (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_itemreset (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+                         const char *command,
+                         const char *message __attribute__ ((unused)))
 {
     int  i;
 
@@ -2259,7 +2267,8 @@ int atcommand_itemreset (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_itemcheck (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+                         const char *command,
+                         const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2410,7 +2419,8 @@ int atcommand_joblevelup (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_help (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command,
+                    const char *message __attribute__ ((unused)))
 {
     char buf[2048], w1[2048], w2[2048];
     int  i, gm_level;
@@ -2491,7 +2501,8 @@ int atcommand_gm (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_pvpoff (const int fd, struct map_session_data *sd,
-                      const char *command, const char *message)
+                      const char *command,
+                      const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -2542,7 +2553,8 @@ int atcommand_pvpoff (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_pvpon (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+                     const char *command,
+                     const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -2592,7 +2604,8 @@ int atcommand_pvpon (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_gvgoff (const int fd, struct map_session_data *sd,
-                      const char *command, const char *message)
+                      const char *command,
+                      const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2617,7 +2630,8 @@ int atcommand_gvgoff (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_gvgon (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+                     const char *command,
+                     const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -2697,8 +2711,10 @@ int atcommand_model (const int fd, struct map_session_data *sd,
  * @dye && @ccolor
  *------------------------------------------
  */
-int atcommand_dye (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+int atcommand_dye (const int fd __attribute__ ((unused)),
+                   struct map_session_data *sd __attribute__ ((unused)),
+                   const char *command __attribute__ ((unused)),
+                   const char *message __attribute__ ((unused)))
 {
     int  cloth_color = 0;
     char output[200];
@@ -2745,8 +2761,8 @@ int atcommand_dye (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int
-atcommand_chardye (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+atcommand_chardye (const int fd __attribute__ ((unused)), struct map_session_data *sd __attribute__ ((unused)),
+                   const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     return 0;
 }
@@ -2755,8 +2771,10 @@ atcommand_chardye (const int fd, struct map_session_data *sd,
  * @hairstyle && @hstyle
  *------------------------------------------
  */
-int atcommand_hair_style (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+int atcommand_hair_style (const int fd __attribute__ ((unused)),
+                          struct map_session_data *sd __attribute__ ((unused)),
+                          const char *command __attribute__ ((unused)),
+                          const char *message __attribute__ ((unused)))
 {
     int  hair_style = 0;
     char output[200];
@@ -2803,8 +2821,8 @@ int atcommand_hair_style (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int
-atcommand_charhairstyle (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+atcommand_charhairstyle (const int fd __attribute__ ((unused)), struct map_session_data *sd __attribute__ ((unused)),
+                         const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     return 0;
 }
@@ -2813,8 +2831,10 @@ atcommand_charhairstyle (const int fd, struct map_session_data *sd,
  * @haircolor && @hcolor
  *------------------------------------------
  */
-int atcommand_hair_color (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+int atcommand_hair_color (const int fd __attribute__ ((unused)),
+                          struct map_session_data *sd __attribute__ ((unused)),
+                          const char *command __attribute__ ((unused)),
+                          const char *message __attribute__ ((unused)))
 {
     int  hair_color = 0;
     char output[200];
@@ -2861,8 +2881,8 @@ int atcommand_hair_color (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int
-atcommand_charhaircolor (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+atcommand_charhaircolor (const int fd __attribute__ ((unused)), struct map_session_data *sd __attribute__ ((unused)),
+                         const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     return 0;
 }
@@ -3253,7 +3273,8 @@ void atcommand_killmonster_sub (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_killmonster (const int fd, struct map_session_data *sd,
-                           const char *command, const char *message)
+                           const char *command __attribute__ ((unused)),
+                           const char *message)
 {
     atcommand_killmonster_sub (fd, sd, message, 1);
 
@@ -3281,7 +3302,8 @@ static int atlist_nearby_sub (struct block_list *bl, va_list ap)
  *------------------------------------------
  */
 int atcommand_list_nearby (const int fd, struct map_session_data *sd,
-                           const char *command, const char *message)
+                           const char *command,
+                           const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -3298,7 +3320,8 @@ int atcommand_list_nearby (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_killmonster2 (const int fd, struct map_session_data *sd,
-                            const char *command, const char *message)
+                            const char *command __attribute__ ((unused)),
+                            const char *message)
 {
     atcommand_killmonster_sub (fd, sd, message, 0);
 
@@ -3465,7 +3488,8 @@ int atcommand_memo (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_gat (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+                   const char *command,
+                   const char *message __attribute__ ((unused)))
 {
     char output[200];
     int  y;
@@ -4019,7 +4043,8 @@ int atcommand_character_stats (const int fd, struct map_session_data *sd,
  */
 //** Character Stats All by fritz
 int atcommand_character_stats_all (const int fd, struct map_session_data *sd,
-                                   const char *command, const char *message)
+                                   const char *command,
+                                   const char *message __attribute__ ((unused)))
 {
     char output[1024], gmlevel[1024];
     int  i;
@@ -4522,7 +4547,8 @@ int atcommand_character_save (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_night (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+                     const char *command,
+                     const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4558,7 +4584,8 @@ int atcommand_night (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_day (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+                   const char *command,
+                   const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4594,7 +4621,8 @@ int atcommand_day (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_doom (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command,
+                    const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4622,7 +4650,8 @@ int atcommand_doom (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_doommap (const int fd, struct map_session_data *sd,
-                       const char *command, const char *message)
+                       const char *command,
+                       const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4671,7 +4700,8 @@ static void atcommand_raise_sub (struct map_session_data *sd)
  *------------------------------------------
  */
 int atcommand_raise (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+                     const char *command,
+                     const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -4693,7 +4723,8 @@ int atcommand_raise (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_raisemap (const int fd, struct map_session_data *sd,
-                        const char *command, const char *message)
+                        const char *command,
+                        const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4948,7 +4979,8 @@ int atcommand_kick (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_kickall (const int fd, struct map_session_data *sd,
-                       const char *command, const char *message)
+                       const char *command,
+                       const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -4976,7 +5008,8 @@ int atcommand_kickall (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_allskills (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+                         const char *command,
+                         const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -5278,7 +5311,8 @@ int atcommand_guild (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_agitstart (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+                         const char *command,
+                         const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -5301,7 +5335,8 @@ int atcommand_agitstart (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_agitend (const int fd, struct map_session_data *sd,
-                       const char *command, const char *message)
+                       const char *command,
+                       const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -5324,7 +5359,8 @@ int atcommand_agitend (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_mapexit (const int fd, struct map_session_data *sd,
-                       const char *command, const char *message)
+                       const char *command,
+                       const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -5871,7 +5907,8 @@ int atcommand_charzeny (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_recallall (const int fd, struct map_session_data *sd,
-                         const char *command, const char *message)
+                         const char *command,
+                         const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
     int  i;
@@ -6068,7 +6105,8 @@ int atcommand_partyrecall (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_reloaditemdb (const int fd, struct map_session_data *sd,
-                            const char *command, const char *message)
+                            const char *command,
+                            const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6084,7 +6122,8 @@ int atcommand_reloaditemdb (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_reloadmobdb (const int fd, struct map_session_data *sd,
-                           const char *command, const char *message)
+                           const char *command,
+                           const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6100,7 +6139,8 @@ int atcommand_reloadmobdb (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_reloadskilldb (const int fd, struct map_session_data *sd,
-                             const char *command, const char *message)
+                             const char *command,
+                             const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6116,7 +6156,8 @@ int atcommand_reloadskilldb (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_reloadscript (const int fd, struct map_session_data *sd,
-                            const char *command, const char *message)
+                            const char *command,
+                            const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6137,7 +6178,8 @@ int atcommand_reloadscript (const int fd, struct map_session_data *sd,
  */
 int atcommand_reloadgmdb (      // by [Yor]
                              const int fd, struct map_session_data *sd,
-                             const char *command, const char *message)
+                             const char *command,
+                             const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6352,7 +6394,8 @@ int atcommand_mapinfo (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_mount_peco (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+                          const char *command,
+                          const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -6694,7 +6737,8 @@ char *txt_time (unsigned int duration)
  *------------------------------------------
  */
 int atcommand_servertime (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+                          const char *command,
+                          const char *message __attribute__ ((unused)))
 {
     struct TimerData *timer_data;
     struct TimerData *timer_data2;
@@ -7052,7 +7096,7 @@ int atcommand_disguise (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_undisguise (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+                          const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -7133,7 +7177,7 @@ int atcommand_localbroadcast (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int atcommand_ignorelist (const int fd, struct map_session_data *sd,
-                          const char *command, const char *message)
+                          const char *command, const char *message __attribute__ ((unused)))
 {
     char output[200];
     int  count;
@@ -8000,7 +8044,7 @@ atcommand_character_cart_list (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_killer (const int fd, struct map_session_data *sd,
-                  const char *command, const char *message)
+                  const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -8022,7 +8066,7 @@ atcommand_killer (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_killable (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -8074,7 +8118,7 @@ atcommand_charkillable (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_skillon (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+                   const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -8091,7 +8135,7 @@ atcommand_skillon (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_skilloff (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -8181,8 +8225,8 @@ atcommand_addwarp (const int fd, struct map_session_data *sd,
  *------------------------------------------
  */
 int
-atcommand_follow (const int fd, struct map_session_data *sd,
-                  const char *command, const char *message)
+atcommand_follow (const int fd, struct map_session_data *sd __attribute__ ((unused)),
+                  const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
 #if 0
     struct map_session_data *pl_sd = NULL;
@@ -8249,7 +8293,7 @@ atcommand_chareffect (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_dropall (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+                   const char *command, const char *message __attribute__ ((unused)))
 {
     if (!fd || !sd || !command)
         return -1;
@@ -8314,7 +8358,7 @@ atcommand_chardropall (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_storeall (const int fd, struct map_session_data *sd,
-                    const char *command, const char *message)
+                    const char *command, const char *message __attribute__ ((unused)))
 {
     int  i;
 
@@ -8482,7 +8526,7 @@ atcommand_useskill (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_rain (const int fd, struct map_session_data *sd,
-                const char *command, const char *message)
+                const char *command, const char *message __attribute__ ((unused)))
 {
     int  effno = 0;
     effno = 161;
@@ -8504,7 +8548,7 @@ atcommand_rain (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_snow (const int fd, struct map_session_data *sd,
-                const char *command, const char *message)
+                const char *command, const char *message __attribute__ ((unused)))
 {
     int  effno = 0;
     effno = 162;
@@ -8526,7 +8570,7 @@ atcommand_snow (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_sakura (const int fd, struct map_session_data *sd,
-                  const char *command, const char *message)
+                  const char *command, const char *message __attribute__ ((unused)))
 {
     int  effno = 0;
     effno = 163;
@@ -8548,7 +8592,7 @@ atcommand_sakura (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_fog (const int fd, struct map_session_data *sd,
-               const char *command, const char *message)
+               const char *command, const char *message __attribute__ ((unused)))
 {
     int  effno = 0;
     effno = 233;
@@ -8571,7 +8615,7 @@ atcommand_fog (const int fd, struct map_session_data *sd,
  */
 int
 atcommand_leaves (const int fd, struct map_session_data *sd,
-                  const char *command, const char *message)
+                  const char *command, const char *message __attribute__ ((unused)))
 {
     int  effno = 0;
     effno = 333;
@@ -8884,8 +8928,8 @@ atcommand_set_magic (const int fd, struct map_session_data *sd,
 }
 
 int
-atcommand_log (const int fd, struct map_session_data *sd,
-               const char *command, const char *message)
+atcommand_log (const int fd __attribute__ ((unused)), struct map_session_data *sd __attribute__ ((unused)),
+               const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     return 0;                   // only used for (implicit) logging
 }
@@ -8906,23 +8950,23 @@ atcommand_tee (const int fd, struct map_session_data *sd,
 }
 
 int
-atcommand_invisible (const int fd, struct map_session_data *sd,
-                     const char *command, const char *message)
+atcommand_invisible (const int fd __attribute__ ((unused)), struct map_session_data *sd,
+                     const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     pc_invisibility (sd, 1);
     return 0;
 }
 
 int
-atcommand_visible (const int fd, struct map_session_data *sd,
-                   const char *command, const char *message)
+atcommand_visible (const int fd __attribute__ ((unused)), struct map_session_data *sd,
+                   const char *command __attribute__ ((unused)), const char *message __attribute__ ((unused)))
 {
     pc_invisibility (sd, 0);
     return 0;
 }
 
 int atcommand_jump_iterate (const int fd, struct map_session_data *sd,
-                            const char *command, const char *message,
+                            const char *command, const char *message __attribute__ ((unused)),
                             struct map_session_data *(*get_start) (),
                             struct map_session_data *(*get_next) (struct
                                                                   map_session_data

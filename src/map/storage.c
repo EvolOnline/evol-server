@@ -40,14 +40,16 @@ int storage_comp_item (const void *_i1, const void *_i2)
     return i1->nameid - i2->nameid;
 }
 
-static int guild_storage_db_final (void *key, void *data, va_list ap)
+static int guild_storage_db_final (void *key __attribute__ ((unused)),
+                                   void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild_storage *gstor = (struct guild_storage *) data;
     free (gstor);
     return 0;
 }
 
-static int storage_db_final (void *key, void *data, va_list ap)
+static int storage_db_final (void *key __attribute__ ((unused)),
+                             void *data, va_list ap __attribute__ ((unused)))
 {
     struct storage *stor = (struct storage *) data;
     free (stor);
@@ -87,7 +89,7 @@ void do_final_storage (void)    // by [MC Cameri]
         numdb_final (guild_storage_db, guild_storage_db_final);
 }
 
-static int storage_reconnect_sub (void *key, void *data, va_list ap)
+static int storage_reconnect_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {                               //Parses storage and saves 'dirty' ones upon reconnect. [Skotlex]
     int  type = va_arg (ap, int);
     if (type)

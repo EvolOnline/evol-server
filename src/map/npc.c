@@ -177,7 +177,8 @@ int npc_delete (struct npc_data *nd)
  * �C�x���g�̒x����s
  *------------------------------------------
  */
-int npc_event_timer (int tid, unsigned int tick, int id, int data)
+int npc_event_timer (int tid __attribute__ ((unused)),
+                     unsigned int tick __attribute__ ((unused)), int id, int data)
 {
     struct map_session_data *sd = map_id2sd (id);
     if (sd == NULL)
@@ -396,7 +397,10 @@ int npc_event_do_l (const char *name, int rid, int argc, argrec_t * args)
  * ���v�C�x���g��s
  *------------------------------------------
  */
-int npc_event_do_clock (int tid, unsigned int tick, int id, int data)
+int npc_event_do_clock (int tid __attribute__ ((unused)),
+                        unsigned int tick __attribute__ ((unused)),
+                        int id __attribute__ ((unused)),
+                        int data __attribute__ ((unused)))
 {
     time_t timer;
     struct tm *t;
@@ -604,7 +608,8 @@ int npc_timerevent_import (void *key, void *data, va_list ap)
  * �^�C�}�[�C�x���g��s
  *------------------------------------------
  */
-int npc_timerevent (int tid, unsigned int tick, int id, int data)
+int npc_timerevent (int tid __attribute__ ((unused)),
+                    unsigned int tick, int id, int data)
 {
     int  next, t;
     struct npc_data *nd = (struct npc_data *) map_id2bl (id);
@@ -837,7 +842,8 @@ int npc_command_sub (void *key, void *data, va_list ap)
     return 0;
 }
 
-int npc_command (struct map_session_data *sd, char *npcname, char *command)
+int npc_command (struct map_session_data *sd __attribute__ ((unused)),
+                 char *npcname, char *command)
 {
     strdb_foreach (ev_db, npc_command_sub, npcname, command);
 
@@ -2239,7 +2245,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
     return 0;
 }
 
-static int ev_db_final (void *key, void *data, va_list ap)
+static int ev_db_final (void *key, void *data, va_list ap __attribute__ ((unused)))
 {
     free (data);
     if (key && strstr (key, "::") != NULL)
@@ -2247,7 +2253,9 @@ static int ev_db_final (void *key, void *data, va_list ap)
     return 0;
 }
 
-static int npcname_db_final (void *key, void *data, va_list ap)
+static int npcname_db_final (void *key __attribute__ ((unused)),
+                             void *data __attribute__ ((unused)),
+                             va_list ap __attribute__ ((unused)))
 {
     return 0;
 }

@@ -1056,7 +1056,9 @@ void mmo_auth_sync (void)
 // update the account DB will not immideately trigger a save. Instead
 // we save periodicly on a timer.
 //-----------------------------------------------------
-int check_auth_sync (int tid, unsigned int tick, int id, int data)
+int check_auth_sync (int tid __attribute__ ((unused)),
+                     unsigned int tick __attribute__ ((unused)),
+                     int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     if (pid != 0)
     {
@@ -1143,7 +1145,9 @@ void send_GM_accounts ()
 //-----------------------------------------------------
 // Check if GM file account have been changed
 //-----------------------------------------------------
-int check_GM_file (int tid, unsigned int tick, int id, int data)
+int check_GM_file (int tid __attribute__ ((unused)),
+                   unsigned int tick __attribute__ ((unused)),
+                   int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     struct stat file_stat;
     long new_time;
@@ -1461,7 +1465,9 @@ int mmo_auth (struct mmo_account *account, int fd)
 //-------------------------------
 // Char-server anti-freeze system
 //-------------------------------
-int char_anti_freeze_system (int tid, unsigned int tick, int id, int data)
+int char_anti_freeze_system (int tid __attribute__ ((unused)),
+                             unsigned int tick __attribute__ ((unused)),
+                             int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     int  i;
 

@@ -74,7 +74,7 @@ static void clear_activation_record (cont_activation_record_t * ar)
 }
 
 static int
-invocation_timer_callback (int _, unsigned int __, int id, int data)
+invocation_timer_callback (int _ __attribute__ ((unused)), unsigned int __ __attribute__ ((unused)), int id, int data __attribute__ ((unused)))
 {
     invocation_t *invocation = (invocation_t *) map_id2bl (id);
 
@@ -256,7 +256,7 @@ static void char_update (character_t * character)
                  character->bl.y);
 }
 
-static int timer_callback_effect (int _, unsigned int __, int id, int data)
+static int timer_callback_effect (int _ __attribute__ ((unused)), unsigned int __ __attribute__ ((unused)), int id, int data)
 {
     entity_t *target = map_id2bl (id);
     if (target)
@@ -286,8 +286,8 @@ void magic_unshroud (character_t * other_char)
 }
 
 static int
-timer_callback_effect_npc_delete (int timer_id, unsigned int odelay,
-                                  int npc_id, int _)
+timer_callback_effect_npc_delete (int timer_id __attribute__ ((unused)), unsigned int odelay __attribute__ ((unused)),
+                                  int npc_id, int _ __attribute__ ((unused)))
 {
     struct npc_data *effect_npc = (struct npc_data *) map_id2bl (npc_id);
     npc_free (effect_npc);
@@ -313,7 +313,7 @@ static struct npc_data *local_spell_effect (int m, int x, int y, int effect,
     return effect_npc;
 }
 
-static int op_sfx (env_t * env, int args_nr, val_t * args)
+static int op_sfx (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!env || !args)
         return 1;
@@ -336,7 +336,7 @@ static int op_sfx (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_instaheal (env_t * env, int args_nr, val_t * args)
+static int op_instaheal (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!env || !args)
         return 1;
@@ -385,7 +385,7 @@ static int op_itemheal (env_t * env, int args_nr, val_t * args)
 
 #define ARGCHAR(n) (ARGENTITY(n)->type == BL_PC) ? (character_t *)(ARGENTITY(n)) : NULL
 
-static int op_shroud (env_t * env, int args_nr, val_t * args)
+static int op_shroud (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!env || !args)
         return 1;
@@ -406,7 +406,7 @@ static int op_shroud (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_reveal (env_t * env, int args_nr, val_t * args)
+static int op_reveal (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -419,7 +419,7 @@ static int op_reveal (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_message (env_t * env, int args_nr, val_t * args)
+static int op_message (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -433,8 +433,8 @@ static int op_message (env_t * env, int args_nr, val_t * args)
 }
 
 static int
-timer_callback_kill_npc (int timer_id, unsigned int odelay, int npc_id,
-                         int data)
+timer_callback_kill_npc (int timer_id __attribute__ ((unused)), unsigned int odelay __attribute__ ((unused)), int npc_id,
+                         int data __attribute__ ((unused)))
 {
     struct npc_data *npc = (struct npc_data *) map_id2bl (npc_id);
     if (npc)
@@ -443,7 +443,7 @@ timer_callback_kill_npc (int timer_id, unsigned int odelay, int npc_id,
     return 0;
 }
 
-static int op_messenger_npc (env_t * env, int args_nr, val_t * args)
+static int op_messenger_npc (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -504,7 +504,7 @@ static void entity_warp (entity_t * target, int destm, int destx, int desty)
     }
 }
 
-static int op_move (env_t * env, int args_nr, val_t * args)
+static int op_move (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -524,7 +524,7 @@ static int op_move (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_warp (env_t * env, int args_nr, val_t * args)
+static int op_warp (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -540,7 +540,7 @@ static int op_warp (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_banish (env_t * env, int args_nr, val_t * args)
+static int op_banish (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -584,7 +584,7 @@ record_status_change (invocation_t * invocation, int bl_id, int sc_id)
     cr->bl_id = bl_id;
 }
 
-static int op_status_change (env_t * env, int args_nr, val_t * args)
+static int op_status_change (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -607,7 +607,7 @@ static int op_status_change (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_stop_status_change (env_t * env, int args_nr, val_t * args)
+static int op_stop_status_change (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -621,7 +621,7 @@ static int op_stop_status_change (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_override_attack (env_t * env, int args_nr, val_t * args)
+static int op_override_attack (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -669,7 +669,7 @@ static int op_override_attack (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_create_item (env_t * env, int args_nr, val_t * args)
+static int op_create_item (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -704,7 +704,7 @@ static int op_create_item (env_t * env, int args_nr, val_t * args)
 #define AGGRAVATION_MODE_ATTACKS_CASTER(n) 	((n) == 0 || (n) == 2)
 #define AGGRAVATION_MODE_MAKES_AGGRESSIVE(n)	((n) > 0)
 
-static int op_aggravate (env_t * env, int args_nr, val_t * args)
+static int op_aggravate (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -744,7 +744,7 @@ static int op_aggravate (env_t * env, int args_nr, val_t * args)
 #define MONSTER_ATTITUDE_SERVANT	2
 #define MONSTER_ATTITUDE_FROZEN		3
 
-static int op_spawn (env_t * env, int args_nr, val_t * args)
+static int op_spawn (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -844,7 +844,7 @@ static char *get_invocation_name (env_t * env)
         return "??";
 }
 
-static int op_injure (env_t * env, int args_nr, val_t * args)
+static int op_injure (env_t * env, int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -897,7 +897,7 @@ static int op_injure (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_emote (env_t * env, int args_nr, val_t * args)
+static int op_emote (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -912,7 +912,7 @@ static int op_emote (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_set_script_variable (env_t * env, int args_nr, val_t * args)
+static int op_set_script_variable (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -927,7 +927,7 @@ static int op_set_script_variable (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_set_hair_colour (env_t * env, int args_nr, val_t * args)
+static int op_set_hair_colour (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -942,7 +942,7 @@ static int op_set_hair_colour (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_set_hair_style (env_t * env, int args_nr, val_t * args)
+static int op_set_hair_style (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -957,7 +957,7 @@ static int op_set_hair_style (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_drop_item_for (env_t * env, int args_nr, val_t * args)
+static int op_drop_item_for (env_t * env __attribute__ ((unused)), int args_nr, val_t * args)
 {
     if (!args)
         return 1;
@@ -985,7 +985,7 @@ static int op_drop_item_for (env_t * env, int args_nr, val_t * args)
     return 0;
 }
 
-static int op_gain_exp (env_t * env, int args_nr, val_t * args)
+static int op_gain_exp (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
@@ -1071,7 +1071,7 @@ op_t *magic_get_op (char *name, int *index)
 
 void
 spell_effect_report_termination (int invocation_id, int bl_id, int sc_id,
-                                 int supplanted)
+                                 int supplanted __attribute__ ((unused)))
 {
     int  i;
     int  index = -1;

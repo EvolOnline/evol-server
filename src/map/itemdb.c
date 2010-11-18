@@ -49,7 +49,8 @@ static int itemdb_read_noequip (void);
  *------------------------------------------
  */
 // name = item alias, so we should find items aliases first. if not found then look for "jname" (full name)
-int itemdb_searchname_sub (void *key, void *data, va_list ap)
+int itemdb_searchname_sub (void *key __attribute__ ((unused)),
+                           void *data, va_list ap)
 {
     if (!data || !ap)
         return 0;
@@ -73,7 +74,8 @@ int itemdb_searchname_sub (void *key, void *data, va_list ap)
  * –¼‘O‚ÅŒŸõ—p
  *------------------------------------------
  */
-int itemdb_searchjname_sub (void *key, void *data, va_list ap)
+int itemdb_searchjname_sub (void *key __attribute__ ((unused)),
+                            void *data, va_list ap)
 {
     if (!data || !ap)
         return 0;
@@ -695,7 +697,8 @@ static int itemdb_read_noequip (void)
  *
  *------------------------------------------
  */
-static int itemdb_final (void *key, void *data, va_list ap)
+static int itemdb_final (void *key __attribute__ ((unused)),
+                         void *data, va_list ap __attribute__ ((unused)))
 {
     struct item_data *id;
 

@@ -2241,9 +2241,12 @@ int skill_check_unit_range2 (int m, int x, int y, int range)
  * 範囲スキル使用処理小分けここから
  */
 /* 対象の数をカウントする。（skill_area_temp[0]を初期化しておくこと） */
-int skill_area_sub_count (struct block_list *src, struct block_list *target,
-                          int skillid, int skilllv, unsigned int tick,
-                          int flag)
+int skill_area_sub_count (struct block_list *src __attribute__ ((unused)),
+                          struct block_list *target __attribute__ ((unused)),
+                          int skillid __attribute__ ((unused)),
+                          int skilllv __attribute__ ((unused)),
+                          unsigned int tick __attribute__ ((unused)),
+                          int flag __attribute__ ((unused)))
 {
     if (skill_area_temp[0] < 0xffff)
         skill_area_temp[0]++;
@@ -2254,7 +2257,8 @@ int skill_area_sub_count (struct block_list *src, struct block_list *target,
  *
  *------------------------------------------
  */
-static int skill_timerskill (int tid, unsigned int tick, int id, int data)
+static int skill_timerskill (int tid __attribute__ ((unused)),
+                             unsigned int tick, int id, int data)
 {
     struct map_session_data *sd = NULL;
     struct mob_data *md = NULL;
@@ -5151,7 +5155,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
  * スキル使用（詠唱完了、ID指定）
  *------------------------------------------
  */
-int skill_castend_id (int tid, unsigned int tick, int id, int data)
+int skill_castend_id (int tid, unsigned int tick, int id,
+                      int data __attribute__ ((unused)))
 {
     struct map_session_data *sd = map_id2sd (id) /*,*target_sd=NULL */ ;
     struct block_list *bl;
@@ -6922,7 +6927,8 @@ int skill_unit_ondelete (struct skill_unit *src, struct block_list *bl,
  * スキルユニットの限界イベント
  *------------------------------------------
  */
-int skill_unit_onlimit (struct skill_unit *src, unsigned int tick)
+int skill_unit_onlimit (struct skill_unit *src,
+                        unsigned int tick __attribute__ ((unused)))
 {
     struct skill_unit_group *sg;
 
@@ -6978,7 +6984,7 @@ int skill_unit_onlimit (struct skill_unit *src, unsigned int tick)
  *------------------------------------------
  */
 int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl,
-                          int damage, unsigned int tick)
+                          int damage, unsigned int tick __attribute__ ((unused)))
 {
     struct skill_unit_group *sg;
 
@@ -7007,7 +7013,8 @@ int skill_unit_ondamaged (struct skill_unit *src, struct block_list *bl,
  * スキル使用（詠唱完了、場所指定）
  *------------------------------------------
  */
-int skill_castend_pos (int tid, unsigned int tick, int id, int data)
+int skill_castend_pos (int tid, unsigned int tick, int id,
+                       int data __attribute__ ((unused)))
 {
     struct map_session_data *sd = map_id2sd (id) /*,*target_sd=NULL */ ;
     int  range, maxcount;
@@ -8648,7 +8655,8 @@ void skill_brandishspear_dir (struct square *tc, int dir, int are)
  * ディボーション 有効確認
  *------------------------------------------
  */
-void skill_devotion (struct map_session_data *md, int target)
+void skill_devotion (struct map_session_data *md,
+                     int target __attribute__ ((unused)))
 {
     // 総確認
     int  n;
@@ -11499,7 +11507,9 @@ int skill_unit_timer_sub (struct block_list *bl, va_list ap)
  * スキルユニットタイマー処理
  *------------------------------------------
  */
-int skill_unit_timer (int tid, unsigned int tick, int id, int data)
+int skill_unit_timer (int tid __attribute__ ((unused)), unsigned int tick,
+                      int id __attribute__ ((unused)),
+                      int data __attribute__ ((unused)))
 {
     map_freeblock_lock ();
 

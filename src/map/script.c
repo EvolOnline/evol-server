@@ -86,7 +86,9 @@ struct dbt *script_get_userfunc_db ()
     return userfunc_db;
 }
 
-int scriptlabel_final (void *k, void *d, va_list ap)
+int scriptlabel_final (void *k __attribute__ ((unused)),
+                       void *d __attribute__ ((unused)),
+                       va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
@@ -4378,7 +4380,8 @@ int buildin_killmonster (struct script_state *st)
     return 0;
 }
 
-int buildin_killmonsterall_sub (struct block_list *bl, va_list ap)
+int buildin_killmonsterall_sub (struct block_list *bl,
+                                va_list ap __attribute__ ((unused)))
 {
     mob_delete ((struct mob_data *) bl);
     return 0;
@@ -4692,7 +4695,8 @@ int buildin_getmapusers (struct script_state *st)
  * �G���A�w�胆�[�U�[������
  *------------------------------------------
  */
-int buildin_getareausers_sub (struct block_list *bl, va_list ap)
+int buildin_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
+                              va_list ap)
 {
     int *users = va_arg (ap, int *);
     (*users)++;
@@ -5688,7 +5692,7 @@ int buildin_maprespawnguildid (struct script_state *st)
     return 0;
 }
 
-int buildin_agitstart (struct script_state *st)
+int buildin_agitstart (struct script_state *st __attribute__ ((unused)))
 {
     if (agit_flag == 1)
         return 1;               // Agit already Start.
@@ -5697,7 +5701,7 @@ int buildin_agitstart (struct script_state *st)
     return 0;
 }
 
-int buildin_agitend (struct script_state *st)
+int buildin_agitend (struct script_state *st __attribute__ ((unused)))
 {
     if (agit_flag == 0)
         return 1;               // Agit already End.
@@ -7608,7 +7612,9 @@ int run_func (struct script_state *st)
  * �X�N���v�g�̎�s���C������
  *------------------------------------------
  */
-int run_script_main (unsigned char *script, int pos, int rid, int oid,
+int run_script_main (unsigned char *script, int pos,
+                     int rid __attribute__ ((unused)),
+                     int oid __attribute__ ((unused)),
                      struct script_state *st, unsigned char *rootscript)
 {
     int  c, rerun_pos;
@@ -7951,8 +7957,10 @@ static int script_save_mapreg ()
     return 0;
 }
 
-static int script_autosave_mapreg (int tid, unsigned int tick, int id,
-                                   int data)
+static int script_autosave_mapreg (int tid __attribute__ ((unused)),
+                                   unsigned int tick __attribute__ ((unused)),
+                                   int id __attribute__ ((unused)),
+                                   int data __attribute__ ((unused)))
 {
     if (mapreg_dirty)
         script_save_mapreg ();
@@ -8035,23 +8043,29 @@ int script_config_read (char *cfgName)
  * �I��
  *------------------------------------------
  */
-static int mapreg_db_final (void *key, void *data, va_list ap)
+static int mapreg_db_final (void *key __attribute__ ((unused)),
+                            void *data __attribute__ ((unused)),
+                            va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-static int mapregstr_db_final (void *key, void *data, va_list ap)
+static int mapregstr_db_final (void *key __attribute__ ((unused)),
+                               void *data, va_list ap __attribute__ ((unused)))
 {
     free (data);
     return 0;
 }
 
-static int scriptlabel_db_final (void *key, void *data, va_list ap)
+static int scriptlabel_db_final (void *key __attribute__ ((unused)),
+                                 void *data __attribute__ ((unused)),
+                                 va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-static int userfunc_db_final (void *key, void *data, va_list ap)
+static int userfunc_db_final (void *key, void *data,
+                              va_list ap __attribute__ ((unused)))
 {
     free (key);
     free (data);

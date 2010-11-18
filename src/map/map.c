@@ -812,7 +812,8 @@ void map_foreachobject (int (*func) (struct block_list *, va_list), int type,
  * map.h“à‚Å#define‚µ‚Ä‚ ‚é
  *------------------------------------------
  */
-int map_clearflooritem_timer (int tid, unsigned int tick, int id, int data)
+int map_clearflooritem_timer (int tid, unsigned int tick __attribute__ ((unused)),
+                              int id, int data)
 {
     struct flooritem_data *fitem = NULL;
 
@@ -1721,7 +1722,7 @@ static void map_readwater (char *watertxt)
  * ƒ}ƒbƒv1–‡“Ç‚İ‚İ
  *------------------------------------------
  */
-static int map_readmap (int m, char *fn, char *alias)
+static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
 {
     unsigned char *gat = "";
     int  s;
@@ -2147,27 +2148,36 @@ int map_config_read (char *cfgName)
     return 0;
 }
 
-int id_db_final (void *k, void *d, va_list ap)
+int id_db_final (void *k __attribute__ ((unused)),
+                 void *d __attribute__ ((unused)),
+                 va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-int map_db_final (void *k, void *d, va_list ap)
+int map_db_final (void *k __attribute__ ((unused)),
+                  void *d __attribute__ ((unused)),
+                  va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-int nick_db_final (void *k, void *d, va_list ap)
+int nick_db_final (void *k __attribute__ ((unused)),
+                   void *d __attribute__ ((unused)),
+                   va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-int charid_db_final (void *k, void *d, va_list ap)
+int charid_db_final (void *k __attribute__ ((unused)),
+                     void *d __attribute__ ((unused)),
+                     va_list ap __attribute__ ((unused)))
 {
     return 0;
 }
 
-static int cleanup_sub (struct block_list *bl, va_list ap)
+static int cleanup_sub (struct block_list *bl,
+                        va_list ap __attribute__ ((unused)))
 {
     nullpo_retr (0, bl);
 

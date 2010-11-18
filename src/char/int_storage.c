@@ -340,7 +340,8 @@ int inter_storage_init ()
     return 0;
 }
 
-int storage_db_final (void *k, void *data, va_list ap)
+int storage_db_final (void *k __attribute__ ((unused)),
+                      void *data, va_list ap __attribute__ ((unused)))
 {
     struct storage *p = (struct storage *) data;
     if (p)
@@ -348,7 +349,8 @@ int storage_db_final (void *k, void *data, va_list ap)
     return 0;
 }
 
-int guild_storage_db_final (void *k, void *data, va_list ap)
+int guild_storage_db_final (void *k __attribute__ ((unused)),
+                            void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild_storage *p = (struct guild_storage *) data;
     if (p)
@@ -363,7 +365,7 @@ void inter_storage_final ()
     return;
 }
 
-int inter_storage_save_sub (void *key, void *data, va_list ap)
+int inter_storage_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     char line[65536];
     FILE *fp;
@@ -397,7 +399,8 @@ int inter_storage_save ()
     return 0;
 }
 
-int inter_guild_storage_save_sub (void *key, void *data, va_list ap)
+int inter_guild_storage_save_sub (void *key __attribute__ ((unused)),
+                                  void *data, va_list ap)
 {
     char line[65536];
     FILE *fp;

@@ -831,7 +831,9 @@ void mmo_char_sync (void)
 //----------------------------------------------------
 // Function to save (in a periodic way) datas in files
 //----------------------------------------------------
-int mmo_char_sync_timer (int tid, unsigned int tick, int id, int data)
+int mmo_char_sync_timer (int tid __attribute__ ((unused)),
+                         unsigned int tick __attribute__ ((unused)),
+                         int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     if (pid != 0)
     {
@@ -2396,7 +2398,9 @@ int parse_tologin (int fd)
 //--------------------------------
 // Map-server anti-freeze system
 //--------------------------------
-int map_anti_freeze_system (int tid, unsigned int tick, int id, int data)
+int map_anti_freeze_system (int tid __attribute__ ((unused)),
+                            unsigned int tick __attribute__ ((unused)),
+                            int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     int  i;
 
@@ -3652,7 +3656,9 @@ int mapif_send (int fd, unsigned char *buf, unsigned int len)
     return 0;
 }
 
-int send_users_tologin (int tid, unsigned int tick, int id, int data)
+int send_users_tologin (int tid __attribute__ ((unused)),
+                        unsigned int tick __attribute__ ((unused)),
+                        int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     int  users = count_users ();
     char buf[16];
@@ -3672,7 +3678,9 @@ int send_users_tologin (int tid, unsigned int tick, int id, int data)
     return 0;
 }
 
-int check_connect_login_server (int tid, unsigned int tick, int id, int data)
+int check_connect_login_server (int tid __attribute__ ((unused)),
+                                unsigned int tick __attribute__ ((unused)),
+                                int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     if (login_fd <= 0 || session[login_fd] == NULL)
     {

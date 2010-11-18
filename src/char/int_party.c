@@ -139,7 +139,7 @@ int inter_party_init ()
 }
 
 // パーティーデータのセーブ用
-int inter_party_save_sub (void *key, void *data, va_list ap)
+int inter_party_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     char line[8192];
     FILE *fp;
@@ -172,7 +172,7 @@ int inter_party_save ()
 }
 
 // パーティ名検索用
-int search_partyname_sub (void *key, void *data, va_list ap)
+int search_partyname_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     struct party *p = (struct party *) data, **dst;
     char *str;
@@ -238,7 +238,7 @@ int party_check_empty (struct party *p)
 }
 
 // キャラの競合がないかチェック用
-int party_check_conflict_sub (void *key, void *data, va_list ap)
+int party_check_conflict_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     struct party *p = (struct party *) data;
     int  party_id, account_id, i;
@@ -559,7 +559,7 @@ int mapif_parse_PartyChangeOption (int fd, int party_id, int account_id,
 }
 
 // パーティ脱退要求
-int mapif_parse_PartyLeave (int fd, int party_id, int account_id)
+int mapif_parse_PartyLeave (int fd __attribute__ ((unused)), int party_id, int account_id)
 {
     struct party *p;
     int  i;
@@ -636,14 +636,14 @@ int mapif_parse_BreakParty (int fd, int party_id)
 }
 
 // パーティメッセージ送信
-int mapif_parse_PartyMessage (int fd, int party_id, int account_id, char *mes,
+int mapif_parse_PartyMessage (int fd __attribute__ ((unused)), int party_id, int account_id, char *mes,
                               int len)
 {
     return mapif_party_message (party_id, account_id, mes, len);
 }
 
 // パーティチェック要求
-int mapif_parse_PartyCheck (int fd, int party_id, int account_id, char *nick)
+int mapif_parse_PartyCheck (int fd __attribute__ ((unused)), int party_id, int account_id, char *nick)
 {
     return party_check_conflict (party_id, account_id, nick);
 }

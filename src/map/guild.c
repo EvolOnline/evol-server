@@ -46,17 +46,18 @@ struct guild_expcache
 };
 
 // ギルドスキルdbのアクセサ（今は直打ちで代用）
-int guild_skill_get_inf (int id)
+int guild_skill_get_inf (int id __attribute__ ((unused)))
 {
     return 0;
 }
 
-int guild_skill_get_sp (int id, int lv)
+int guild_skill_get_sp (int id __attribute__ ((unused)),
+                        int lv __attribute__ ((unused)))
 {
     return 0;
 }
 
-int guild_skill_get_range (int id)
+int guild_skill_get_range (int id __attribute__ ((unused)))
 {
     return 0;
 }
@@ -238,7 +239,8 @@ struct map_session_data *guild_getavailablesd (struct guild *g)
 }
 
 // ギルドメンバーのインデックスを返す
-int guild_getindex (struct guild *g, int account_id, int char_id)
+int guild_getindex (struct guild *g, int account_id,
+                    int char_id __attribute__ ((unused)))
 {
     int  i;
     if (g == NULL)
@@ -326,7 +328,10 @@ int guild_payexp_timer_sub (void *key, void *data, va_list ap)
     return 0;
 }
 
-int guild_payexp_timer (int tid, unsigned int tick, int id, int data)
+int guild_payexp_timer (int tid __attribute__ ((unused)),
+                        unsigned int tick __attribute__ ((unused)),
+                        int id __attribute__ ((unused)),
+                        int data __attribute__ ((unused)))
 {
     int  dellist[GUILD_PAYEXP_LIST], delp = 0, i;
     numdb_foreach (guild_expcache_db, guild_payexp_timer_sub, dellist, &delp);
@@ -681,7 +686,8 @@ int guild_reply_invite (struct map_session_data *sd, int guild_id, int flag)
 }
 
 // ギルドメンバが追加された
-int guild_member_added (int guild_id, int account_id, int char_id, int flag)
+int guild_member_added (int guild_id, int account_id,
+                        int char_id __attribute__ ((unused)), int flag)
 {
     struct map_session_data *sd = map_id2sd (account_id), *sd2;
     struct guild *g;
@@ -725,7 +731,8 @@ int guild_member_added (int guild_id, int account_id, int char_id, int flag)
 
 // ギルド脱退要求
 int guild_leave (struct map_session_data *sd, int guild_id,
-                 int account_id, int char_id, const char *mes)
+                 int account_id, int char_id __attribute__ ((unused)),
+                 const char *mes)
 {
     struct guild *g;
     int  i;
@@ -755,7 +762,8 @@ int guild_leave (struct map_session_data *sd, int guild_id,
 
 // ギルド追放要求
 int guild_explusion (struct map_session_data *sd, int guild_id,
-                     int account_id, int char_id, const char *mes)
+                     int account_id, int char_id __attribute__ ((unused)),
+                     const char *mes)
 {
     struct guild *g;
     int  i, ps;
@@ -786,7 +794,8 @@ int guild_explusion (struct map_session_data *sd, int guild_id,
 }
 
 // ギルドメンバが脱退した
-int guild_member_leaved (int guild_id, int account_id, int char_id, int flag,
+int guild_member_leaved (int guild_id, int account_id,
+                         int char_id __attribute__ ((unused)), int flag,
                          const char *name, const char *mes)
 {
     struct map_session_data *sd = map_id2sd (account_id);
@@ -959,7 +968,8 @@ int guild_recv_message (int guild_id, int account_id, char *mes, int len)
 }
 
 // ギルドメンバの役職変更
-int guild_change_memberposition (int guild_id, int account_id, int char_id,
+int guild_change_memberposition (int guild_id, int account_id,
+                                 int char_id __attribute__ ((unused)),
                                  int idx)
 {
     return intif_guild_change_memberinfo (guild_id, account_id, 0 /*char_id*/,
@@ -1497,7 +1507,7 @@ int guild_allianceack (int guild_id1, int guild_id2, int account_id1,
 }
 
 // ギルド解散通知用
-int guild_broken_sub (void *key, void *data, va_list ap)
+int guild_broken_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     struct guild *g = (struct guild *) data;
     int  guild_id = va_arg (ap, int);
@@ -1858,7 +1868,9 @@ int guild_agit_end (void)
     return 0;
 }
 
-int guild_gvg_eliminate_timer (int tid, unsigned int tick, int id, int data)
+int guild_gvg_eliminate_timer (int tid __attribute__ ((unused)),
+                               unsigned int tick __attribute__ ((unused)),
+                               int id __attribute__ ((unused)), int data)
 {                               // Run One NPC_Event[OnAgitEliminate]
     nullpo_retr (0, data);
     size_t len = strlen ((const char *) data);
@@ -1943,7 +1955,8 @@ int guild_isallied (struct guild *g, struct guild_castle *gc)
     return 0;
 }
 
-static int guild_db_final (void *key, void *data, va_list ap)
+static int guild_db_final (void *key __attribute__ ((unused)),
+                           void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild *g = data;
 
@@ -1952,7 +1965,8 @@ static int guild_db_final (void *key, void *data, va_list ap)
     return 0;
 }
 
-static int castle_db_final (void *key, void *data, va_list ap)
+static int castle_db_final (void *key __attribute__ ((unused)),
+                            void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild_castle *gc = data;
 
@@ -1961,7 +1975,8 @@ static int castle_db_final (void *key, void *data, va_list ap)
     return 0;
 }
 
-static int guild_expcache_db_final (void *key, void *data, va_list ap)
+static int guild_expcache_db_final (void *key __attribute__ ((unused)),
+                                    void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild_expcache *c = data;
 
@@ -1970,7 +1985,8 @@ static int guild_expcache_db_final (void *key, void *data, va_list ap)
     return 0;
 }
 
-static int guild_infoevent_db_final (void *key, void *data, va_list ap)
+static int guild_infoevent_db_final (void *key __attribute__ ((unused)),
+                                     void *data, va_list ap __attribute__ ((unused)))
 {
     struct eventlist *ev = data;
 

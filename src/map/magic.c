@@ -63,7 +63,8 @@ static char *magic_tokenise (char *src, char **parameter)
     return retval;
 }
 
-int magic_message (character_t * caster, char *spell_, size_t spell_len)
+int magic_message (character_t * caster, char *spell_,
+                   size_t spell_len  __attribute__ ((unused)))
 {
     if (!caster || !spell_)
         return 0;

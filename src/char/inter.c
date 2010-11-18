@@ -149,7 +149,7 @@ int inter_accreg_init ()
 }
 
 // アカウント変数のセーブ用
-int inter_accreg_save_sub (void *key, void *data, va_list ap)
+int inter_accreg_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     char line[8192];
     FILE *fp;
@@ -407,7 +407,7 @@ int mapif_account_reg_reply (int fd, int account_id)
 //--------------------------------------------------------
 
 // Existence check of WISP data
-int check_ttl_wisdata_sub (void *key, void *data, va_list ap)
+int check_ttl_wisdata_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     unsigned long tick;
     struct WisData *wd = (struct WisData *) data;

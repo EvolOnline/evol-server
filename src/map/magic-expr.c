@@ -273,7 +273,9 @@ static void make_spell (val_t * v)
     }
 }
 
-static int fun_add (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_add (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 0;
@@ -309,7 +311,9 @@ static int fun_add (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_sub (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_sub (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -318,7 +322,9 @@ static int fun_sub (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_mul (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_mul (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -327,7 +333,9 @@ static int fun_mul (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_div (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_div (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -338,7 +346,9 @@ static int fun_div (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_mod (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_mod (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -349,7 +359,9 @@ static int fun_mod (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_or (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_or (env_t * env __attribute__ ((unused)),
+                   int args_nr __attribute__ ((unused)),
+                   val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -358,7 +370,9 @@ static int fun_or (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_and (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_and (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -367,7 +381,9 @@ static int fun_and (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_not (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_not (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -376,7 +392,9 @@ static int fun_not (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_neg (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_neg (env_t * env __attribute__ ((unused)),
+                    int args_nr __attribute__ ((unused)),
+                    val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -385,7 +403,7 @@ static int fun_neg (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_gte (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_gte (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -405,7 +423,7 @@ static int fun_gte (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_gt (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_gt (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -425,7 +443,7 @@ static int fun_gt (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_eq (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_eq (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -459,7 +477,7 @@ static int fun_eq (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_bitand (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_bitand (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -468,7 +486,7 @@ static int fun_bitand (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_bitor (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_bitor (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -477,7 +495,7 @@ static int fun_bitor (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_bitxor (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_bitxor (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -486,7 +504,7 @@ static int fun_bitxor (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_bitshl (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_bitshl (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -495,7 +513,7 @@ static int fun_bitshl (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_bitshr (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_bitshr (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -504,7 +522,7 @@ static int fun_bitshr (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_max (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_max (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -513,7 +531,7 @@ static int fun_max (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_min (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_min (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -523,7 +541,7 @@ static int fun_min (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_if_then_else (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_if_then_else (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -640,7 +658,7 @@ int magic_location_in_area (int m, int x, int y, area_t * area)
     }
 }
 
-static int fun_is_in (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_is_in (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -651,7 +669,7 @@ static int fun_is_in (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_skill (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_skill (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -669,7 +687,7 @@ static int fun_skill (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_has_shroud (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_has_shroud (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -678,7 +696,7 @@ fun_has_shroud (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-#define BATTLE_GETTER(name) static int fun_get_##name(env_t *env, int args_nr, val_t *result, val_t *args) { RESULTINT = battle_get_##name(ARGENTITY(0)); return 0; }
+#define BATTLE_GETTER(name) static int fun_get_##name(env_t *env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t *result, val_t *args) { RESULTINT = battle_get_##name(ARGENTITY(0)); return 0; }
 
 BATTLE_GETTER (str);
 BATTLE_GETTER (agi);
@@ -693,7 +711,7 @@ BATTLE_GETTER (def);
 BATTLE_GETTER (max_hp);
 BATTLE_GETTER (dir);
 
-#define MMO_GETTER(name) static int fun_get_##name(env_t *env, int args_nr, val_t *result, val_t *args) {	\
+#define MMO_GETTER(name) static int fun_get_##name(env_t *env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t *result, val_t *args) {	\
                 if (ETY(0) == BL_PC)								\
                 	RESULTINT = ARGPC(0)->status.name;					\
 		else										\
@@ -704,7 +722,7 @@ MMO_GETTER (sp);
 MMO_GETTER (max_sp);
 
 static int
-fun_name_of (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_name_of (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -729,7 +747,7 @@ fun_name_of (env_t * env, int args_nr, val_t * result, val_t * args)
 
 /* [Freeyorp] I'm putting this one in as name_of seems to have issues with summoned or spawned mobs. */
 static int
-fun_mob_id (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_mob_id (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -742,7 +760,7 @@ fun_mob_id (env_t * env, int args_nr, val_t * result, val_t * args)
 #define COPY_LOCATION(dest, src) (dest).x = (src).x; (dest).y = (src).y; (dest).m = (src).m;
 
 static int
-fun_location (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_location (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -751,7 +769,7 @@ fun_location (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_random (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_random (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -772,7 +790,7 @@ static int fun_random (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_random_dir (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_random_dir (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -785,7 +803,7 @@ fun_random_dir (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_hash_entity (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_hash_entity (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -826,7 +844,7 @@ magic_find_item (val_t * args, int index, struct item *item, int *stackable)
 }
 
 static int
-fun_count_item (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_count_item (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -845,7 +863,7 @@ fun_count_item (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_is_equipped (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_is_equipped (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -875,7 +893,7 @@ fun_is_equipped (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_is_married (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_is_married (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -885,7 +903,7 @@ fun_is_married (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_is_dead (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_is_dead (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -894,7 +912,7 @@ fun_is_dead (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_is_pc (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_is_pc (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -904,7 +922,7 @@ static int fun_is_pc (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_partner (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_partner (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -921,7 +939,7 @@ fun_partner (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_awayfrom (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_awayfrom (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args || ARGDIR (1) < 0 || ARGDIR (1) >= 8)
         return 1;
@@ -943,7 +961,7 @@ fun_awayfrom (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_failed (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_failed (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -952,7 +970,7 @@ static int fun_failed (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_npc (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_npc (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -961,7 +979,7 @@ static int fun_npc (env_t * env, int args_nr, val_t * result, val_t * args)
     return RESULTENTITY == NULL;
 }
 
-static int fun_pc (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_pc (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -971,7 +989,7 @@ static int fun_pc (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_distance (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_distance (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -985,7 +1003,7 @@ fun_distance (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_rdistance (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_rdistance (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1001,7 +1019,7 @@ fun_rdistance (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_anchor (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_anchor (env_t * env, int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1024,7 +1042,7 @@ static int fun_anchor (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_line_of_sight (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_line_of_sight (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1117,7 +1135,7 @@ void magic_random_location (location_t * dest, area_t * area)
 }
 
 static int
-fun_pick_location (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_pick_location (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1127,7 +1145,7 @@ fun_pick_location (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_read_script_int (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_read_script_int (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1145,7 +1163,7 @@ fun_read_script_int (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_rbox (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_rbox (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1164,7 +1182,7 @@ static int fun_rbox (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_running_status_update (env_t * env, int args_nr, val_t * result,
+fun_running_status_update (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result,
                            val_t * args)
 {
     if (!result || !args)
@@ -1178,7 +1196,7 @@ fun_running_status_update (env_t * env, int args_nr, val_t * result,
 }
 
 static int
-fun_status_option (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_status_option (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1190,7 +1208,7 @@ fun_status_option (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_element (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_element (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1200,7 +1218,7 @@ fun_element (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_element_level (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_element_level (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1209,7 +1227,7 @@ fun_element_level (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_index (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_index (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1219,7 +1237,7 @@ static int fun_index (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_is_exterior (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_is_exterior (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1229,7 +1247,7 @@ fun_is_exterior (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_contains_string (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_contains_string (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1238,7 +1256,7 @@ fun_contains_string (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_strstr (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_strstr (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1248,7 +1266,7 @@ static int fun_strstr (env_t * env, int args_nr, val_t * result, val_t * args)
     return offset == NULL;
 }
 
-static int fun_strlen (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_strlen (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1257,7 +1275,7 @@ static int fun_strlen (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_substr (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_substr (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1287,7 +1305,7 @@ static int fun_substr (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_sqrt (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_sqrt (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1297,7 +1315,7 @@ static int fun_sqrt (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_map_level (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_map_level (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1307,7 +1325,7 @@ fun_map_level (env_t * env, int args_nr, val_t * result, val_t * args)
     return 0;
 }
 
-static int fun_map_nr (env_t * env, int args_nr, val_t * result, val_t * args)
+static int fun_map_nr (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1323,7 +1341,7 @@ static int fun_map_nr (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_dir_towards (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_dir_towards (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;
@@ -1392,7 +1410,7 @@ fun_dir_towards (env_t * env, int args_nr, val_t * result, val_t * args)
 }
 
 static int
-fun_extract_healer_xp (env_t * env, int args_nr, val_t * result, val_t * args)
+fun_extract_healer_xp (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
 {
     if (!result || !args)
         return 1;

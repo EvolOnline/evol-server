@@ -170,7 +170,8 @@ static int distance (int x0, int y0, int x1, int y1)
     return dx > dy ? dx : dy;
 }
 
-static int pc_invincible_timer (int tid, unsigned int tick, int id, int data)
+static int pc_invincible_timer (int tid, unsigned int tick __attribute__ ((unused)),
+                                int id, int data __attribute__ ((unused)))
 {
     struct map_session_data *sd;
 
@@ -225,7 +226,8 @@ int pc_delattacktimer (struct map_session_data *sd)
     return 0;
 }
 
-static int pc_spiritball_timer (int tid, unsigned int tick, int id, int data)
+static int pc_spiritball_timer (int tid, unsigned int tick __attribute__ ((unused)),
+                                int id, int data __attribute__ ((unused)))
 {
     struct map_session_data *sd;
     int  i;
@@ -497,7 +499,8 @@ int pc_makesavestatus (struct map_session_data *sd)
  *------------------------------------------
  */
 int pc_setnewpc (struct map_session_data *sd, int account_id, int char_id,
-                 int login_id1, int client_tick, int sex, int fd)
+                 int login_id1, int client_tick, int sex,
+                 int fd __attribute__ ((unused)))
 {
     nullpo_retr (0, sd);
 
@@ -4808,7 +4811,8 @@ struct pc_base_job pc_calc_base_job (int b_class)
  * PC�̍U�� (timer�֐�)
  *------------------------------------------
  */
-int pc_attack_timer (int tid, unsigned int tick, int id, int data)
+int pc_attack_timer (int tid, unsigned int tick, int id,
+                     int data __attribute__ ((unused)))
 {
     struct map_session_data *sd;
     struct block_list *bl;
@@ -5022,7 +5026,8 @@ int pc_stopattack (struct map_session_data *sd)
     return 0;
 }
 
-int pc_follow_timer (int tid, unsigned int tick, int id, int data)
+int pc_follow_timer (int tid, unsigned int tick, int id,
+                     int data __attribute__ ((unused)))
 {
     struct map_session_data *sd, *bl;
 
@@ -7234,7 +7239,7 @@ int pc_percentrefinery (struct map_session_data *sd, struct item *item)
  * �C�x���g�^�C�}�[����
  *------------------------------------------
  */
-int pc_eventtimer (int tid, unsigned int tick, int id, int data)
+int pc_eventtimer (int tid, unsigned int tick __attribute__ ((unused)), int id, int data)
 {
     struct map_session_data *sd = map_id2sd (id);
     int  i;
@@ -7832,7 +7837,7 @@ int pc_calc_pvprank (struct map_session_data *sd)
  * PVP���ʌv�Z(timer)
  *------------------------------------------
  */
-int pc_calc_pvprank_timer (int tid, unsigned int tick, int id, int data)
+int pc_calc_pvprank_timer (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id, int data)
 {
     struct map_session_data *sd = NULL;
     if (battle_config.pk_mode)  // disable pvp ranking if pk_mode on [Valaris]
@@ -8199,7 +8204,7 @@ static int pc_natural_heal_sp (struct map_session_data *sd)
     return 0;
 }
 
-static int pc_spirit_heal_hp (struct map_session_data *sd, int level)
+static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute__ ((unused)))
 {
     int  bonus_hp, interval = battle_config.natural_heal_skill_interval;
     struct status_change *sc_data = battle_get_sc_data (&sd->bl);
@@ -8251,7 +8256,7 @@ static int pc_spirit_heal_hp (struct map_session_data *sd, int level)
     return 0;
 }
 
-static int pc_spirit_heal_sp (struct map_session_data *sd, int level)
+static int pc_spirit_heal_sp (struct map_session_data *sd, int level __attribute__ ((unused)))
 {
     int  bonus_sp, interval = battle_config.natural_heal_skill_interval;
 
@@ -8327,7 +8332,7 @@ pc_quickregenerate_effect (struct quick_regeneration *quick_regen,
     return 0;
 }
 
-static int pc_natural_heal_sub (struct map_session_data *sd, va_list ap)
+static int pc_natural_heal_sub (struct map_session_data *sd, va_list ap __attribute__ ((unused)))
 {
     int  skill;
 
@@ -8408,7 +8413,7 @@ static int pc_natural_heal_sub (struct map_session_data *sd, va_list ap)
  * HP/SP���R���� (interval timer�֐�)
  *------------------------------------------
  */
-int pc_natural_heal (int tid, unsigned int tick, int id, int data)
+int pc_natural_heal (int tid __attribute__ ((unused)), unsigned int tick, int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     natural_heal_tick = tick;
     natural_heal_diff_tick =
@@ -8440,7 +8445,7 @@ int pc_setsavepoint (struct map_session_data *sd, char *mapname, int x, int y)
  *------------------------------------------
  */
 static int last_save_fd, save_flag;
-static int pc_autosave_sub (struct map_session_data *sd, va_list ap)
+static int pc_autosave_sub (struct map_session_data *sd, va_list ap __attribute__ ((unused)))
 {
     nullpo_retr (0, sd);
 
@@ -8486,7 +8491,7 @@ static int pc_autosave_sub (struct map_session_data *sd, va_list ap)
  * �����Z�[�u (timer�֐�)
  *------------------------------------------
  */
-int pc_autosave (int tid, unsigned int tick, int id, int data)
+int pc_autosave (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {
     int  interval;
 
@@ -8526,7 +8531,7 @@ int pc_read_gm_account (int fd)
  * timer to do the day
  *------------------------------------------
  */
-int map_day_timer (int tid, unsigned int tick, int id, int data)
+int map_day_timer (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {                               // by [yor]
     struct map_session_data *pl_sd = NULL;
     int  i;
@@ -8559,7 +8564,7 @@ int map_day_timer (int tid, unsigned int tick, int id, int data)
  * timer to do the night
  *------------------------------------------
  */
-int map_night_timer (int tid, unsigned int tick, int id, int data)
+int map_night_timer (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {                               // by [yor]
     struct map_session_data *pl_sd = NULL;
     int  i;

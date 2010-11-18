@@ -8,7 +8,7 @@
 // （書き込みが終わるまで、旧ファイルを保管しておく）
 
 // 新しいファイルの書き込み開始
-FILE *lock_fopen (const char *filename, int *info, int *cnt)
+FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unused)))
 {
     char newfile[512];
     FILE *fp;

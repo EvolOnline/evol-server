@@ -80,7 +80,8 @@ struct dbt *strdb_init (int maxlen)
     return table;
 }
 
-static int numdb_cmp (struct dbt *table, void *a, void *b)
+static int numdb_cmp (struct dbt *table __attribute__ ((unused)),
+                      void *a, void *b)
 {
     int  ia, ib;
 
@@ -93,7 +94,8 @@ static int numdb_cmp (struct dbt *table, void *a, void *b)
     return ia - ib;
 }
 
-static unsigned int numdb_hash (struct dbt *table, void *a)
+static unsigned int numdb_hash (struct dbt *table __attribute__ ((unused)),
+                                void *a)
 {
     return (unsigned int) a;
 }
