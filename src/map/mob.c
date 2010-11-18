@@ -44,7 +44,7 @@ struct mob_db mob_db[2001];
 static int distance (int, int, int, int);
 static int mob_makedummymobdb (int);
 static int mob_timer (int, unsigned int, int, int);
-int  mobskill_use (struct mob_data *md, unsigned int tick, int event);
+//int  mobskill_use (struct mob_data *md, unsigned int tick, int event);
 int  mobskill_deltimer (struct mob_data *md);
 int  mob_skillid2skillidx (int class, int skillid);
 int  mobskill_use_id (struct mob_data *md, struct block_list *target,

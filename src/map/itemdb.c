@@ -42,7 +42,7 @@ static int itemdb_read_randomitem ();
 static int itemdb_read_itemavail (void);
 static int itemdb_read_itemnametable (void);
 static int itemdb_read_noequip (void);
-void itemdb_reload (void);
+//void itemdb_reload (void);
 
 /*==========================================
  * –¼‘O‚ÅŒŸõ—p

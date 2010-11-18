@@ -1,5 +1,8 @@
 #include "mt_rand.h"
 
+#ifndef _UTILS_H_
+#define _UTILS_H_
+
 #ifndef NULL
 #define NULL (void *)0
 #endif
@@ -37,3 +40,5 @@ void dump (unsigned char *buffer, int num);
  */
 #define MRAND(mod) (int) (mt_random() % (mod))
 #define MPRAND(add, mod) add + MRAND(mod)
+
+#endif // _UTILS_H_

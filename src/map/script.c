@@ -283,13 +283,13 @@ int  buildin_get_activated_pool_skills (struct script_state *st);   // [fate]
 int  buildin_activate_pool_skill (struct script_state *st); // [fate]
 int  buildin_deactivate_pool_skill (struct script_state *st);   // [fate]
 int  buildin_check_pool_skill (struct script_state *st);    // [fate]
-int  buildin_getskilllist (struct script_state *st);
-int  buildin_getskilllist (struct script_state *st);
+//int  buildin_getskilllist (struct script_state *st);
+//int  buildin_getskilllist (struct script_state *st);
 int  buildin_clearitem (struct script_state *st);
 int  buildin_classchange (struct script_state *st);
 int  buildin_misceffect (struct script_state *st);
 int  buildin_soundeffect (struct script_state *st);
-int  buildin_setcastledata (struct script_state *st);
+//int  buildin_setcastledata (struct script_state *st);
 int  buildin_mapwarp (struct script_state *st);
 int  buildin_inittimer (struct script_state *st);
 int  buildin_stoptimer (struct script_state *st);
@@ -740,7 +740,7 @@ struct
     {
 NULL, NULL, NULL},};
 
-int  buildin_message (struct script_state *st); // [MouseJstr]
+//int  buildin_message (struct script_state *st); // [MouseJstr]
 
 enum
 {
@@ -6574,8 +6574,8 @@ int buildin_get_activated_pool_skills (struct script_state *st)
     return 0;
 }
 
-extern int skill_pool_skills[];
-extern int skill_pool_skills_size;
+//extern int skill_pool_skills[];
+//extern int skill_pool_skills_size;
 
 int buildin_get_pool_skills (struct script_state *st)
 {
