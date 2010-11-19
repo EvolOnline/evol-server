@@ -954,7 +954,7 @@ int make_new_char (int fd, unsigned char *dat)
 
     if (dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29] != 5 * 6 ||   // stats
         dat[30] >= 9 ||         // slots (dat[30] can not be negativ)
-        dat[33] < 0 || dat[33] >= 30 || // hair style
+        /*dat[33] < 0 ||*/ dat[33] >= 30 || // hair style
         dat[31] >= 12)
     {                           // hair color (dat[31] can not be negativ)
         char_log
@@ -3829,7 +3829,7 @@ int lan_config_read (const char *lancfgName)
     {
         unsigned int a0, a1, a2, a3;
         unsigned char p[4];
-        sscanf (lan_map_ip, "%d.%d.%d.%d", &a0, &a1, &a2, &a3);
+        sscanf (lan_map_ip, "%u.%u.%u.%u", &a0, &a1, &a2, &a3);
         p[0] = a0;
         p[1] = a1;
         p[2] = a2;

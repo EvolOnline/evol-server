@@ -284,8 +284,7 @@ enum
     GBI_SKILLLV = 4,            // ギルドスキルLv
 
     GMI_POSITION = 0,           // メンバーの役職変更
-    GMI_EXP = 1,                // メンバーのEXP
-
+    GMI_EXP = 1                 // メンバーのEXP
 };
 
 #ifndef LCCWIN32

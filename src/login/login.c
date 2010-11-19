@@ -297,14 +297,14 @@ int check_ipmask (unsigned int ip, const unsigned char *str)
     unsigned int mask = 0, i = 0, m, ip2, a0, a1, a2, a3;
     unsigned char *p = (unsigned char *) &ip2, *p2 = (unsigned char *) &mask;
 
-    if (sscanf (str, "%d.%d.%d.%d/%n", &a0, &a1, &a2, &a3, &i) != 4 || i == 0)
+    if (sscanf (str, "%u.%u.%u.%u/%n", &a0, &a1, &a2, &a3, &i) != 4 || i == 0)
         return 0;
     p[0] = a0;
     p[1] = a1;
     p[2] = a2;
     p[3] = a3;
 
-    if (sscanf (str + i, "%d.%d.%d.%d", &a0, &a1, &a2, &a3) == 4)
+    if (sscanf (str + i, "%u.%u.%u.%d", &a0, &a1, &a2, &a3) == 4)
     {
         p2[0] = a0;
         p2[1] = a1;
@@ -312,7 +312,7 @@ int check_ipmask (unsigned int ip, const unsigned char *str)
         p2[3] = a3;
         mask = ntohl (mask);
     }
-    else if (sscanf (str + i, "%d", &m) == 1 && m >= 0 && m <= 32)
+    else if (sscanf (str + i, "%u", &m) == 1 /*&& m >= 0*/ && m <= 32)
     {
         for (i = 0; i < m && i < 32; i++)
             mask = (mask >> 1) | 0x80000000;
@@ -2133,6 +2133,8 @@ int parse_fromchar (int fd)
                 {
                     int  acc;
                     char actual_pass[24], new_pass[24];
+                    int  status = 0;
+
                     acc = RFIFOL (fd, 2);
                     memcpy (actual_pass, RFIFOP (fd, 6), 24);
                     actual_pass[23] = '\0';
@@ -2140,8 +2142,6 @@ int parse_fromchar (int fd)
                     memcpy (new_pass, RFIFOP (fd, 30), 24);
                     new_pass[23] = '\0';
                     remove_control_chars (new_pass);
-
-                    int  status = 0;
 
                     for (i = 0; i < auth_num; i++)
                     {
@@ -4330,7 +4330,7 @@ int login_lan_config_read (const char *lancfgName)
     {
         unsigned int a0, a1, a2, a3;
         unsigned char p[4];
-        sscanf (lan_char_ip, "%d.%d.%d.%d", &a0, &a1, &a2, &a3);
+        sscanf (lan_char_ip, "%u.%u.%u.%u", &a0, &a1, &a2, &a3);
         p[0] = a0;
         p[1] = a1;
         p[2] = a2;

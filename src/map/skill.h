@@ -178,7 +178,7 @@ enum
 {
     ST_NONE, ST_HIDING, ST_CLOAKING, ST_HIDDEN, ST_RIDING, ST_FALCON, ST_CART,
     ST_SHIELD, ST_SIGHT, ST_EXPLOSIONSPIRITS,
-    ST_RECOV_WEIGHT_RATE, ST_MOVE_ENABLE, ST_WATER,
+    ST_RECOV_WEIGHT_RATE, ST_MOVE_ENABLE, ST_WATER
 };
 
 enum
@@ -348,7 +348,7 @@ enum
     SC_HASTE = 198,             // `Haste' spell (val1 : power)
     SC_PHYS_SHIELD = 199,       // `Protect' spell, reduce damage (val1: power)
 
-    SC_DIVINA = SC_SILENCE,
+    SC_DIVINA = SC_SILENCE
 };
 extern int SkillStatusChangeTable[];
 
@@ -858,7 +858,7 @@ enum
     GD_KAFRACONTACT,
     GD_GUARDIANRESEARCH,
     GD_CHARISMA,
-    GD_EXTENSION,
+    GD_EXTENSION
 };
 
 // [Fate] Skill pools API

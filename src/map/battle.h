@@ -56,7 +56,7 @@ enum
     BF_NORMAL = 0x0200,
     BF_WEAPONMASK = 0x000f,
     BF_RANGEMASK = 0x00f0,
-    BF_SKILLMASK = 0x0f00,
+    BF_SKILLMASK = 0x0f00
 };
 
 // é¿ç€Ç…HPÇëùå∏
@@ -133,7 +133,7 @@ enum
     BCT_ENEMY = 0x40000,
     BCT_NOPARTY = 0x50000,
     BCT_ALL = 0x20000,
-    BCT_NOONE = 0x60000,
+    BCT_NOONE = 0x60000
 };
 
 int  battle_check_undead (int race, int element);

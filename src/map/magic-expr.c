@@ -698,18 +698,18 @@ fun_has_shroud (env_t * env __attribute__ ((unused)), int args_nr __attribute__ 
 
 #define BATTLE_GETTER(name) static int fun_get_##name(env_t *env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t *result, val_t *args) { RESULTINT = battle_get_##name(ARGENTITY(0)); return 0; }
 
-BATTLE_GETTER (str);
-BATTLE_GETTER (agi);
-BATTLE_GETTER (vit);
-BATTLE_GETTER (dex);
-BATTLE_GETTER (luk);
-BATTLE_GETTER (int);
-BATTLE_GETTER (lv);
-BATTLE_GETTER (hp);
-BATTLE_GETTER (mdef);
-BATTLE_GETTER (def);
-BATTLE_GETTER (max_hp);
-BATTLE_GETTER (dir);
+BATTLE_GETTER (str)
+BATTLE_GETTER (agi)
+BATTLE_GETTER (vit)
+BATTLE_GETTER (dex)
+BATTLE_GETTER (luk)
+BATTLE_GETTER (int)
+BATTLE_GETTER (lv)
+BATTLE_GETTER (hp)
+BATTLE_GETTER (mdef)
+BATTLE_GETTER (def)
+BATTLE_GETTER (max_hp)
+BATTLE_GETTER (dir)
 
 #define MMO_GETTER(name) static int fun_get_##name(env_t *env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t *result, val_t *args) {	\
                 if (ETY(0) == BL_PC)								\
@@ -718,8 +718,8 @@ BATTLE_GETTER (dir);
 		        RESULTINT = 0;								\
 		return 0; }
 
-MMO_GETTER (sp);
-MMO_GETTER (max_sp);
+MMO_GETTER (sp)
+MMO_GETTER (max_sp)
 
 static int
 fun_name_of (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)

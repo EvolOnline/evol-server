@@ -6701,8 +6701,8 @@ char *txt_time (unsigned int duration)
     memset (temp, '\0', sizeof (temp));
     memset (temp1, '\0', sizeof (temp1));
 
-    if (duration < 0)
-        duration = 0;
+//    if (duration < 0)
+//        duration = 0;
 
     days = duration / (60 * 60 * 24);
     duration = duration - (60 * 60 * 24 * days);

@@ -755,7 +755,7 @@ static int calc_next_walk_step (struct mob_data *md)
 {
     nullpo_retr (0, md);
 
-    if (md->walkpath.path_pos < 0 || md->walkpath.path_pos >= md->walkpath.path_len)
+    if (md->walkpath.path_pos >= md->walkpath.path_len)
         return -1;
     if (md->walkpath.path[md->walkpath.path_pos] & 1)
         return battle_get_speed (&md->bl) * 14 / 10;
@@ -779,7 +779,7 @@ static int mob_walk (struct mob_data *md, unsigned int tick, int data)
     nullpo_retr (0, md);
 
     md->state.state = MS_IDLE;
-    if (md->walkpath.path_pos < 0 || md->walkpath.path_pos >= md->walkpath.path_len
+    if (md->walkpath.path_pos >= md->walkpath.path_len
         || md->walkpath.path_pos != data)
         return 0;
 

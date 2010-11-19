@@ -17,11 +17,14 @@ else
 MAKE = make
 endif
 
-#skipped -Wredundant-decls -Wmissing-format-attribute -Wswitch-default 
-#need fix -Wmissing-declarations
-OPT = -pipe -g -fno-strict-aliasing -O2 -Wall -Wunreachable-code -Wmissing-field-initializers -Wabi \
+#skipped -Wredundant-decls -Wmissing-format-attribute -Wswitch-default -Wlogical-op
+#need fix -Wmissing-declarations -Wsign-compare -Wcast-qual -Wundef
+
+OPT = -pipe -g -fno-strict-aliasing -O2 -Wall -Wmissing-field-initializers -Wabi \
 -Wdisabled-optimization -Wuninitialized -Wvolatile-register-var -Winvalid-pch \
--Wnormalized=nfkc -Wmissing-noreturn -Waddress -Wunused-parameter
+-Wnormalized=nfkc -Wmissing-noreturn -Waddress -Wunused-parameter -Wempty-body -Wclobbered \
+-Wcast-align -Wtype-limits -Wpointer-arith -Wmissing-include-dirs -Wignored-qualifiers \
+-Winit-self
 
 ifeq ($(findstring CYGWIN,$(PLATFORM)), CYGWIN)
 OS_TYPE = -DCYGWIN
