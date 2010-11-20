@@ -127,6 +127,8 @@ int pc_iskiller (struct map_session_data *src,
     if (src->special_state.killer)
         return 1;
 
+    nullpo_retr (0, target);
+
     if (target->bl.type != BL_PC)
         return 0;
     if (target->special_state.killable)
@@ -411,6 +413,7 @@ static int pc_counttargeted_sub (struct block_list *bl, va_list ap)
     nullpo_retr (0, c = va_arg (ap, int *));
 
     src = va_arg (ap, struct block_list *);
+
     target_lv = va_arg (ap, int);
     if (id == bl->id || (src && id == src->id))
         return 0;
@@ -437,6 +440,8 @@ int pc_counttargeted (struct map_session_data *sd, struct block_list *src,
                       int target_lv)
 {
     int  c = 0;
+    nullpo_retr (0, sd);
+
     map_foreachinarea (pc_counttargeted_sub, sd->bl.m,
                        sd->bl.x - AREA_SIZE, sd->bl.y - AREA_SIZE,
                        sd->bl.x + AREA_SIZE, sd->bl.y + AREA_SIZE, 0,
@@ -527,7 +532,7 @@ int pc_equippoint (struct map_session_data *sd, int n)
 
     nullpo_retr (0, sd);
 
-    if (!sd->inventory_data[n])
+    if (n < 0 || n >= MAX_INVENTORY || !sd->inventory_data[n])
         return 0;
 
     s_class = pc_calc_base_job (sd->status.class);
@@ -642,6 +647,9 @@ int pc_isequip (struct map_session_data *sd, int n)
 
     nullpo_retr (0, sd);
 
+    if (n < 0 || n >= MAX_INVENTORY)
+        return 0;
+
     item = sd->inventory_data[n];
     sc_data = battle_get_sc_data (&sd->bl);
     //s_class = pc_calc_base_job(sd->status.class);
@@ -700,6 +708,8 @@ int pc_breakweapon (struct map_session_data *sd)
             && !sd->status.inventory[i].broken)
         {
             item = sd->inventory_data[i];
+            if (!item)
+                continue;
             sd->status.inventory[i].broken = 1;
             //pc_unequipitem(sd,i,0);
             if (sd->status.inventory[i].equip
@@ -745,6 +755,8 @@ int pc_breakarmor (struct map_session_data *sd)
             && !sd->status.inventory[i].broken)
         {
             item = sd->inventory_data[i];
+            if (!item)
+                continue;
             sd->status.inventory[i].broken = 1;
             //pc_unequipitem(sd,i,0);
             if (sd->status.inventory[i].equip
@@ -1247,6 +1259,9 @@ int pc_checkweighticon (struct map_session_data *sd)
 
 void pc_set_weapon_look (struct map_session_data *sd)
 {
+    if (!sd)
+        return;
+
     if (sd->attack_spell_override)
         clif_changelook (&sd->bl, LOOK_WEAPON,
                          sd->attack_spell_look_override);
@@ -2895,6 +2910,9 @@ int pc_bonus2 (struct map_session_data *sd, int type, int type2, int val)
     switch (type)
     {
         case SP_ADDELE:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (!sd->state.lr_flag)
                 sd->addele[type2] += val;
             else if (sd->state.lr_flag == 1)
@@ -2903,6 +2921,9 @@ int pc_bonus2 (struct map_session_data *sd, int type, int type2, int val)
                 sd->arrow_addele[type2] += val;
             break;
         case SP_ADDRACE:
+            if (type2 < 0 || type2 >= 12)
+                break;
+
             if (!sd->state.lr_flag)
                 sd->addrace[type2] += val;
             else if (sd->state.lr_flag == 1)
@@ -2911,6 +2932,9 @@ int pc_bonus2 (struct map_session_data *sd, int type, int type2, int val)
                 sd->arrow_addrace[type2] += val;
             break;
         case SP_ADDSIZE:
+            if (type2 < 0 || type2 >= 3)
+                break;
+
             if (!sd->state.lr_flag)
                 sd->addsize[type2] += val;
             else if (sd->state.lr_flag == 1)
@@ -2919,38 +2943,62 @@ int pc_bonus2 (struct map_session_data *sd, int type, int type2, int val)
                 sd->arrow_addsize[type2] += val;
             break;
         case SP_SUBELE:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->subele[type2] += val;
             break;
         case SP_SUBRACE:
+            if (type2 < 0 || type2 >= 12)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->subrace[type2] += val;
             break;
         case SP_ADDEFF:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->addeff[type2] += val;
             else
                 sd->arrow_addeff[type2] += val;
             break;
         case SP_ADDEFF2:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->addeff2[type2] += val;
             else
                 sd->arrow_addeff2[type2] += val;
             break;
         case SP_RESEFF:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->reseff[type2] += val;
             break;
         case SP_MAGIC_ADDELE:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->magic_addele[type2] += val;
             break;
         case SP_MAGIC_ADDRACE:
+            if (type2 < 0 || type2 >= 12)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->magic_addrace[type2] += val;
             break;
         case SP_MAGIC_SUBRACE:
+            if (type2 < 0 || type2 >= 12)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->magic_subrace[type2] += val;
             break;
@@ -3083,10 +3131,16 @@ int pc_bonus2 (struct map_session_data *sd, int type, int type2, int val)
             }
             break;
         case SP_WEAPON_COMA_ELE:
+            if (type2 < 0 || type2 >= 10)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->weapon_coma_ele[type2] += val;
             break;
         case SP_WEAPON_COMA_RACE:
+            if (type2 < 0 || type2 >= 12)
+                break;
+
             if (sd->state.lr_flag != 2)
                 sd->weapon_coma_race[type2] += val;
             break;
@@ -3110,6 +3164,9 @@ int pc_bonus3 (struct map_session_data *sd, int type, int type2, int type3,
                int val)
 {
     int  i;
+
+    nullpo_retr (0, sd);
+
     switch (type)
     {
         case SP_ADD_MONSTER_DROP_ITEM:
@@ -3163,6 +3220,9 @@ int pc_bonus3 (struct map_session_data *sd, int type, int type2, int type3,
 int pc_skill (struct map_session_data *sd, int id, int level, int flag)
 {
     nullpo_retr (0, sd);
+
+    if (id < 0 || id >= MAX_SKILL)
+        return 0;
 
     if (level > MAX_SKILL_LEVEL)
     {
@@ -3441,14 +3501,17 @@ int pc_additem (struct map_session_data *sd, struct item *item_data,
     struct item_data *data;
     int  i, w;
 
-    MAP_LOG_PC (sd, "PICKUP %d %d", item_data->nameid, amount);
-
     nullpo_retr (1, sd);
     nullpo_retr (1, item_data);
+
+    MAP_LOG_PC (sd, "PICKUP %d %d", item_data->nameid, amount);
 
     if (item_data->nameid <= 0 || amount <= 0)
         return 1;
     data = itemdb_search (item_data->nameid);
+    if (!data)
+        return 1;
+
     if ((w = data->weight * amount) + sd->weight > sd->max_weight)
         return 2;
 
@@ -3503,6 +3566,12 @@ int pc_additem (struct map_session_data *sd, struct item *item_data,
 int pc_delitem (struct map_session_data *sd, int n, int amount, int type)
 {
     nullpo_retr (1, sd);
+
+    if (n < 0 || n >= MAX_INVENTORY)
+        return 1;
+
+    if (amount <= 0)
+        return 1;
 
     if (sd->trade_partner != 0)
         trade_tradecancel (sd);
@@ -3567,11 +3636,11 @@ int pc_dropitem (struct map_session_data *sd, int n, int amount)
 
 static int can_pick_item_up_from (struct map_session_data *self, int other_id)
 {
-    struct party *p = party_search (self->status.party_id);
-
     /* From ourselves or from no-one? */
     if (!self || self->bl.id == other_id || !other_id)
         return 1;
+
+    struct party *p = party_search (self->status.party_id);
 
     struct map_session_data *other = map_id2sd (other_id);
 
@@ -3666,6 +3735,9 @@ int pc_isUseitem (struct map_session_data *sd, int n)
     int  nameid;
 
     nullpo_retr (0, sd);
+
+    if (n < 0 || n >= MAX_INVENTORY)
+        return 0;
 
     item = sd->inventory_data[n];
     nameid = sd->status.inventory[n].nameid;
@@ -3798,6 +3870,12 @@ int pc_cart_additem (struct map_session_data *sd, struct item *item_data,
 int pc_cart_delitem (struct map_session_data *sd, int n, int amount, int type)
 {
     nullpo_retr (1, sd);
+
+    if (n < 0 || n >= MAX_CART || amount <= 0)
+        return 1;
+
+    if (!pc_iscarton (sd))
+        return 1;
 
     if (sd->status.cart[n].nameid == 0 || sd->status.cart[n].amount < amount)
         return 1;
@@ -4071,6 +4149,7 @@ int pc_setpos (struct map_session_data *sd, char *mapname_org, int x, int y,
     int  m = 0, c = 0, disguise = 0;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, mapname_org);
 
     if (sd->chatID)             // �`���b�g�����o��
         chat_leavechat (sd);
@@ -4565,6 +4644,9 @@ int pc_stop_walking (struct map_session_data *sd, int type)
 
 void pc_touch_all_relevant_npcs (struct map_session_data *sd)
 {
+    if (!sd)
+        return;
+
     if (map_getcell (sd->bl.m, sd->bl.x, sd->bl.y) & 0x80)
         npc_touch_areanpc (sd, sd->bl.m, sd->bl.x, sd->bl.y);
     else
@@ -4655,6 +4737,9 @@ int pc_checkskill (struct map_session_data *sd, int skill_id)
             return guild_checkskill (g, skill_id);
         return 0;
     }
+
+    if (skill_id < 0 || skill_id >= MAX_SKILL)
+        return 0;
 
     if (sd->status.skill[skill_id].id == skill_id)
         return (sd->status.skill[skill_id].lv);
@@ -5080,6 +5165,8 @@ int pc_follow (struct map_session_data *sd, int target_id)
 {
     struct block_list *bl;
 
+    nullpo_retr (0, sd);
+
     bl = map_id2bl (target_id);
     if (bl == NULL)
         return 1;
@@ -5097,9 +5184,9 @@ int pc_follow (struct map_session_data *sd, int target_id)
 
 int pc_checkbaselevelup (struct map_session_data *sd)
 {
-    int  next = pc_nextbaseexp (sd);
-
     nullpo_retr (0, sd);
+
+    int  next = pc_nextbaseexp (sd);
 
     if (sd->status.base_exp >= next && next > 0)
     {
@@ -5159,6 +5246,8 @@ int pc_skillpt_potential (struct map_session_data *sd)
     int  skill_id;
     int  potential = 0;
 
+    nullpo_retr (0, sd);
+
 #define RAISE_COST(x) (((x)*((x)-1))>>1)
 
     for (skill_id = 0; skill_id < MAX_SKILL; skill_id++)
@@ -5173,9 +5262,9 @@ int pc_skillpt_potential (struct map_session_data *sd)
 
 int pc_checkjoblevelup (struct map_session_data *sd)
 {
-    int  next = pc_nextjobexp (sd);
-
     nullpo_retr (0, sd);
+
+    int  next = pc_nextjobexp (sd);
 
     if (sd->status.job_exp >= next && next > 0)
     {
@@ -5355,6 +5444,8 @@ int pc_nextbaseexp (struct map_session_data *sd)
  */
 int pc_nextjobexp (struct map_session_data *sd)
 {
+    nullpo_retr (0, sd);
+
     // [fate]  For normal levels, this ranges from 20k to 50k, depending on job level.
     // Job level is at most twice the player's experience level (base_level).  Levelling
     // from 2 to 9 is 44 points, i.e., 880k to 2.2M job experience points (this is per
@@ -5616,6 +5707,9 @@ int pc_statusup2 (struct map_session_data *sd, int type, int val)
 int pc_skillup (struct map_session_data *sd, int skill_num)
 {
     nullpo_retr (0, sd);
+
+    if (skill_num < 0 || skill_num > MAX_SKILL)
+        return 0;
 
     if (sd->status.skill[skill_num].id != 0
         && sd->status.skill_point >= sd->status.skill[skill_num].lv
@@ -6148,9 +6242,9 @@ int pc_readparam (struct map_session_data *sd, int type)
     int  val = 0;
     struct pc_base_job s_class;
 
-    s_class = pc_calc_base_job (sd->status.class);
-
     nullpo_retr (0, sd);
+
+    s_class = pc_calc_base_job (sd->status.class);
 
     switch (type)
     {
@@ -6463,8 +6557,15 @@ static void
 pc_heal_quick_accumulate (int new_amount,
                           struct quick_regeneration *quick_regen, int max)
 {
+    if (!quick_regen)
+        return;
+
     int  current_amount = quick_regen->amount;
     int  current_speed = quick_regen->speed;
+
+    if (current_amount + new_amount == 0)
+        return;
+
     int  new_speed = pc_heal_quick_speed (new_amount);
 
     int  average_speed = ((new_speed * new_amount) + (current_speed * current_amount)) / (current_amount + new_amount); // new_amount > 0, current_amount >= 0
@@ -6477,6 +6578,8 @@ pc_heal_quick_accumulate (int new_amount,
 
 int pc_itemheal (struct map_session_data *sd, int hp, int sp)
 {
+    nullpo_retr (0, sd);
+
     /* defer healing */
     if (hp > 0)
     {
@@ -6659,12 +6762,12 @@ int pc_percentheal (struct map_session_data *sd, int hp, int sp)
  */
 int pc_jobchange (struct map_session_data *sd, int job, int upper)
 {
+    nullpo_retr (0, sd);
+
     int  i;
     int  b_class = 0;
     //�]�����{�q�̏ꍇ�̌��̐E�Ƃ��Z�o����
     struct pc_base_job s_class = pc_calc_base_job (sd->status.class);
-
-    nullpo_retr (0, sd);
 
     if ((job > 23) && (job < 68))
         job += 3977;
@@ -6827,6 +6930,8 @@ int pc_setcart (struct map_session_data *sd, int type)
     int  cart[6] = { 0x0000, 0x0008, 0x0080, 0x0100, 0x0200, 0x0400 };
 
     nullpo_retr (0, sd);
+    if (type < 0 || type >= 6)
+        return 0;
 
     if (pc_checkskill (sd, MC_PUSHCART) > 0)
     {                           // �v�b�V���J�[�g�X�L������
@@ -6853,6 +6958,8 @@ int pc_setcart (struct map_session_data *sd, int type)
  */
 int pc_setfalcon (struct map_session_data *sd)
 {
+    nullpo_retr (0, sd);
+
     if (pc_checkskill (sd, HT_FALCON) > 0)
     {                           // �t�@���R���}�X�^���[�X�L������
         pc_setoption (sd, sd->status.option | 0x0010);
@@ -6867,6 +6974,8 @@ int pc_setfalcon (struct map_session_data *sd)
  */
 int pc_setriding (struct map_session_data *sd)
 {
+    nullpo_retr (0, sd);
+
     if (sd->disguise > 0)
     {                           // temporary prevention of crash caused by peco + disguise, will look into a better solution [Valaris]
         clif_displaymessage (sd->fd,
@@ -6971,6 +7080,7 @@ int pc_setregstr (struct map_session_data *sd, int reg, char *str)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, str);
 
     if (strlen (str) + 1 > sizeof (sd->regstr[0].data))
     {
@@ -7010,6 +7120,7 @@ int pc_readglobalreg (struct map_session_data *sd, char *reg)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, reg);
 
     for (i = 0; i < sd->status.global_reg_num; i++)
     {
@@ -7029,6 +7140,7 @@ int pc_setglobalreg (struct map_session_data *sd, char *reg, int val)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, reg);
 
     //PC_DIE_COUNTER���X�N���v�g�ȂǂŕύX���ꂽ���̏���
     if (strcmp (reg, "PC_DIE_COUNTER") == 0 && sd->die_counter != val)
@@ -7081,6 +7193,7 @@ int pc_readaccountreg (struct map_session_data *sd, char *reg)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, reg);
 
     for (i = 0; i < sd->status.account_reg_num; i++)
     {
@@ -7100,6 +7213,7 @@ int pc_setaccountreg (struct map_session_data *sd, char *reg, int val)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, reg);
 
     if (val == 0)
     {
@@ -7149,6 +7263,7 @@ int pc_readaccountreg2 (struct map_session_data *sd, char *reg)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, reg);
 
     for (i = 0; i < sd->status.account_reg2_num; i++)
     {
@@ -7168,6 +7283,7 @@ int pc_setaccountreg2 (struct map_session_data *sd, char *reg, int val)
     int  i;
 
     nullpo_retr (1, sd);
+    nullpo_retr (1, reg);
 
     if (val == 0)
     {
@@ -7218,8 +7334,8 @@ int pc_percentrefinery (struct map_session_data *sd, struct item *item)
     int  percent;
 
     nullpo_retr (0, item);
-    percent = percentrefinery[itemdb_wlv (item->nameid)][(int) item->refine];
 
+    percent = percentrefinery[itemdb_wlv (item->nameid)][(int) item->refine];
     percent += pc_checkskill (sd, BS_WEAPONRESEARCH);   // ���팤���X�L������
 
     // �m���̗L���͈̓`�F�b�N
@@ -7227,7 +7343,7 @@ int pc_percentrefinery (struct map_session_data *sd, struct item *item)
     {
         percent = 100;
     }
-    if (percent < 0)
+    else if (percent < 0)
     {
         percent = 0;
     }
@@ -7302,6 +7418,7 @@ int pc_deleventtimer (struct map_session_data *sd, const char *name)
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     for (i = 0; i < MAX_EVENTTIMER; i++)
         if (sd->eventtimer[i] != -1 && strcmp ((char
@@ -7327,6 +7444,7 @@ int pc_addeventtimercount (struct map_session_data *sd, const char *name,
     int  i;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     for (i = 0; i < MAX_EVENTTIMER; i++)
         if (sd->eventtimer[i] != -1 && strcmp ((char
@@ -7371,6 +7489,8 @@ int pc_cleareventtimer (struct map_session_data *sd)
 static int
 pc_signal_advanced_equipment_change (struct map_session_data *sd, int n)
 {
+    nullpo_retr (0, sd);
+
     if (sd->status.inventory[n].equip & 0x0040)
         clif_changelook (&sd->bl, LOOK_SHOES, 0);
     if (sd->status.inventory[n].equip & 0x0004)
@@ -7564,6 +7684,9 @@ int pc_equipitem (struct map_session_data *sd, int n, int pos)
 int pc_unequipitem (struct map_session_data *sd, int n, int type)
 {
     nullpo_retr (0, sd);
+
+    if (n < 0 || n >= MAX_INVENTORY)
+        return 0;
 
 // -- moonsoul  (if player is berserk then cannot unequip)
 //
@@ -8206,10 +8329,11 @@ static int pc_natural_heal_sp (struct map_session_data *sd)
 
 static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute__ ((unused)))
 {
+    nullpo_retr (0, sd);
+
     int  bonus_hp, interval = battle_config.natural_heal_skill_interval;
     struct status_change *sc_data = battle_get_sc_data (&sd->bl);
-
-    nullpo_retr (0, sd);
+    nullpo_retr (0, sc_data);
 
     if (pc_checkoverhp (sd))
     {
@@ -8219,7 +8343,7 @@ static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute
 
     sd->inchealspirithptick += natural_heal_diff_tick;
 
-    if (sd->weight * 100 / sd->max_weight >=
+    if (sd->max_weight && sd->weight * 100 / sd->max_weight >=
         battle_config.natural_heal_weight_rate
         && sc_data[SC_FLYING_BACKPACK].timer == -1)
         interval += interval;
@@ -8270,7 +8394,7 @@ static int pc_spirit_heal_sp (struct map_session_data *sd, int level __attribute
 
     sd->inchealspiritsptick += natural_heal_diff_tick;
 
-    if (sd->weight * 100 / sd->max_weight >=
+    if (sd->max_weight && sd->weight * 100 / sd->max_weight >=
         battle_config.natural_heal_weight_rate)
         interval += interval;
 
@@ -8316,6 +8440,8 @@ static int
 pc_quickregenerate_effect (struct quick_regeneration *quick_regen,
                            int heal_speed)
 {
+    nullpo_retr (0, quick_regen);
+
     if (!(quick_regen->tickdelay--))
     {
         int  bonus =
@@ -8378,8 +8504,8 @@ static int pc_natural_heal_sub (struct map_session_data *sd, va_list ap __attrib
 // -- moonsoul (if conditions below altered to disallow natural healing if under berserk status)
     if ((sd->sc_data[SC_FLYING_BACKPACK].timer != -1
          || battle_config.natural_heal_weight_rate > 100
-         || sd->weight * 100 / sd->max_weight <
-         battle_config.natural_heal_weight_rate) && !pc_isdead (sd)
+         || (sd->max_weight && sd->weight * 100 / sd->max_weight <
+         battle_config.natural_heal_weight_rate)) && !pc_isdead (sd)
         && !pc_ishiding (sd) && sd->sc_data[SC_POISON].timer == -1)
     {
         pc_natural_heal_hp (sd);
@@ -8431,6 +8557,7 @@ int pc_natural_heal (int tid __attribute__ ((unused)), unsigned int tick, int id
 int pc_setsavepoint (struct map_session_data *sd, char *mapname, int x, int y)
 {
     nullpo_retr (0, sd);
+    nullpo_retr (0, mapname);
 
     strncpy (sd->status.save_point.map, mapname, 23);
     sd->status.save_point.map[23] = '\0';
@@ -8500,7 +8627,12 @@ int pc_autosave (int tid __attribute__ ((unused)), unsigned int tick __attribute
     if (save_flag == 0)
         last_save_fd = 0;
 
-    interval = autosave_interval / (clif_countusers () + 1);
+    int tmp = clif_countusers () + 1;
+    if (tmp)
+        interval = autosave_interval / tmp;
+    else
+        interval = 1;
+
     if (interval <= 0)
         interval = 1;
     add_timer (gettick () + interval, pc_autosave, 0, 0);
@@ -8621,7 +8753,7 @@ int pc_readdb (void)
 {
     int  i, j, k;
     FILE *fp;
-    char line[1024], *p;
+    char line[2024], *p;
 
     // �K�v�o���l�ǂݍ���
 
@@ -8824,7 +8956,13 @@ int pc_readdb (void)
                 *p++ = 0;
         }
         lv = atoi (split[0]);
+        if (lv < 1 || lv >= 4 + 1)
+            continue;
+
         n = atoi (split[1]);
+        if (n > 10)
+            continue;
+
 //      printf("%d %d\n",lv,n);
 
         for (i = 0; i < n;)
