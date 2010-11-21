@@ -760,6 +760,9 @@ enum
  */
 static int calc_hash (const unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     int  h = 0;
     while (*p)
     {
@@ -776,6 +779,9 @@ static int calc_hash (const unsigned char *p)
 // �����̂ł����Δԍ��A��������-1
 static int search_str (const unsigned char *p)
 {
+    if (!p)
+        return -1;
+
     int  i;
     i = str_hash[calc_hash (p)];
     while (i)
@@ -796,6 +802,9 @@ static int search_str (const unsigned char *p)
 // �����̂ł����Δԍ��A�������Γo�^���ĐV�K�ԍ�
 static int add_str (const unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     int  i;
     char *lowcase;
 
@@ -970,6 +979,9 @@ void set_label (int l, int pos)
  */
 static unsigned char *skip_space (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     while (1)
     {
         while (isspace (*p))
@@ -999,6 +1011,9 @@ static unsigned char *skip_space (unsigned char *p)
  */
 static unsigned char *skip_word (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     // prefix
     if (*p == '$')
         p++;                    // MAP�I���L�ϐ��p
@@ -1035,6 +1050,9 @@ static int startline;
  */
 static void disp_error_message (const char *mes, const unsigned char *pos)
 {
+    if (!mes)
+        return;
+
     int  line, c = 0, i;
     unsigned char *p, *linestart, *lineend;
 
@@ -1075,6 +1093,9 @@ static void disp_error_message (const char *mes, const unsigned char *pos)
  */
 unsigned char *parse_simpleexpr (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     int  i;
     p = skip_space (p);
 
@@ -1194,6 +1215,9 @@ unsigned char *parse_subexpr (unsigned char *p, int limit)
     int  op, opl, len;
     char *tmpp;
 
+    if (!p)
+        return 0;
+
 #ifdef DEBUG_FUNCIN
     if (battle_config.etc_log)
         printf ("parse_subexpr %s\n", p);
@@ -1311,6 +1335,9 @@ unsigned char *parse_subexpr (unsigned char *p, int limit)
  */
 unsigned char *parse_expr (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
 #ifdef DEBUG_FUNCIN
     if (battle_config.etc_log)
         printf ("parse_expr %s\n", p);
@@ -1342,6 +1369,9 @@ unsigned char *parse_expr (unsigned char *p)
  */
 unsigned char *parse_line (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     int  i = 0, cmd;
     const char *plist[128];
     char *p2;
@@ -1431,7 +1461,7 @@ static void add_buildin_func (void)
 static void read_constdb (void)
 {
     FILE *fp;
-    char line[1024], name[1024];
+    char line[2026], name[2026];
     int  val, n, i, type;
 
     fp = fopen_ ("db/const.txt", "r");
@@ -1440,13 +1470,13 @@ static void read_constdb (void)
         printf ("can't read db/const.txt\n");
         return;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
         type = 0;
-        if (sscanf (line, "%[A-Za-z0-9_],%d,%d", name, &val, &type) >= 2 ||
-            sscanf (line, "%[A-Za-z0-9_] %d %d", name, &val, &type) >= 2)
+        if (sscanf (line, "%1024[A-Za-z0-9_],%d,%d", name, &val, &type) >= 2 ||
+            sscanf (line, "%1024[A-Za-z0-9_] %d %d", name, &val, &type) >= 2)
         {
             for (i = 0; name[i]; i++)
                 name[i] = tolower (name[i]);
@@ -1470,6 +1500,9 @@ unsigned char *parse_script (unsigned char *src, int line)
     unsigned char *p, *tmpp;
     int  i;
     static int first = 1;
+
+    if (!src)
+        return 0;
 
     if (first)
     {
@@ -1597,6 +1630,9 @@ enum
  */
 struct map_session_data *script_rid2sd (struct script_state *st)
 {
+    if (!st)
+        return 0;
+
     struct map_session_data *sd = map_id2sd (st->rid);
     if (!sd)
     {
@@ -1611,12 +1647,19 @@ struct map_session_data *script_rid2sd (struct script_state *st)
  */
 int get_val (struct script_state *st, struct script_data *data)
 {
+    if (!st || !data)
+        return 0;
+
     struct map_session_data *sd = NULL;
     if (data->type == C_NAME)
     {
         char *name = str_buf + str_data[data->u.num & 0x00ffffff].str;
+        int idx = strlen (name) - 1;
+        if (idx < 0)
+            return 0;
+
         char prefix = *name;
-        char postfix = name[strlen (name) - 1];
+        char postfix = name[idx];
 
         if (prefix != '$')
         {
