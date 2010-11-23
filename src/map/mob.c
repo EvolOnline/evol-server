@@ -970,10 +970,10 @@ static int mob_attack (struct mob_data *md, unsigned int tick,
 
     nullpo_retr (0, md);
 
-    if ((tbl = map_id2bl (md->target_id)) == NULL)
+    if (!mob_check_attack (md))
         return 0;
 
-    if (!mob_check_attack (md))
+    if ((tbl = map_id2bl (md->target_id)) == NULL)
         return 0;
 
     if (battle_config.monster_attack_direction_change)
