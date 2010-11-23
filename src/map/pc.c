@@ -348,7 +348,7 @@ int pc_setrestartvalue (struct map_session_data *sd, int type)
     }
     else
     {
-        if (s_class.job == 0 && battle_config.restart_hp_rate < 50)
+        if (s_class.job <= 5 && battle_config.restart_hp_rate < 50)
         {                       //�m�r�͔�������
             sd->status.hp = (sd->status.max_hp) / 2;
         }
