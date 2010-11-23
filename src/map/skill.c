@@ -727,112 +727,178 @@ struct skill_db skill_db[MAX_SKILL_DB];
 
 int skill_get_hit (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].hit;
 }
 
 int skill_get_inf (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].inf;
 }
 
 int skill_get_pl (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].pl;
 }
 
 int skill_get_nk (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].nk;
 }
 
 int skill_get_max (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].max;
 }
 
 int skill_get_max_raise (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].max_raise;
 }
 
 int skill_get_range (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].range[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].range[lv - 1];
 }
 
 int skill_get_hp (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].hp[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].hp[lv - 1];
 }
 
 int skill_get_sp (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].sp[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].sp[lv - 1];
 }
 
 int skill_get_zeny (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].zeny[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].zeny[lv - 1];
 }
 
 int skill_get_num (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].num[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].num[lv - 1];
 }
 
 int skill_get_cast (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].cast[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].cast[lv - 1];
 }
 
 int skill_get_delay (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].delay[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].delay[lv - 1];
 }
 
 int skill_get_time (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].upkeep_time[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].upkeep_time[lv - 1];
 }
 
 int skill_get_time2 (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].upkeep_time2[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].upkeep_time2[lv - 1];
 }
 
 int skill_get_castdef (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].cast_def_rate;
 }
 
 int skill_get_weapontype (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].weapon;
 }
 
 int skill_get_inf2 (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].inf2;
 }
 
 int skill_get_maxcount (int id)
 {
+    if (id < 0 || id >= MAX_SKILL_DB)
+        return 0;
+
     return skill_db[id].maxcount;
 }
 
 int skill_get_blewcount (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].blewcount[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].blewcount[lv - 1];
 }
 
 int skill_get_mhp (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].mhp[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].mhp[lv - 1];
 }
 
 int skill_get_castnodex (int id, int lv)
 {
-    return (lv <= 0) ? 0 : skill_db[id].castnodex[lv - 1];
+    if (id < 0 || id >= MAX_SKILL_DB || lv <= 0 || lv > MAX_SKILL_LEVEL)
+        return 0;
+
+    return skill_db[id].castnodex[lv - 1];
 }
 
 /* プロトタイプ */
@@ -5554,6 +5620,7 @@ int skill_castend_map (struct map_session_data *sd, int skill_num,
     int  x = 0, y = 0;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, map);
     if (sd->bl.prev == NULL || pc_isdead (sd))
         return 0;
 
@@ -6027,8 +6094,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
             {
                 static const int dx[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
                 static const int dy[9] = { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
-                ux += dx[i];
-                uy += dy[i];
+                if (i < 9)
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
             case MG_FIREWALL:  /* ファイヤーウォール */
@@ -6043,8 +6113,12 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                         1, 0, 0, -1, -1},
                         {
                     1, 0, 0, -1, -1},};
-                    ux += dx[(dir >> 1) & 1][i];
-                    uy += dy[(dir >> 1) & 1][i];
+                    int idx = (dir >> 1) & 1;
+                    if (idx > 0 && idx < 5)
+                    {
+                        ux += dx[idx][i];
+                        uy += dy[idx][i];
+                    }
                 }
                 else
                 {               /* 上下配置 */
@@ -6067,8 +6141,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                     -2, -2, -2, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1,
                     1, 2, 2, 2,
                 };
-                ux += dx[i];
-                uy += dy[i];
+                if (i < sizeof(dx) / sizeof(int))
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
 
@@ -6083,8 +6160,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                     -3, -3, -3, -2, -2, -2, -1, -1, -1, -1, -1, -1, -1,
                     0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3
                 };
-                ux += dx[i];
-                uy += dy[i];
+                if (i < sizeof(dx) / sizeof(int))
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
 
@@ -6100,8 +6180,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                     -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2,
                     3, 3, 3, 4, 4, 4, 5, 5, 5
                 };
-                ux += dx[i];
-                uy += dy[i];
+                if (i < sizeof(dx) / sizeof(int))
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
 
@@ -6117,8 +6200,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                     dir = 2;
                 else
                     dir = map_calc_dir (src, x, y);
-                ux += (2 - i) * diry[dir];
-                uy += (i - 2) * dirx[dir];
+                if (dir >= 0 && dir < 8)
+                {
+                    ux += (2 - i) * diry[dir];
+                    uy += (i - 2) * dirx[dir];
+                }
             }
                 break;
 
@@ -6136,8 +6222,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
             {
                 static const int dx[] = { -1, 0, 0, 0, 1 };
                 static const int dy[] = { 0, -1, 0, 1, 0 };
-                ux += dx[i];
-                uy += dy[i];
+                if (dir >= 0 && dir < 5)
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
 
@@ -6151,8 +6240,11 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
                     -4, -3, -2, -2, -2, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4,
                 };
-                ux += dx[i];
-                uy += dy[i];
+                if (i < sizeof(dx) / sizeof(int))
+                {
+                    ux += dx[i];
+                    uy += dy[i];
+                }
             }
                 break;
             case SA_VOLCANO:   /* ボルケーノ */
@@ -7864,10 +7956,19 @@ int skill_castfix (struct block_list *bl, int time)
     else if (castnodex <= 0 && bl->type == BL_PC)
     {
         castrate = ((struct map_session_data *) bl)->castrate;
-        time =
-            time * castrate * (battle_config.castrate_dex_scale -
-                               dex) / (battle_config.castrate_dex_scale *
-                                       100);
+        if (battle_config.castrate_dex_scale)
+        {
+            time =
+                time * castrate * (battle_config.castrate_dex_scale -
+                                   dex) / (battle_config.castrate_dex_scale *
+                                           100);
+        }
+        else
+        {
+            time =
+                time * castrate * (battle_config.castrate_dex_scale -
+                                   dex);
+        }
         time = time * battle_config.cast_rate / 100;
     }
 
@@ -7899,6 +8000,9 @@ int skill_delayfix (struct block_list *bl, int time)
     nullpo_retr (0, bl);
 
     sc_data = battle_get_sc_data (bl);
+
+    nullpo_retr (0, sc_data);
+
     if (time <= 0)
         return 0;
 
@@ -8724,6 +8828,9 @@ void skill_devotion_end (struct map_session_data *md,
     nullpo_retv (md);
     nullpo_retv (sd);
 
+    if (target < 0 || target >= 5)
+        return;
+
     md->dev.val1[target] = md->dev.val2[target] = 0;
     if (sd && sd->sc_data)
     {
@@ -8999,7 +9106,7 @@ int skill_landprotector (struct block_list *bl, va_list ap)
     }
     else
     {
-        if (alive && unit->group->skill_id == SA_LANDPROTECTOR)
+        if (alive && unit->group && unit->group->skill_id == SA_LANDPROTECTOR)
             (*alive) = 0;
     }
     return 0;
@@ -9152,8 +9259,11 @@ int skill_status_change_timer_sub (struct block_list *bl, va_list ap)
                 if (battle_check_target (src, bl, BCT_ENEMY) > 0)
                 {
                     struct status_change *sc_data = battle_get_sc_data (bl);
-                    skill_attack (BF_MAGIC, src, src, bl, AL_RUWACH,
-                                  sc_data[type].val1, tick, 0);
+                    if (sc_data)
+                    {
+                        skill_attack (BF_MAGIC, src, src, bl, AL_RUWACH,
+                                      sc_data[type].val1, tick, 0);
+                    }
                 }
             }
             break;
@@ -9170,6 +9280,10 @@ int skill_status_change_active (struct block_list *bl, int type)
     struct status_change *sc_data;
 
     nullpo_retr (0, bl);
+
+    if (type < 0 || type >= MAX_STATUSCHANGE)
+        return 0;
+
     if (bl->type != BL_PC && bl->type != BL_MOB)
     {
         if (battle_config.error_log)
@@ -9189,6 +9303,10 @@ int skill_status_change_end (struct block_list *bl, int type, int tid)
     short *sc_count, *option, *opt1, *opt2, *opt3;
 
     nullpo_retr (0, bl);
+
+    if (type < 0 || type >= MAX_STATUSCHANGE)
+        return 0;
+
     if (bl->type != BL_PC && bl->type != BL_MOB)
     {
         if (battle_config.error_log)
@@ -9512,6 +9630,9 @@ int skill_update_heal_animation (struct map_session_data *sd)
  */
 int skill_status_change_timer (int tid, unsigned int tick, int id, int data)
 {
+    if (data < 0 || data >= MAX_STATUSCHANGE)
+        return 0;
+
     int  type = data;
     struct block_list *bl;
     struct map_session_data *sd = NULL;
@@ -10004,6 +10125,9 @@ int skill_status_effect (struct block_list *bl, int type, int val1, int val2,
                          int val3, int val4, int tick, int flag,
                          int spell_invocation)
 {
+    if (type < 0 || type >= MAX_STATUSCHANGE)
+        return 0;
+
     struct map_session_data *sd = NULL;
     struct status_change *sc_data;
     short *sc_count, *option, *opt1, *opt2, *opt3;
@@ -10907,6 +11031,8 @@ int skill_check_cloaking (struct block_list *bl)
 
     nullpo_retr (0, bl);
 
+    //+++ skill broken because sd == null?
+
     if (pc_checkskill (sd, AS_CLOAKING) > 2)
         return 0;
     if (bl->type == BL_PC && battle_config.pc_cloak_check_type & 1)
@@ -10990,7 +11116,7 @@ void skill_stop_dancing (struct block_list *src, int flag)
     nullpo_retv (src);
 
     sc_data = battle_get_sc_data (src);
-    if (sc_data && sc_data[SC_DANCING].timer == -1)
+    if (!sc_data || sc_data[SC_DANCING].timer == -1)
         return;
     group = (struct skill_unit_group *) sc_data[SC_DANCING].val2;   //ダンスのスキルユニットIDはval2に入ってる
     if (group && src->type == BL_PC && sc_data && sc_data[SC_DANCING].val4)
@@ -11051,6 +11177,7 @@ struct skill_unit *skill_initunit (struct skill_unit_group *group, int idx,
     struct skill_unit *unit;
 
     nullpo_retr (NULL, group);
+    nullpo_retr (NULL, group->unit);
     nullpo_retr (NULL, unit = &group->unit[idx]);
 
     if (!unit->alive)
@@ -11830,6 +11957,9 @@ int skill_unit_move_unit_group (struct skill_unit_group *group, int m, int dx,
 
 static int scan_stat (char *statname)
 {
+    if (!statname)
+        return 0;
+
     if (!strcmpi (statname, "str"))
         return SP_STR;
     if (!strcmpi (statname, "dex"))
@@ -11862,7 +11992,7 @@ int skill_readdb (void)
 {
     int  i, j, k, l;
     FILE *fp;
-    char line[1024], *p;
+    char line[2026], *p;
 
     /* The main skill database */
     memset (skill_db, 0, sizeof (skill_db));
@@ -11872,7 +12002,7 @@ int skill_readdb (void)
         printf ("can't read db/skill_db.txt\n");
         return 1;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         char *split[50], *split2[MAX_SKILL_LEVEL];
         if (line[0] == '/' && line[1] == '/')
@@ -11989,7 +12119,7 @@ int skill_readdb (void)
         printf ("can't read db/skill_require_db.txt\n");
         return 1;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         char *split[51], *split2[MAX_SKILL_LEVEL];
         if (line[0] == '/' && line[1] == '/')
@@ -12171,7 +12301,7 @@ int skill_readdb (void)
         printf ("can't read db/skill_cast_db.txt\n");
         return 1;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         char *split[50], *split2[MAX_SKILL_LEVEL];
         memset (split, 0, sizeof (split));  // [Valaris] thanks to fov
@@ -12250,7 +12380,7 @@ int skill_readdb (void)
         printf ("can't read db/skill_castnodex_db.txt\n");
         return 1;
     }
-    while (fgets (line, 1020, fp))
+    while (fgets (line, 2020, fp))
     {
         char *split[50], *split2[MAX_SKILL_LEVEL];
         memset (split, 0, sizeof (split));
