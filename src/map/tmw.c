@@ -34,6 +34,8 @@
 int tmw_CheckChatSpam (struct map_session_data *sd, char *message)
 {
     nullpo_retr (1, sd);
+    nullpo_retr (1, message);
+
     time_t now = time (NULL);
 
     if (pc_isGM (sd))
@@ -98,6 +100,9 @@ int tmw_CheckChatSpam (struct map_session_data *sd, char *message)
 
 void tmw_AutoBan(struct map_session_data *sd, char *reason, int length)
 {
+    nullpo_retv (sd);
+    nullpo_retv (reason);
+
     char anotherbuf[512];
 
     if (length == 0 || sd->auto_ban_info.in_progress)
