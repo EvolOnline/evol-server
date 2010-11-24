@@ -91,6 +91,9 @@ void do_final_storage (void)    // by [MC Cameri]
 
 static int storage_reconnect_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {                               //Parses storage and saves 'dirty' ones upon reconnect. [Skotlex]
+    nullpo_retr (0, ap);
+    nullpo_retr (0, data);
+
     int  type = va_arg (ap, int);
     if (type)
     {                           //Guild Storage
@@ -186,6 +189,9 @@ static int storage_additem (struct map_session_data *sd, struct storage *stor,
     struct item_data *data;
     int  i;
 
+    nullpo_retr (1, stor);
+    nullpo_retr (1, item_data);
+
     if (item_data->nameid <= 0 || amount <= 0)
         return 1;
 
@@ -228,6 +234,10 @@ static int storage_additem (struct map_session_data *sd, struct storage *stor,
 static int storage_delitem (struct map_session_data *sd, struct storage *stor,
                             int n, int amount)
 {
+
+    nullpo_retr (1, stor);
+    if (n < 0 || n >= MAX_STORAGE)
+        return 1;
 
     if (stor->storage_[n].nameid == 0 || stor->storage_[n].amount < amount)
         return 1;
@@ -422,6 +432,8 @@ int storage_storage_quit (struct map_session_data *sd)
 
 void storage_storage_dirty (struct map_session_data *sd)
 {
+    nullpo_retv (sd);
+
     struct storage *stor;
 
     stor = account2storage2 (sd->status.account_id);
@@ -593,6 +605,9 @@ int guild_storage_delitem (struct map_session_data *sd,
 {
     nullpo_retr (1, sd);
     nullpo_retr (1, stor);
+
+    if (n < 0 || n >= MAX_GUILD_STORAGE)
+        return 1;
 
     if (stor->storage_[n].nameid == 0 || stor->storage_[n].amount < amount)
         return 1;
