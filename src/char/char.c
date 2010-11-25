@@ -124,6 +124,9 @@ pid_t pid = 0; // For forked DB writes
 //------------------------------
 int char_log (char *fmt, ...)
 {
+    if (!fmt)
+        return 0;
+
     FILE *logfp;
     va_list ap;
     struct timeval tv;
@@ -155,6 +158,9 @@ int char_log (char *fmt, ...)
 //-----------------------------------------------------
 int remove_control_chars (unsigned char *str)
 {
+    if (!str)
+        return 0;
+
     int  i;
     int  change = 0;
 
@@ -194,6 +200,9 @@ int isGM (int account_id)
 //----------------------------------------------
 int search_character_index (char *character_name)
 {
+    if (!character_name)
+        return -1;
+
     int  i, quantity, index;
 
     quantity = 0;
@@ -236,6 +245,9 @@ char *search_character_name (int index)
 //-------------------------------------------------
 int mmo_char_tostr (char *str, struct mmo_charstatus *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  i;
     char *str_p = str;
 
@@ -316,6 +328,9 @@ int mmo_char_tostr (char *str, struct mmo_charstatus *p)
 //-------------------------------------------------------------------------
 int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
 {
+    if (!str || !p)
+        return 0;
+
     int  tmp_int[256];
     int  set, next, len, i;
 
@@ -787,16 +802,16 @@ void mmo_char_sync (void)
     fp = lock_fopen (char_txt, &lock, &index_db);
     if (fp == NULL)
     {
-        printf ("WARNING: Server can't not save characters.\n");
-        char_log ("WARNING: Server can't not save characters." RETCODE);
+        printf ("WARNING: Server can't save characters.\n");
+        char_log ("WARNING: Server can't save characters." RETCODE);
     }
     else
     {
         for (i = 0; i < char_num; i++)
         {
             // create only once the line, and save it in the 2 files (it's speeder than repeat twice the loop and create twice the line)
-            mmo_char_tostr (line, &char_dat[id[i]]);    // use of sorted index
-            fprintf (fp, "%s" RETCODE, line);
+            if (!mmo_char_tostr (line, &char_dat[id[i]]))    // use of sorted index
+                fprintf (fp, "%s" RETCODE, line);
         }
         fprintf (fp, "%d\t%%newid%%" RETCODE, char_id_count);
         lock_fclose (fp, char_txt, &lock, &index_db);
@@ -818,8 +833,8 @@ void mmo_char_sync (void)
         for (i = 0; i < char_num; i++)
         {
             // create only once the line, and save it in the 2 files (it's speeder than repeat twice the loop and create twice the line)
-            mmo_char_tostr (line, &char_dat[id[i]]);    // use of sorted index
-            fprintf (fp, "%s" RETCODE, line);
+            if (!mmo_char_tostr (line, &char_dat[id[i]]))    // use of sorted index
+                fprintf (fp, "%s" RETCODE, line);
         }
         fprintf (fp, "%d\t%%newid%%" RETCODE, char_id_count);
         lock_fclose (fp, backup_txt, &lock, &index_db);
@@ -876,6 +891,9 @@ int mmo_char_sync_timer (int tid __attribute__ ((unused)),
 //----------------------------------------------------
 static void remove_trailing_blanks (char *name)
 {
+    if (!name)
+        return;
+
     char *tail = name + strlen (name) - 1;
 
     while (tail > name && *tail == ' ')
@@ -887,6 +905,9 @@ static void remove_trailing_blanks (char *name)
 //----------------------------------------------------
 static void remove_prefix_blanks (char *name)
 {
+    if (!name)
+        return;
+
     char *dst = name;
     char *src = name;
 
@@ -903,7 +924,13 @@ int make_new_char (int fd, unsigned char *dat)
     int  i, j;
     struct char_session_data *sd;
 
+    if (!session[fd])
+        return -1;
+
     sd = session[fd]->session_data;
+
+    if (!sd)
+        return -1;
 
     // remove control characters from the name
     dat[23] = '\0';
@@ -1634,6 +1661,9 @@ int count_users (void)
 //----------------------------------------
 static int find_equip_view (struct mmo_charstatus *p, unsigned int equipmask)
 {
+    if (!p)
+        return 0;
+
     int  i;
     for (i = 0; i < MAX_INVENTORY; i++)
         if (p->inventory[i].nameid && p->inventory[i].amount
@@ -1650,6 +1680,9 @@ int mmo_char_send006b (int fd, struct char_session_data *sd)
     int  i, j, found_num;
     struct mmo_charstatus *p;
     const int offset = 24;
+
+    if (!sd)
+        return 0;
 
     found_num = 0;
     for (i = 0; i < char_num; i++)
@@ -1727,6 +1760,9 @@ int mmo_char_send006b (int fd, struct char_session_data *sd)
 
 int set_account_reg2 (int acc, int num, struct global_reg *reg)
 {
+    if (!reg)
+        return 0;
+
     int  i, c;
 
     c = 0;
@@ -1803,7 +1839,7 @@ int e_mail_check (unsigned char *email)
     unsigned char *last_arobas;
 
     // athena limits
-    if (strlen (email) < 3 || strlen (email) > 39)
+    if (!email || strlen (email) < 3 || strlen (email) > 39)
         return 0;
 
     // part of RFC limits (official reference of e-mail description)
@@ -1863,6 +1899,8 @@ int disconnect_player (int accound_id)
 // �L�����폜�ɔ����f�[�^�폜
 static int char_delete (struct mmo_charstatus *cs)
 {
+    if (!cs)
+        return 0;
 
     // �M���h�E��
     if (cs->guild_id)
@@ -1892,7 +1930,7 @@ int parse_tologin (int fd)
 
     // only login-server can have an access to here.
     // so, if it isn't the login-server, we disconnect the session (fd != login_fd).
-    if (fd != login_fd || session[fd]->eof)
+    if (!session[fd] || fd != login_fd || session[fd]->eof)
     {
         if (fd == login_fd)
         {
@@ -2434,7 +2472,7 @@ int parse_frommap (int fd)
     for (id = 0; id < MAX_MAP_SERVERS; id++)
         if (server_fd[id] == fd)
             break;
-    if (id == MAX_MAP_SERVERS || session[fd]->eof)
+    if (id == MAX_MAP_SERVERS || !session[fd] || session[fd]->eof)
     {
         if (id < MAX_MAP_SERVERS)
         {
@@ -2959,6 +2997,9 @@ int parse_frommap (int fd)
 
 int search_mapserver (char *map)
 {
+    if (!map)
+        return -1;
+
     int  i, j;
     char temp_map[16];
     int  temp_map_len;
@@ -2995,6 +3036,9 @@ static int char_mapif_init (int fd)
 //-----------------------------------------------------
 int lan_ip_check (unsigned char *p)
 {
+    if (!p)
+        return 1;
+
     int  i;
     int  lancheck = 1;
 
@@ -3020,9 +3064,8 @@ int parse_char (int fd)
     int  i, ch;
     char email[40];
     struct char_session_data *sd;
-    unsigned char *p = (unsigned char *) &session[fd]->client_addr.sin_addr;
 
-    if (login_fd < 0 || session[fd]->eof)
+    if (login_fd < 0 || !session[fd] || session[fd]->eof)
     {                           // disconnect any player (already connected to char-server or coming back from map-server) if login-server is diconnected.
         if (fd == login_fd)
             login_fd = -1;
@@ -3031,7 +3074,11 @@ int parse_char (int fd)
         return 0;
     }
 
+    unsigned char *p = (unsigned char *) &session[fd]->client_addr.sin_addr;
+
     sd = session[fd]->session_data;
+
+    //+++ need check for sd == 0?
 
     while (RFIFOREST (fd) >= 2)
     {
@@ -3157,7 +3204,7 @@ int parse_char (int fd)
                     return 0;
 
                 // if we activated email creation and email is default email
-                if (email_creation != 0 && strcmp (sd->email, "a@a.com") == 0
+                if (email_creation != 0 && strncmp (sd->email, "a@a.com", 40) == 0
                     && login_fd > 0)
                 {               // to modify an e-mail, login-server must be online
                     WFIFOW (fd, 0) = 0x70;
@@ -3399,11 +3446,11 @@ int parse_char (int fd)
                     strncpy (email, "a@a.com", 40); // default e-mail
 
                 // if we activated email creation and email is default email
-                if (email_creation != 0 && strcmp (sd->email, "a@a.com") == 0
+                if (email_creation != 0 && strncmp (sd->email, "a@a.com", 40) == 0
                     && login_fd > 0)
                 {               // to modify an e-mail, login-server must be online
                     // if sended email is incorrect e-mail
-                    if (strcmp (email, "a@a.com") == 0)
+                    if (strncmp (email, "a@a.com", 40) == 0)
                     {
                         WFIFOW (fd, 0) = 0x70;
                         WFIFOB (fd, 2) = 0; // 00 = Incorrect Email address
@@ -3603,6 +3650,9 @@ int mapif_sendall (char *buf, unsigned int len)
 {
     int  i, c;
 
+    if (!buf)
+        return 0;
+
     c = 0;
     for (i = 0; i < MAX_MAP_SERVERS; i++)
     {
@@ -3622,6 +3672,9 @@ int mapif_sendallwos (int sfd, unsigned char *buf, unsigned int len)
 {
     int  i, c;
 
+    if (!buf)
+        return 0;
+
     c = 0;
     for (i = 0; i < MAX_MAP_SERVERS; i++)
     {
@@ -3640,6 +3693,9 @@ int mapif_sendallwos (int sfd, unsigned char *buf, unsigned int len)
 int mapif_send (int fd, unsigned char *buf, unsigned int len)
 {
     int  i;
+
+    if (!buf)
+        return 0;
 
     if (fd >= 0)
     {
@@ -3762,7 +3818,7 @@ int lan_config_read (const char *lancfgName)
             continue;
 
         line[sizeof (line) - 1] = '\0';
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) != 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) != 2)
             continue;
 
         remove_control_chars (w1);
@@ -3865,7 +3921,7 @@ int char_config_read (const char *cfgName)
             continue;
 
         line[sizeof (line) - 1] = '\0';
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) != 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) != 2)
             continue;
 
         remove_control_chars (w1);
@@ -3982,7 +4038,7 @@ int char_config_read (const char *cfgName)
         {
             char map[32];
             int  x, y;
-            if (sscanf (w2, "%[^,],%d,%d", map, &x, &y) < 3)
+            if (sscanf (w2, "%16[^,],%d,%d", map, &x, &y) < 3)
                 continue;
             if (strstr (map, ".gat") != NULL)
             {                   // Verify at least if '.gat' is in the map name
