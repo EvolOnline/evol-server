@@ -267,7 +267,8 @@ int clif_send_sub (struct block_list *bl, va_list ap)
                 clif_emotion_towards (src_bl, bl, EMOTE_IGNORED);
                 return 0;
             }
-            /* fall through... */
+            if ((sd && sd->chatID) || (bl && bl == src_bl))
+                return 0;
             break;
         case AREA_WOC:
             if ((sd && sd->chatID) || (bl && bl == src_bl))
