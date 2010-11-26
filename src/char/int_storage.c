@@ -24,6 +24,9 @@ static struct dbt *guild_storage_db;
 // 倉庫データを文字列に変換
 int storage_tostr (char *str, struct storage *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  i, f = 0;
     char *str_p = str;
     str_p += sprintf (str_p, "%d,%d\t", p->account_id, p->storage_amount);
@@ -52,6 +55,9 @@ int storage_tostr (char *str, struct storage *p)
 // 文字列を倉庫データに変換
 int storage_fromstr (char *str, struct storage *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  tmp_int[256];
     int  set, next, len, i;
 
@@ -121,6 +127,9 @@ int storage_fromstr (char *str, struct storage *p)
 
 int guild_storage_tostr (char *str, struct guild_storage *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  i, f = 0;
     char *str_p = str;
     str_p += sprintf (str, "%d,%d\t", p->guild_id, p->storage_amount);
@@ -148,6 +157,9 @@ int guild_storage_tostr (char *str, struct guild_storage *p)
 
 int guild_storage_fromstr (char *str, struct guild_storage *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  tmp_int[256];
     int  set, next, len, i;
 
@@ -263,7 +275,7 @@ struct guild_storage *guild2storage (int guild_id)
 // 倉庫データを読み込む
 int inter_storage_init ()
 {
-    char line[65536];
+    char line[85536];
     int  c = 0, tmp_int;
     struct storage *s;
     struct guild_storage *gs;
@@ -277,7 +289,7 @@ int inter_storage_init ()
         printf ("cant't read : %s\n", storage_txt);
         return 1;
     }
-    while (fgets (line, 65535, fp))
+    while (fgets (line, 85535, fp))
     {
         sscanf (line, "%d", &tmp_int);
         s = (struct storage *) aCalloc (sizeof (struct storage), 1);
@@ -367,10 +379,16 @@ void inter_storage_final ()
 
 int inter_storage_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
+    if (!ap)
+        return 0;
+
     char line[65536];
     FILE *fp;
     storage_tostr (line, (struct storage *) data);
     fp = va_arg (ap, FILE *);
+    if (!fp)
+        return 0;
+
     if (*line)
         fprintf (fp, "%s" RETCODE, line);
     return 0;
@@ -402,6 +420,9 @@ int inter_storage_save ()
 int inter_guild_storage_save_sub (void *key __attribute__ ((unused)),
                                   void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     char line[65536];
     FILE *fp;
 
@@ -410,6 +431,9 @@ int inter_guild_storage_save_sub (void *key __attribute__ ((unused)),
     {
         guild_storage_tostr (line, (struct guild_storage *) data);
         fp = va_arg (ap, FILE *);
+        if (!fp)
+            return 0;
+
         if (*line)
             fprintf (fp, "%s" RETCODE, line);
     }
@@ -472,6 +496,9 @@ int inter_guild_storage_delete (int guild_id)
 int mapif_load_storage (int fd, int account_id)
 {
     struct storage *s = account2storage (account_id);
+    if (!s)
+        return 0;
+
     WFIFOW (fd, 0) = 0x3810;
     WFIFOW (fd, 2) = sizeof (struct storage) + 8;
     WFIFOL (fd, 4) = account_id;
@@ -547,6 +574,9 @@ int mapif_parse_SaveStorage (int fd)
     else
     {
         s = account2storage (account_id);
+        if (!s)
+            return 0;
+
         memcpy (s, RFIFOP (fd, 8), sizeof (struct storage));
         mapif_save_storage_ack (fd, account_id);
     }
