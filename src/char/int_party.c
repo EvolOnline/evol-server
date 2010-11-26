@@ -22,6 +22,9 @@ int  mapif_parse_PartyLeave (int fd, int party_id, int account_id);
 // パーティデータの文字列への変換
 int inter_party_tostr (char *str, struct party *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  i, len;
 
     len =
@@ -41,6 +44,9 @@ int inter_party_tostr (char *str, struct party *p)
 // パーティデータの文字列からの変換
 int inter_party_fromstr (char *str, struct party *p)
 {
+    if (!str || !p)
+        return 1;
+
     int  i, j;
     int  tmp_int[16];
     char tmp_str[256];
@@ -49,7 +55,7 @@ int inter_party_fromstr (char *str, struct party *p)
 
 //  printf("sscanf party main info\n");
     if (sscanf
-        (str, "%d\t%[^\t]\t%d,%d\t", &tmp_int[0], tmp_str, &tmp_int[1],
+        (str, "%d\t%255[^\t]\t%d,%d\t", &tmp_int[0], tmp_str, &tmp_int[1],
          &tmp_int[2]) != 4)
         return 1;
 
@@ -70,7 +76,7 @@ int inter_party_fromstr (char *str, struct party *p)
 //      printf("sscanf party member info %d\n", i);
 
         if (sscanf
-            (str + 1, "%d,%d\t%[^\t]\t", &tmp_int[0], &tmp_int[1],
+            (str + 1, "%d,%d\t%255[^\t]\t", &tmp_int[0], &tmp_int[1],
              tmp_str) != 3)
             return 1;
 
@@ -89,7 +95,7 @@ int inter_party_fromstr (char *str, struct party *p)
 // パーティデータのロード
 int inter_party_init ()
 {
-    char line[8192];
+    char line[16382];
     struct party *p;
     FILE *fp;
     int  c = 0;
@@ -141,11 +147,17 @@ int inter_party_init ()
 // パーティーデータのセーブ用
 int inter_party_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     char line[8192];
     FILE *fp;
 
-    inter_party_tostr (line, (struct party *) data);
     fp = va_arg (ap, FILE *);
+    if (!fp)
+        return 0;
+
+    inter_party_tostr (line, (struct party *) data);
     fprintf (fp, "%s" RETCODE, line);
 
     return 0;
@@ -174,11 +186,20 @@ int inter_party_save ()
 // パーティ名検索用
 int search_partyname_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
+    if (!data)
+        return 0;
+
     struct party *p = (struct party *) data, **dst;
     char *str;
 
     str = va_arg (ap, char *);
+    if (!str)
+        return 0;
+
     dst = va_arg (ap, struct party **);
+    if (!dst)
+        return 0;
+
     if (strcmpi (p->name, str) == 0)
         *dst = p;
 
@@ -188,6 +209,9 @@ int search_partyname_sub (void *key __attribute__ ((unused)), void *data, va_lis
 // パーティ名検索
 struct party *search_partyname (char *str)
 {
+    if (!str)
+        return 0;
+
     struct party *p = NULL;
     numdb_foreach (party_db, search_partyname_sub, str, &p);
 
@@ -197,6 +221,9 @@ struct party *search_partyname (char *str)
 // EXP公平分配できるかチェック
 int party_check_exp_share (struct party *p)
 {
+    if (!p)
+        return 0;
+
     int  i;
     int  maxlv = 0, minlv = 0x7fffffff;
 
@@ -218,6 +245,9 @@ int party_check_exp_share (struct party *p)
 // パーティが空かどうかチェック
 int party_check_empty (struct party *p)
 {
+    if (!p)
+        return 1;
+
     int  i;
 
 //  printf("party check empty %08X\n", (int)p);
@@ -240,6 +270,9 @@ int party_check_empty (struct party *p)
 // キャラの競合がないかチェック用
 int party_check_conflict_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     struct party *p = (struct party *) data;
     int  party_id, account_id, i;
     char *nick;
@@ -247,6 +280,8 @@ int party_check_conflict_sub (void *key __attribute__ ((unused)), void *data, va
     party_id = va_arg (ap, int);
     account_id = va_arg (ap, int);
     nick = va_arg (ap, char *);
+    if (!nick)
+        return 0;
 
     if (p->party_id == party_id)    // 本来の所属なので問題なし
         return 0;
@@ -281,6 +316,9 @@ int party_check_conflict (int party_id, int account_id, char *nick)
 // パーティ作成可否
 int mapif_party_created (int fd, int account_id, struct party *p)
 {
+    if (!p)
+        return 0;
+
     WFIFOW (fd, 0) = 0x3820;
     WFIFOL (fd, 2) = account_id;
     if (p != NULL)
@@ -316,6 +354,9 @@ int mapif_party_noinfo (int fd, int party_id)
 // パーティ情報まとめ送り
 int mapif_party_info (int fd, struct party *p)
 {
+    if (!p)
+        return 0;
+
     unsigned char buf[4 + sizeof (struct party)];
 
     WBUFW (buf, 0) = 0x3821;
@@ -346,6 +387,9 @@ int mapif_party_memberadded (int fd, int party_id, int account_id, int flag)
 int mapif_party_optionchanged (int fd, struct party *p, int account_id,
                                int flag)
 {
+    if (!p)
+        return 0;
+
     unsigned char buf[15];
 
     WBUFW (buf, 0) = 0x3823;
@@ -367,6 +411,9 @@ int mapif_party_optionchanged (int fd, struct party *p, int account_id,
 // パーティ脱退通知
 int mapif_party_leaved (int party_id, int account_id, char *name)
 {
+    if (!name)
+        return 0;
+
     unsigned char buf[34];
 
     WBUFW (buf, 0) = 0x3824;
@@ -382,6 +429,9 @@ int mapif_party_leaved (int party_id, int account_id, char *name)
 // パーティマップ更新通知
 int mapif_party_membermoved (struct party *p, int idx)
 {
+    if (!p)
+        return 0;
+
     unsigned char buf[29];
 
     WBUFW (buf, 0) = 0x3825;
@@ -411,6 +461,9 @@ int mapif_party_broken (int party_id, int flag)
 // パーティ内発言
 int mapif_party_message (int party_id, int account_id, char *mes, int len)
 {
+    if (!mes)
+        return 0;
+
     unsigned char buf[len + 12];
 
     WBUFW (buf, 0) = 0x3827;
@@ -430,6 +483,9 @@ int mapif_party_message (int party_id, int account_id, char *mes, int len)
 int mapif_parse_CreateParty (int fd, int account_id, char *name, char *nick,
                              char *map, int lv)
 {
+    if (!name || !nick || !map)
+        return 0;
+
     struct party *p;
     int  i;
 
@@ -494,6 +550,9 @@ int mapif_parse_PartyInfo (int fd, int party_id)
 int mapif_parse_PartyAddMember (int fd, int party_id, int account_id,
                                 char *nick, char *map, int lv)
 {
+    if (!nick || !map)
+        return 0;
+
     struct party *p;
     int  i;
 
@@ -588,6 +647,9 @@ int mapif_parse_PartyLeave (int fd __attribute__ ((unused)), int party_id, int a
 int mapif_parse_PartyChangeMap (int fd, int party_id, int account_id,
                                 char *map, int online, int lv)
 {
+    if (!map)
+        return 0;
+
     struct party *p;
     int  i;
 
