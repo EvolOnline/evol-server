@@ -113,6 +113,7 @@ int  online_sorting_option = 0; // sorting option to display online players in o
 int  online_display_option = 1; // display options: to know which columns must be displayed
 int  online_refresh_html = 20;  // refresh time (in sec) of the html file in the explorer
 int  online_gm_display_min_level = 20;  // minimum GM level to display 'GM' when we want to display it
+int  online_refresh_interval = 8; // refresh time (in sec) of online files
 
 int *online_chars;              // same size of char_dat, and id value of current server (or -1)
 time_t update_online;           // to update online files when we receiving information from a server (not less than 8 seconds)
@@ -2652,7 +2653,7 @@ int parse_frommap (int fd)
                 }
                 if (update_online < time (NULL))
                 {               // Time is done
-                    update_online = time (NULL) + 8;
+                    update_online = time (NULL) + online_refresh_interval;
                     create_online_files (); // only every 8 sec. (normally, 1 server send users every 5 sec.) Don't update every time, because that takes time, but only every 2 connection.
                     // it set to 8 sec because is more than 5 (sec) and if we have more than 1 map-server, informations can be received in shifted.
                 }
@@ -4114,6 +4115,12 @@ int char_config_read (const char *cfgName)
             online_refresh_html = atoi (w2);
             if (online_refresh_html < 1)
                 online_refresh_html = 1;
+        }
+        else if (strcmpi (w1, "online_refresh_interval") == 0)
+        {
+            online_refresh_interval = atoi (w2);
+            if (online_refresh_interval < 1)
+                online_refresh_interval = 1;
         }
         else if (strcmpi (w1, "anti_freeze_enable") == 0)
         {
