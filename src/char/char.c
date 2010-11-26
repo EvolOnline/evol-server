@@ -983,7 +983,7 @@ int make_new_char (int fd, unsigned char *dat)
     if (dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29] != 5 * 6 ||   // stats
         dat[30] >= 9 ||         // slots (dat[30] can not be negativ)
         /*dat[33] < 0 ||*/ dat[33] >= 30 || // hair style
-        dat[31] >= 12)
+        dat[31] >= 30)
     {                           // hair color (dat[31] can not be negativ)
         char_log
             ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"
