@@ -70,6 +70,11 @@ int  name_ignoring_case = 0;    // Allow or not identical name for characters bu
 int  char_name_option = 0;      // Option to know which letters/symbols are authorised in the name of a character (0: all, 1: only those in char_name_letters, 2: all EXCEPT those in char_name_letters) by [Yor]
 char char_name_letters[1024] = "";  // list of letters/symbols authorised (or not) in a character name. by [Yor]
 
+int min_hair_style = 0;
+int min_hair_color = 0;
+int max_hair_style = 20;
+int max_hair_color = 9;
+
 struct char_session_data
 {
     int  account_id, login_id1, login_id2, sex;
@@ -982,8 +987,8 @@ int make_new_char (int fd, unsigned char *dat)
 
     if (dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29] != 5 * 6 ||   // stats
         dat[30] >= 9 ||         // slots (dat[30] can not be negativ)
-        /*dat[33] < 0 ||*/ dat[33] >= 30 || // hair style
-        dat[31] >= 30)
+        dat[33] < min_hair_style || dat[33] >= max_hair_style || // hair style
+        dat[31] < min_hair_color || dat[31] >= max_hair_color)
     {                           // hair color (dat[31] can not be negativ)
         char_log
             ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"

@@ -17,5 +17,9 @@ extern int party_share_level;
 extern int db_count;
 extern int db_skip_count;
 extern char inter_log_filename[1024];
+extern int min_hair_style;
+extern int min_hair_color;
+extern int max_hair_style;
+extern int max_hair_color;
 
 #endif

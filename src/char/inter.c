@@ -256,6 +256,30 @@ int inter_config_read (const char *cfgName)
             if (db_skip_count <= 0)
                 db_skip_count = 1;
         }
+        else if (strcmpi (w1, "min_hair_style") == 0)
+        {
+            min_hair_style = atoi (w2);
+            if (min_hair_style <= 0)
+                min_hair_style = 1;
+        }
+        else if (strcmpi (w1, "max_hair_style") == 0)
+        {
+            max_hair_style = atoi (w2);
+            if (max_hair_style <= 0)
+                max_hair_style = 1;
+        }
+        else if (strcmpi (w1, "min_hair_color") == 0)
+        {
+            min_hair_color = atoi (w2);
+            if (min_hair_color <= 0)
+                min_hair_color = 1;
+        }
+        else if (strcmpi (w1, "max_hair_color") == 0)
+        {
+            max_hair_color = atoi (w2);
+            if (max_hair_color <= 0)
+                max_hair_color = 1;
+        }
         else if (strcmpi (w1, "import") == 0)
         {
             inter_config_read (w2);
