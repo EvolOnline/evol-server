@@ -1466,11 +1466,34 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
     while (p && pos < max)
     {
         int  nameid, value;
+        int  nameid2;
         char name[24];
         struct item_data *id = NULL;
         p++;
         if (sscanf (p, "%d:%d", &nameid, &value) == 2)
         {
+        }
+        else if (sscanf (p, "%d-%d:%d", &nameid, &nameid2, &value) == 3)
+        {
+            int f;
+            for (f = nameid; f <= nameid2 && pos < max; f ++)
+            {
+                if (itemdb_exists(f))
+                {
+                    nd->u.shop_item[pos].nameid = f;
+                    if (value < 0)
+                    {
+                        if (id == NULL)
+                            id = itemdb_search (f);
+                        if (id)
+                            value = id->value_buy * abs (value);
+                    }
+                    nd->u.shop_item[pos].value = value;
+                    pos++;
+                }
+            }
+            p = strchr (p, ',');
+            continue;
         }
         else if (sscanf (p, "%23s :%d", name, &value) == 2)
         {
