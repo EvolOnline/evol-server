@@ -368,11 +368,15 @@ static int itemdb_readdb (void)
 
             memcpy (id->name, str[1], 24);
             memcpy (id->jname, str[2], 24);
+
+            if (!strlen(str[3]))
+                printf("item type error. Id %d\n", nameid);
             id->type = atoi (str[3]);
             id->value_buy = atoi (str[4]);
             id->value_sell = atoi (str[5]);
             if (id->value_buy == 0 && id->value_sell == 0)
             {
+                // may be here need warning?
             }
             else if (id->value_buy == 0)
             {
@@ -382,6 +386,9 @@ static int itemdb_readdb (void)
             {
                 id->value_sell = id->value_buy / 2;
             }
+
+            if (!strlen(str[6]))
+                printf("item weight error. Id %d\n", nameid);
             id->weight = atoi (str[6]);
             id->atk = atoi (str[7]);
             id->def = atoi (str[8]);
@@ -389,6 +396,10 @@ static int itemdb_readdb (void)
             id->magic_bonus = atoi (str[10]);
             id->slot = atoi (str[11]);
             id->sex = atoi (str[12]);
+
+            if (id->type != 0 && id->type != 3 && !strlen(str[13]))
+                printf("item Loc error. Id %d\n", nameid);
+
             id->equip = atoi (str[13]);
             id->wlv = atoi (str[14]);
             id->elv = atoi (str[15]);
