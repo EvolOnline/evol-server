@@ -496,29 +496,46 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
             x1 = map[m].xs - 1;
         if (y1 >= map[m].ys)
             y1 = map[m].ys - 1;
+
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
+            int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                bl = map[m].block[bx + by * map[m].bxs];
-                c = map[m].block_count[bx + by * map[m].bxs];
-                for (i = 0; i < c && bl; i++, bl = bl->next)
+                int b2 = bx + by1;
+                bl = map[m].block[b2];
+                if (bl)
                 {
-                    if (bl && type && bl->type != type)
-                        continue;
-                    if (bl && bl->x >= x0 && bl->x <= x1 && bl->y >= y0
-                        && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
-                        bl_list[bl_list_count++] = bl;
+                    c = map[m].block_count[b2];
+                    for (i = 0; i < c && bl; i++, bl = bl->next)
+                    {
+                        if (!bl)
+                            break;
+                        if (type && bl->type != type)
+                            continue;
+                        if (bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                            && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
+                        {
+                            bl_list[bl_list_count++] = bl;
+                        }
+                    }
                 }
-                bl = map[m].block_mob[bx + by * map[m].bxs];
-                c = map[m].block_mob_count[bx + by * map[m].bxs];
-                for (i = 0; i < c && bl; i++, bl = bl->next)
+                bl = map[m].block_mob[b2];
+                if (bl)
                 {
-                    if (bl && type && bl->type != type)
-                        continue;
-                    if (bl && bl->x >= x0 && bl->x <= x1 && bl->y >= y0
-                        && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
-                        bl_list[bl_list_count++] = bl;
+                    c = map[m].block_mob_count[b2];
+                    for (i = 0; i < c && bl; i++, bl = bl->next)
+                    {
+                        if (!bl)
+                            break;
+                        if (type && bl->type != type)
+                            continue;
+                        if (bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                            && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
+                        {
+                            bl_list[bl_list_count++] = bl;
+                        }
+                    }
                 }
             }
         }
@@ -535,51 +552,64 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
             x1 = map[m].xs - 1;
         if (y1 >= map[m].ys)
             y1 = map[m].ys - 1;
+
+        const int x0dx = x0 + dx;
+        const int x1dx = x1 + dx;
+        const int y0dy = y0 + dy;
+        const int y1dy = y1 + dy;
+
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
+            int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                bl = map[m].block[bx + by * map[m].bxs];
-                c = map[m].block_count[bx + by * map[m].bxs];
-                for (i = 0; i < c && bl; i++, bl = bl->next)
+                int b2 = bx + by1;
+                bl = map[m].block[b2];
+                if (bl)
                 {
-                    if (bl && type && bl->type != type)
-                        continue;
-                    if ((bl)
-                        && !(bl->x >= x0 && bl->x <= x1 && bl->y >= y0
-                             && bl->y <= y1))
-                        continue;
-                    if ((bl)
-                        && ((dx > 0 && bl->x < x0 + dx)
-                            || (dx < 0 && bl->x > x1 + dx) || (dy > 0
-                                                               && bl->y <
-                                                               y0 + dy)
-                            || (dy < 0 && bl->y > y1 + dy))
-                        && bl_list_count < BL_LIST_MAX)
-                        bl_list[bl_list_count++] = bl;
+                    c = map[m].block_count[b2];
+                    for (i = 0; i < c && bl; i++, bl = bl->next)
+                    {
+                        if (!bl)
+                            break;
+                        if (type && bl->type != type)
+                            continue;
+                        if (!(bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                            && bl->y <= y1))
+                            continue;
+                        if (((dx > 0 && bl->x < x0dx)
+                            || (dx < 0 && bl->x > x1dx) || (dy > 0 && bl->y < y0dy)
+                            || (dy < 0 && bl->y > y1dy))
+                            && bl_list_count < BL_LIST_MAX)
+                        {
+                            bl_list[bl_list_count++] = bl;
+                        }
+                    }
                 }
-                bl = map[m].block_mob[bx + by * map[m].bxs];
-                c = map[m].block_mob_count[bx + by * map[m].bxs];
-                for (i = 0; i < c && bl; i++, bl = bl->next)
+                bl = map[m].block_mob[b2];
+                if (bl)
                 {
-                    if (bl && type && bl->type != type)
-                        continue;
-                    if ((bl)
-                        && !(bl->x >= x0 && bl->x <= x1 && bl->y >= y0
-                             && bl->y <= y1))
-                        continue;
-                    if ((bl)
-                        && ((dx > 0 && bl->x < x0 + dx)
-                            || (dx < 0 && bl->x > x1 + dx) || (dy > 0
-                                                               && bl->y <
-                                                               y0 + dy)
-                            || (dy < 0 && bl->y > y1 + dy))
-                        && bl_list_count < BL_LIST_MAX)
-                        bl_list[bl_list_count++] = bl;
+                    c = map[m].block_mob_count[b2];
+                    for (i = 0; i < c && bl; i++, bl = bl->next)
+                    {
+                        if (!bl)
+                            break;
+                        if (type && bl->type != type)
+                            continue;
+                        if (!(bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                            && bl->y <= y1))
+                            continue;
+                        if (((dx > 0 && bl->x < x0dx)
+                            || (dx < 0 && bl->x > x1dx) || (dy > 0 && bl->y < y0dy)
+                            || (dy < 0 && bl->y > y1dy))
+                            && bl_list_count < BL_LIST_MAX)
+                        {
+                            bl_list[bl_list_count++] = bl;
+                        }
+                    }
                 }
             }
         }
-
     }
 
     if (bl_list_count >= BL_LIST_MAX)
