@@ -5,6 +5,7 @@ M32=-m32
 endif
 
 #STATIC=-static
+#MAPPROFILE=-pg -fno-inline
 
 CC = gcc ${M32} ${STATIC}
 LEX=flex

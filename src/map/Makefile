@@ -12,10 +12,10 @@ COMMON_OBJ = ../common/core.o ../common/socket.o ../common/timer.o ../common/grf
 LIBS = -lz -lm
 
 map-server: obj/tmw.o obj/magic-interpreter-lexer.o obj/magic-interpreter-parser.o obj/magic-interpreter-base.o obj/magic-expr.o obj/magic-stmt.o obj/magic.o obj/map.o obj/chrif.o obj/clif.o obj/pc.o obj/npc.o obj/chat.o obj/path.o obj/itemdb.o obj/mob.o obj/script.o obj/storage.o obj/skill.o obj/skill-pools.o obj/atcommand.o obj/battle.o obj/intif.o obj/trade.o obj/party.o obj/guild.o $(COMMON_OBJ)
-	$(CC) -o ../../$@ $^ $(LIBS)
+	$(CC) ${MAPPROFILE} -o ../../$@ $^ $(LIBS)
 
 obj/%.o: %.c
-	$(COMPILE.c) ${STATIC} $(OUTPUT_OPTION) $<
+	$(COMPILE.c) ${MAPPROFILE} ${STATIC} $(OUTPUT_OPTION) $<
 
 magic-interpreter-lexer.c: magic-interpreter.l
 	$(LEX) -o magic-interpreter-lexer.c magic-interpreter.l
