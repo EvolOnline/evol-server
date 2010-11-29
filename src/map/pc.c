@@ -8083,7 +8083,7 @@ static int pc_spheal (struct map_session_data *sd)
     if (pc_issit (sd))
         a += a;
     if (sd->sc_data[SC_MAGNIFICAT].timer != -1) // �}�O�j�t�B�J�[�g
-        a += a;
+        a += a * sd->sc_data[SC_MAGNIFICAT].val1;
 
     gc = guild_mapname2gc (sd->mapname);    // Increased guild castle regen [Valaris]
     if (gc)
@@ -8112,7 +8112,7 @@ static int pc_hpheal (struct map_session_data *sd)
     if (pc_issit (sd))
         a += a;
     if (sd->sc_data[SC_MAGNIFICAT].timer != -1) // Modified by RoVeRT
-        a += a;
+        a += a * sd->sc_data[SC_MAGNIFICAT].val1;
 
     gc = guild_mapname2gc (sd->mapname);    // Increased guild castle regen [Valaris]
     if (gc)
