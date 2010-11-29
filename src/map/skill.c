@@ -10807,7 +10807,8 @@ int skill_status_effect (struct block_list *bl, int type, int val1, int val2,
 */
         case SC_WINDWALK:      /* ウインドウォーク */
             calc_flag = 1;
-            val2 = (val1 / 2);  //Flee上昇率
+            if (!val2)
+                val2 = (val1 / 2);  //Flee上昇率
             break;
         case SC_BERSERK:       /* バーサーク */
             if (sd)

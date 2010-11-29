@@ -232,6 +232,7 @@ int  buildin_disablearena (struct script_state *st);    // Added by RoVeRT
 int  buildin_hideoffnpc (struct script_state *st);
 int  buildin_hideonnpc (struct script_state *st);
 int  buildin_sc_start (struct script_state *st);
+int  buildin_sc_startv2 (struct script_state *st);
 int  buildin_sc_start2 (struct script_state *st);
 int  buildin_sc_end (struct script_state *st);
 int  buildin_sc_check (struct script_state *st);    // [Fate]
@@ -569,6 +570,8 @@ struct
     buildin_hideonnpc, "hideonnpc", "s"},
     {
     buildin_sc_start, "sc_start", "iii*"},
+    {
+    buildin_sc_startv2, "sc_startv2", "iiii*"},
     {
     buildin_sc_start2, "sc_start2", "iiii*"},
     {
@@ -4912,6 +4915,26 @@ int buildin_sc_start (struct script_state *st)
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
     skill_status_change_start (bl, type, val1, 0, 0, 0, tick, 0);
+    return 0;
+}
+
+int buildin_sc_startv2 (struct script_state *st)
+{
+    struct block_list *bl;
+    int  type, tick, val1, val2;
+    type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    tick = conv_num (st, &(st->stack->stack_data[st->start + 3]));
+    val1 = conv_num (st, &(st->stack->stack_data[st->start + 4]));
+    val2 = conv_num (st, &(st->stack->stack_data[st->start + 5]));
+    if (st->end > st->start + 6)    //�w�肵���L���������Ԉُ��ɂ���
+        bl = map_id2bl (conv_num
+                        (st, &(st->stack->stack_data[st->start + 6])));
+    else
+        bl = map_id2bl (st->rid);
+    if (bl->type == BL_PC
+        && ((struct map_session_data *) bl)->state.potionpitcher_flag)
+        bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
+    skill_status_change_start (bl, type, val1, val2, 0, 0, tick, 0);
     return 0;
 }
 
