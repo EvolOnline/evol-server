@@ -73,6 +73,9 @@ static int wis_dellist[WISDELLIST_MAX], wis_delnum;
 // アカウント変数を文字列へ変換
 int inter_accreg_tostr (char *str, struct accreg *reg)
 {
+    if (!str || !reg)
+        return 1;
+
     int  j;
     char *p = str;
 
@@ -88,6 +91,9 @@ int inter_accreg_tostr (char *str, struct accreg *reg)
 // アカウント変数を文字列から変換
 int inter_accreg_fromstr (const char *str, struct accreg *reg)
 {
+    if (!str || !reg)
+        return 1;
+
     int  j, v, n;
     char buf[128];
     const char *p = str;
@@ -98,7 +104,7 @@ int inter_accreg_fromstr (const char *str, struct accreg *reg)
 
     for (j = 0, p += n; j < ACCOUNT_REG_NUM; j++, p += n)
     {
-        if (sscanf (p, "%[^,],%d %n", buf, &v, &n) != 2)
+        if (sscanf (p, "%127[^,],%d %n", buf, &v, &n) != 2)
             break;
         memcpy (reg->reg[j].str, buf, 32);
         reg->reg[j].value = v;
@@ -111,7 +117,7 @@ int inter_accreg_fromstr (const char *str, struct accreg *reg)
 // アカウント変数の読み込み
 int inter_accreg_init ()
 {
-    char line[8192];
+    char line[16382];
     FILE *fp;
     int  c = 0;
     struct accreg *reg;
@@ -151,7 +157,7 @@ int inter_accreg_init ()
 // アカウント変数のセーブ用
 int inter_accreg_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
-    char line[8192];
+    char line[16382];
     FILE *fp;
     struct accreg *reg = (struct accreg *) data;
 
@@ -195,6 +201,9 @@ int inter_config_read (const char *cfgName)
     char line[1024], w1[1024], w2[1024];
     FILE *fp;
 
+    if (!cfgName)
+        return 1;
+
     fp = fopen_ (cfgName, "r");
     if (fp == NULL)
     {
@@ -207,7 +216,7 @@ int inter_config_read (const char *cfgName)
             continue;
         line[sizeof (line) - 1] = '\0';
 
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) != 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) != 2)
             continue;
 
         if (strcmpi (w1, "storage_txt") == 0)
@@ -269,6 +278,9 @@ int inter_config_read (const char *cfgName)
 // ログ書き出し
 int inter_log (char *fmt, ...)
 {
+    if (!fmt)
+        return 0;
+
     FILE *logfp;
     va_list ap;
 
@@ -325,6 +337,9 @@ int inter_mapif_init (int fd)
 // GMメッセージ送信
 int mapif_GMmessage (unsigned char *mes, int len)
 {
+    if (!mes || len < 0)
+        return 0;
+
     unsigned char buf[len];
 
     WBUFW (buf, 0) = 0x3800;
@@ -339,6 +354,9 @@ int mapif_GMmessage (unsigned char *mes, int len)
 // Wisp/page transmission to all map-server
 int mapif_wis_message (struct WisData *wd)
 {
+    if (!wd)
+        return 0;
+
     unsigned char buf[56 + wd->len];
 
     WBUFW (buf, 0) = 0x3801;
@@ -355,6 +373,9 @@ int mapif_wis_message (struct WisData *wd)
 // Wisp/page transmission result to map-server
 int mapif_wis_end (struct WisData *wd, int flag)
 {
+    if (!wd)
+        return 0;
+
     unsigned char buf[27];
 
     WBUFW (buf, 0) = 0x3802;
@@ -369,6 +390,9 @@ int mapif_wis_end (struct WisData *wd, int flag)
 // アカウント変数送信
 int mapif_account_reg (int fd, unsigned char *src)
 {
+    if (!src)
+        return 0;
+
     unsigned char buf[WBUFW (src, 2)];
 
     memcpy (WBUFP (buf, 0), src, WBUFW (src, 2));
@@ -409,6 +433,9 @@ int mapif_account_reg_reply (int fd, int account_id)
 // Existence check of WISP data
 int check_ttl_wisdata_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
+    if (!data || !ap)
+        return 0;
+
     unsigned long tick;
     struct WisData *wd = (struct WisData *) data;
     tick = va_arg (ap, unsigned long);
@@ -432,6 +459,9 @@ int check_ttl_wisdata ()
         for (i = 0; i < wis_delnum; i++)
         {
             struct WisData *wd = numdb_search (wis_db, wis_dellist[i]);
+            if (!wd)
+                continue;
+
             printf ("inter: wis data id=%d time out : from %s to %s\n",
                     wd->id, wd->src, wd->dst);
             // removed. not send information after a timeout. Just no answer for the player
@@ -457,8 +487,12 @@ int mapif_parse_GMmessage (int fd)
 }
 
 // Wisp/page request to send
-int mapif_parse_WisRequest (int fd)
+int mapif_parse_WisRequest (int fd __attribute__ ((unused)))
 {
+    // disable here buggy logic
+
+    return 0;
+/*
     struct WisData *wd;
     static int wisid = 0;
     int  index;
@@ -524,6 +558,7 @@ int mapif_parse_WisRequest (int fd)
     }
 
     return 0;
+*/
 }
 
 // Wisp/page transmission result
@@ -548,6 +583,9 @@ int mapif_parse_WisReply (int fd)
 // Received wisp message from map-server for ALL gm (just copy the message and resends it to ALL map-servers)
 int mapif_parse_WisToGM (int fd)
 {
+    if (RFIFOW (fd, 2) <= 0)
+        return 0;
+
     unsigned char buf[RFIFOW (fd, 2)];  // 0x3003/0x3803 <packet_len>.w <wispname>.24B <min_gm_level>.w <message>.?B
 
     memcpy (WBUFP (buf, 0), RFIFOP (fd, 0), RFIFOW (fd, 2));
