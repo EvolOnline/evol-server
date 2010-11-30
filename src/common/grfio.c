@@ -48,18 +48,27 @@ static char data_dir[1024] = "";    // "../";
 // accessor to data_file,adata_file,sdata_file
 char *grfio_setdatafile (const char *str)
 {
+    if (!str)
+        return 0;
+
     strcpy (data_file, str);
     return data_file;
 }
 
 char *grfio_setadatafile (const char *str)
 {
+    if (!str)
+        return 0;
+
     strcpy (adata_file, str);
     return adata_file;
 }
 
 char *grfio_setsdatafile (const char *str)
 {
+    if (!str)
+        return 0;
+
     strcpy (sdata_file, str);
     return sdata_file;
 }
@@ -174,6 +183,9 @@ static unsigned char NibbleData[4][64] = {
  */
 static unsigned int getlong (unsigned char *p)
 {
+    if (!p)
+        return 0;
+
     return *p + p[1] * 256 + (p[2] + p[3] * 256) * 65536;
 }
 
@@ -183,6 +195,9 @@ static unsigned int getlong (unsigned char *p)
  */
 static void NibbleSwap (BYTE * Src, int len)
 {
+    if (!Src)
+        return;
+
     for (; 0 < len; len--, Src++)
     {
         *Src = (*Src >> 4) | (*Src << 4);
@@ -191,6 +206,9 @@ static void NibbleSwap (BYTE * Src, int len)
 
 static void BitConvert (BYTE * Src, char *BitSwapTable)
 {
+    if (!Src || !BitSwapTable)
+        return;
+
     int  lop, prm;
     BYTE tmp[8];
     *(DWORD *) tmp = *(DWORD *) (tmp + 4) = 0;
@@ -208,6 +226,9 @@ static void BitConvert (BYTE * Src, char *BitSwapTable)
 
 static void BitConvert4 (BYTE * Src)
 {
+    if (!Src)
+        return;
+
     int  lop, prm;
     BYTE tmp[8];
     tmp[0] = ((Src[7] << 5) | (Src[4] >> 3)) & 0x3f;    // ..0 vutsr
@@ -239,6 +260,9 @@ static void BitConvert4 (BYTE * Src)
 
 static void decode_des_etc (BYTE * buf, int len, int type, int cycle)
 {
+    if (!buf)
+        return;
+
     int  lop, cnt = 0;
     if (cycle < 3)
         cycle = 3;
@@ -316,6 +340,9 @@ static void decode_des_etc (BYTE * buf, int len, int type, int cycle)
 static int decode_zip (Bytef * dest, uLongf * destLen, const Bytef * source,
                        uLong sourceLen)
 {
+    if (!dest || !destLen || !source)
+        return Z_BUF_ERROR;
+
     z_stream stream;
     int  err;
 
@@ -359,6 +386,9 @@ static int decode_zip (Bytef * dest, uLongf * destLen, const Bytef * source,
  */
 static int filehash (unsigned char *fname)
 {
+    if (!fname)
+        return 0;
+
     unsigned int hash = 0;
     while (*fname)
     {
@@ -387,6 +417,9 @@ FILELIST *filelist_find (char *fname)
 {
     int  hash;
 
+    if (!fname)
+        return 0;
+
     for (hash = filelist_hash[filehash (fname)]; hash >= 0;
          hash = filelist[hash].next)
     {
@@ -406,6 +439,9 @@ FILELIST *filelist_find (char *fname)
 static FILELIST *filelist_add (FILELIST * entry)
 {
     int  hash;
+
+    if (!entry)
+        return 0;
 
     if (filelist_entrys >= FILELIST_LIMIT)
     {
@@ -446,6 +482,9 @@ static FILELIST *filelist_add (FILELIST * entry)
 
 static FILELIST *filelist_modify (FILELIST * entry)
 {
+    if (!entry)
+        return 0;
+
     FILELIST *fentry;
     if ((fentry = filelist_find (entry->fn)) != NULL)
     {
@@ -500,6 +539,9 @@ char *grfio_resnametable (char *fname, char *lfname)
     char *p;
     char w1[256], w2[256], restable[256], line[512];
 
+    if (!fname || !lfname)
+        return 0;
+
     sprintf (restable, "%sdata\\resnametable.txt", data_dir);
 
     for (p = &restable[0]; *p != 0; p++)
@@ -515,7 +557,7 @@ char *grfio_resnametable (char *fname, char *lfname)
 
     while (fgets (line, 508, fp))
     {
-        if ((sscanf (line, "%[^#]#%[^#]#", w1, w2) == 2)
+        if ((sscanf (line, "%255[^#]#%255[^#]#", w1, w2) == 2)
             && (sscanf (fname, "%*5s%s", lfname) == 1)
             && (!strcmpi (w1, lfname)))
         {
@@ -535,13 +577,16 @@ char *grfio_resnametable (char *fname, char *lfname)
  */
 int grfio_size (char *fname)
 {
+    if (!fname)
+        return 0;
+
     FILELIST *entry;
 
     entry = filelist_find (fname);
 
     if (entry == NULL || entry->gentry < 0)
     {                           // LocalFileCheck
-        char lfname[256], rname[256], *p;
+        char lfname[1000], rname[1000], *p;
         FILELIST lentry;
         struct stat st;
 
@@ -578,6 +623,9 @@ int grfio_size (char *fname)
  */
 void *grfio_reads (char *fname, int *size)
 {
+    if (!fname || !size)
+        return 0;
+
     FILE *in = NULL;
     unsigned char *buf = NULL, *buf2 = NULL;
     char *gfname;
@@ -719,6 +767,9 @@ void *grfio_read (char *fname)
  */
 static unsigned char *decode_filename (unsigned char *buf, int len)
 {
+    if (!buf)
+        return 0;
+
     int  lop;
     for (lop = 0; lop < len; lop += 8)
     {
@@ -736,6 +787,9 @@ static unsigned char *decode_filename (unsigned char *buf, int len)
  */
 static int grfio_entryread (char *gfname, int gentry)
 {
+    if (!gfname)
+        return 0;
+
     FILE *fp;
     int  grf_size, list_size;
     unsigned char grf_header[0x2e];
@@ -976,7 +1030,7 @@ static void grfio_resourcecheck ()
 
     for (ptr = buf; ptr - buf < size;)
     {
-        if (sscanf (ptr, "%[^#]#%[^#]#", w1, w2) == 2)
+        if (sscanf (ptr, "%255[^#]#%255[^#]#", w1, w2) == 2)
         {
             if (strstr (w2, "bmp"))
             {
@@ -1018,6 +1072,9 @@ static void grfio_resourcecheck ()
 
 int grfio_add (char *fname)
 {
+    if (!fname)
+        return 0;
+
     int  len, result;
     char *buf;
 
@@ -1104,6 +1161,9 @@ void grfio_final (void)
  */
 void grfio_init (char *fname)
 {
+    if (!fname)
+        return;
+
     FILE *data_conf;
     char line[1024], w1[1024], w2[1024];
     int  result = 0, result2 = 0, result3 = 0;
@@ -1115,7 +1175,7 @@ void grfio_init (char *fname)
     {
         while (fgets (line, 1020, data_conf))
         {
-            if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) == 2)
+            if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) == 2)
             {
                 if (strcmp (w1, "data") == 0)
                     strcpy (data_file, w2);
