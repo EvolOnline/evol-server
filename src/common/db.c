@@ -37,6 +37,9 @@ static void *malloc_dbn (void)
 
 static void free_dbn (struct dbn *add_dbn)
 {
+    if (!add_dbn)
+        return;
+
     add_dbn->parent = dbn_free;
     dbn_free = add_dbn;
 }
@@ -44,6 +47,9 @@ static void free_dbn (struct dbn *add_dbn)
 
 static int strdb_cmp (struct dbt *table, void *a, void *b)
 {
+    if (!table || !a || !b)
+        return 0;
+
     if (table->maxlen)
         return strncmp (a, b, table->maxlen);
     return strcmp (a, b);
@@ -51,6 +57,9 @@ static int strdb_cmp (struct dbt *table, void *a, void *b)
 
 static unsigned int strdb_hash (struct dbt *table, void *a)
 {
+    if (!table || !a)
+        return 0;
+
     int  i;
     unsigned int h;
     unsigned char *p = a;
@@ -117,6 +126,9 @@ struct dbt *numdb_init (void)
 
 void *db_search (struct dbt *table, void *key)
 {
+    if (!table || !key)
+        return 0;
+
     struct dbn *p;
 
     for (p = table->ht[table->hash (table, key) % HASH_SIZE]; p;)
@@ -134,6 +146,9 @@ void *db_search (struct dbt *table, void *key)
 
 void *db_search2 (struct dbt *table, const char *key)
 {
+    if (!table || !key)
+        return 0;
+
     int  i, sp;
     struct dbn *p, *pn, *stack[64];
     int  slen = strlen (key);
@@ -175,6 +190,9 @@ void *db_search2 (struct dbt *table, const char *key)
 
 static void db_rotate_left (struct dbn *p, struct dbn **root)
 {
+    if (!p || !root)
+        return;
+
     struct dbn *y = p->right;
     p->right = y->left;
     if (y->left != 0)
@@ -193,6 +211,9 @@ static void db_rotate_left (struct dbn *p, struct dbn **root)
 
 static void db_rotate_right (struct dbn *p, struct dbn **root)
 {
+    if (!p || !root)
+        return;
+
     struct dbn *y = p->left;
     p->left = y->right;
     if (y->right != 0)
@@ -211,6 +232,9 @@ static void db_rotate_right (struct dbn *p, struct dbn **root)
 
 static void db_rebalance (struct dbn *p, struct dbn **root)
 {
+    if (!p || !root)
+        return;
+
     p->color = RED;
     while (p != *root && p->parent->color == RED)
     {                           // rootは必ず黒で親は赤いので親の親は必ず存在する
@@ -264,6 +288,9 @@ static void db_rebalance (struct dbn *p, struct dbn **root)
 
 static void db_rebalance_erase (struct dbn *z, struct dbn **root)
 {
+    if (!z || !root)
+        return;
+
     struct dbn *y = z, *x = NULL, *x_parent = NULL;
 
     if (y->left == NULL)
@@ -404,6 +431,9 @@ struct dbn *db_insert (struct dbt *table, void *key, void *data)
     struct dbn *p, *priv;
     int  c, hash;
 
+    if (!table)
+        return 0;
+
     hash = table->hash (table, key) % HASH_SIZE;
     for (c = 0, priv = NULL, p = table->ht[hash]; p;)
     {
@@ -469,6 +499,9 @@ struct dbn *db_insert (struct dbt *table, void *key, void *data)
 
 void *db_erase (struct dbt *table, void *key)
 {
+    if (!table)
+        return 0;
+
     void *data;
     struct dbn *p;
     int  c, hash;
@@ -499,6 +532,9 @@ void *db_erase (struct dbt *table, void *key)
 void db_foreach (struct dbt *table, int (*func) (void *, void *, va_list),
                  ...)
 {
+    if (!table)
+        return;
+
     int  i, sp;
     // red-black treeなので64個stackがあれば2^32個ノードまで大丈夫
     struct dbn *p, *pn, *stack[64];
@@ -541,6 +577,9 @@ void db_foreach (struct dbt *table, int (*func) (void *, void *, va_list),
 
 void db_final (struct dbt *table, int (*func) (void *, void *, va_list), ...)
 {
+    if (!table)
+        return;
+
     int  i, sp;
     struct dbn *p, *pn, *stack[64];
     va_list ap;
