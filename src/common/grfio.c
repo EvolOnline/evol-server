@@ -623,7 +623,7 @@ int grfio_size (char *fname)
  */
 void *grfio_reads (char *fname, int *size)
 {
-    if (!fname || !size)
+    if (!fname)
         return 0;
 
     FILE *in = NULL;
@@ -788,7 +788,7 @@ static unsigned char *decode_filename (unsigned char *buf, int len)
 static int grfio_entryread (char *gfname, int gentry)
 {
     if (!gfname)
-        return 0;
+        return 1;
 
     FILE *fp;
     int  grf_size, list_size;
