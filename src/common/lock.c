@@ -10,7 +10,12 @@
 // 新しいファイルの書き込み開始
 FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unused)))
 {
-    char newfile[512];
+    //+++ need check filename length?
+
+    if (!filename || !info)
+        return 0;
+
+    char newfile[800];
     FILE *fp;
     int  no = getpid ();
 
@@ -27,8 +32,13 @@ FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unus
 // 旧ファイルを削除＆新ファイルをリネーム
 int lock_fclose (FILE * fp, const char *filename, int *info, int *cnt)
 {
+    //+++ need check filename length?
+
+    if (!filename || !info || !cnt)
+        return 1;
+
     int  ret = 0;
-    char newfile[512];
+    char newfile[800];
     if (fp != NULL)
     {
         ret = fclose_ (fp);
