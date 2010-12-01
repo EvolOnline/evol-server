@@ -142,6 +142,9 @@ pid_t pid = 0; // For forked DB writes
 //------------------------------
 int login_log (char *fmt, ...)
 {
+    if (!fmt)
+        return 0;
+
     FILE *logfp;
     va_list ap;
     struct timeval tv;
@@ -188,7 +191,7 @@ int isGM (int account_id)
 //-------------------------------------------------------
 int read_gm_account ()
 {
-    char line[512];
+    char line[1024];
     struct gm_account *p;
     FILE *fp;
     int  c = 0;
@@ -294,6 +297,9 @@ int read_gm_account ()
 //--------------------------------------------------------------
 int check_ipmask (unsigned int ip, const unsigned char *str)
 {
+    if (!str)
+        return 0;
+
     unsigned int mask = 0, i = 0, m, ip2, a0, a1, a2, a3;
     unsigned char *p = (unsigned char *) &ip2, *p2 = (unsigned char *) &mask;
 
@@ -333,6 +339,9 @@ int check_ipmask (unsigned int ip, const unsigned char *str)
 //---------------------
 int check_ip (unsigned int ip)
 {
+    if (!ip)
+        return 0;
+
     int  i;
     unsigned char *p = (unsigned char *) &ip;
     char buf[32];
@@ -388,6 +397,9 @@ int check_ip (unsigned int ip)
 //--------------------------------
 int check_ladminip (unsigned int ip)
 {
+    if (!ip)
+        return 0;
+
     int  i;
     unsigned char *p = (unsigned char *) &ip;
     char buf[32];
@@ -423,6 +435,9 @@ int check_ladminip (unsigned int ip)
 //-----------------------------------------------------
 int remove_control_chars (unsigned char *str)
 {
+    if (!str)
+        return 0;
+
     int  i;
     int  change = 0;
 
@@ -447,7 +462,7 @@ int e_mail_check (unsigned char *email)
     unsigned char *last_arobas;
 
     // athena limits
-    if (strlen (email) < 3 || strlen (email) > 39)
+    if (!email || strlen (email) < 3 || strlen (email) > 39)
         return 0;
 
     // part of RFC limits (official reference of e-mail description)
@@ -492,6 +507,9 @@ int search_account_index (char *account_name)
 {
     int  i, quantity, index;
 
+    if (!account_name)
+        return -1;
+
     quantity = 0;
     index = -1;
     for (i = 0; i < auth_num; i++)
@@ -522,6 +540,9 @@ int mmo_auth_tostr (char *str, struct auth_dat *p)
 {
     int  i;
     char *str_p = str;
+
+    if (!str || !p)
+        return 1;
 
     str_p += sprintf (str_p, "%d\t%s\t%s\t%s\t%c\t%d\t%d\t"
                       "%s\t%s\t%ld\t%s\t%s\t%ld\t",
@@ -577,8 +598,8 @@ int mmo_auth_init (void)
         p = line;
 
         // database version reading (v2)
-        if (((i = sscanf (line, "%d\t%[^\t]\t%[^\t]\t%[^\t]\t%c\t%d\t%d\t"
-                          "%[^\t]\t%[^\t]\t%ld\t%[^\t]\t%[^\t]\t%ld%n",
+        if (((i = sscanf (line, "%d\t%2000[^\t]\t%2000[^\t]\t%2000[^\t]\t%c\t%d\t%d\t"
+                          "%2000[^\t]\t%2000[^\t]\t%ld\t%2000[^\t]\t%2000[^\t]\t%ld%n",
                           &account_id, userid, pass, lastlogin, &sex,
                           &logincount, &state, email, error_message,
                           &connect_until_time, last_ip, memo, &ban_until_time,
@@ -586,8 +607,8 @@ int mmo_auth_init (void)
             ||
             ((i =
               sscanf (line,
-                      "%d\t%[^\t]\t%[^\t]\t%[^\t]\t%c\t%d\t%d\t"
-                      "%[^\t]\t%[^\t]\t%ld\t%[^\t]\t%[^\t]%n", &account_id,
+                      "%d\t%2000[^\t]\t%2000[^\t]\t%2000[^\t]\t%c\t%d\t%d\t"
+                      "%2000[^\t]\t%2000[^\t]\t%ld\t%2000[^\t]\t%2000[^\t]%n", &account_id,
                       userid, pass, lastlogin, &sex, &logincount, &state,
                       email, error_message, &connect_until_time, last_ip,
                       memo, &n)) == 12 && line[n] == '\t'))
@@ -740,7 +761,7 @@ int mmo_auth_init (void)
             for (j = 0; j < ACCOUNT_REG2_NUM; j++)
             {
                 p += n;
-                if (sscanf (p, "%[^\t,],%d %n", str, &v, &n) != 2)
+                if (sscanf (p, "%2000[^\t,],%d %n", str, &v, &n) != 2)
                 {
                     // We must check if a str is void. If it's, we can continue to read other REG2.
                     // Account line will have something like: str2,9 ,9 str3,1 (here, ,9 is not good)
@@ -771,7 +792,7 @@ int mmo_auth_init (void)
             // Old athena database version reading (v1)
         }
         else if ((i =
-                  sscanf (line, "%d\t%[^\t]\t%[^\t]\t%[^\t]\t%c\t%d\t%d\t%n",
+                  sscanf (line, "%d\t%2000[^\t]\t%2000[^\t]\t%2000[^\t]\t%c\t%d\t%d\t%n",
                           &account_id, userid, pass, lastlogin, &sex,
                           &logincount, &state, &n)) >= 5)
         {
@@ -886,7 +907,7 @@ int mmo_auth_init (void)
             for (j = 0; j < ACCOUNT_REG2_NUM; j++)
             {
                 p += n;
-                if (sscanf (p, "%[^\t,],%d %n", str, &v, &n) != 2)
+                if (sscanf (p, "%2000[^\t,],%d %n", str, &v, &n) != 2)
                 {
                     // We must check if a str is void. If it's, we can continue to read other REG2.
                     // Account line will have something like: str2,9 ,9 str3,1 (here, ,9 is not good)
@@ -1103,6 +1124,9 @@ int charif_sendallwos (int sfd, unsigned char *buf, unsigned int len)
 {
     int  i, c;
 
+    if (!buf)
+        return 0;
+
     for (i = 0, c = 0; i < MAX_SERVERS; i++)
     {
         int  fd;
@@ -1176,6 +1200,9 @@ int check_GM_file (int tid __attribute__ ((unused)),
 //-------------------------------------
 int mmo_auth_new (struct mmo_account *account, char sex, char *email)
 {
+    if (!account || !email)
+        return -1;
+
     time_t timestamp, timestamp_temp;
     struct tm *tmtime;
     int  i = auth_num;
@@ -1246,6 +1273,9 @@ int mmo_auth_new (struct mmo_account *account, char sex, char *email)
 //---------------------------------------
 int mmo_auth (struct mmo_account *account, int fd)
 {
+    if (!account)
+        return 1;
+
     int  i;
     struct timeval tv;
     char tmpstr[256];
@@ -2250,6 +2280,9 @@ int parse_fromchar (int fd)
 //---------------------------------------
 int parse_admin (int fd)
 {
+    if (!session[fd])
+        return 0;
+
     int  i, j;
     unsigned char *p = (unsigned char *) &session[fd]->client_addr.sin_addr;
     char *account_name;
@@ -3517,7 +3550,7 @@ int parse_admin (int fd)
             default:
             {
                 FILE *logfp;
-                char tmpstr[24];
+                char tmpstr[100];
                 struct timeval tv;
                 logfp = fopen_ (login_log_unknown_packets_filename, "a");
                 if (logfp)
@@ -3588,6 +3621,9 @@ int lan_ip_check (unsigned char *p)
     int  i;
     int  lancheck = 1;
 
+    if (!p)
+        return 1;
+
 //  printf("lan_ip_check: to compare: %d.%d.%d.%d, network: %d.%d.%d.%d/%d.%d.%d.%d\n",
 //         p[0], p[1], p[2], p[3],
 //         subneti[0], subneti[1], subneti[2], subneti[3],
@@ -3610,6 +3646,9 @@ int lan_ip_check (unsigned char *p)
 //----------------------------------------------------------------------------------------
 int parse_login (int fd)
 {
+    if (!session[fd])
+        return 0;
+
     struct mmo_account account;
     int  result, i, j;
     unsigned char *p = (unsigned char *) &session[fd]->client_addr.sin_addr;
@@ -4223,6 +4262,9 @@ int config_switch (const char *str)
 //----------------------------------
 int login_lan_config_read (const char *lancfgName)
 {
+    if (!lancfgName)
+        return 1;
+
     int  j;
     struct hostent *h = NULL;
     char line[1024], w1[1024], w2[1024];
@@ -4255,7 +4297,7 @@ int login_lan_config_read (const char *lancfgName)
             continue;
 
         line[sizeof (line) - 1] = '\0';
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) != 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) != 2)
             continue;
 
         remove_control_chars (w1);
@@ -4356,6 +4398,9 @@ int login_lan_config_read (const char *lancfgName)
 //-----------------------------------
 int login_config_read (const char *cfgName)
 {
+    if (!cfgName)
+        return 1;
+
     char line[1024], w1[1024], w2[1024];
     FILE *fp;
 
@@ -4374,7 +4419,7 @@ int login_config_read (const char *cfgName)
             continue;
 
         line[sizeof (line) - 1] = '\0';
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) == 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) == 2)
         {
             remove_control_chars (w1);
             remove_control_chars (w2);
