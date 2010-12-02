@@ -382,7 +382,10 @@ in_addr_t MD5_ip(char *secret, in_addr_t ip)
 
     if (!secret)
     {
-        memset(&conv, 4, 0);
+        conv.bytes.b1 = 0;
+        conv.bytes.b2 = 0;
+        conv.bytes.b3 = 0;
+        conv.bytes.b4 = 0;
         return conv.ip;
     }
 
