@@ -207,6 +207,13 @@ static void MD5_Round_Calculate (const unsigned char *block,
 /** output is the coded binary in the character sequence which wants to code string. */
 void MD5_String2binary (const char *string, char *output)
 {
+    if (!output)
+        return;
+    if (!string)
+    {
+        *output=0;
+        return;
+    }
 //var
     /*8bit */
     unsigned char padding_message[64];  //Extended message   512bit 64byte
@@ -282,6 +289,13 @@ void MD5_String2binary (const char *string, char *output)
 /** output is the coded character sequence in the character sequence which wants to code string. */
 void MD5_String (const char *string, char *output)
 {
+    if (!output)
+        return;
+    if (!string)
+    {
+        *output=0;
+        return;
+    }
     unsigned char digest[16];
 
     MD5_String2binary (string, digest);
@@ -296,6 +310,9 @@ void MD5_String (const char *string, char *output)
 // Hash a password with a salt.
 char *MD5_saltcrypt(const char *key, const char *salt)
 {
+    if (!salt)
+        return 0;
+
 	char buf[66], *sbuf = buf+32;
 	static char obuf[33];
 
@@ -311,7 +328,8 @@ char *MD5_saltcrypt(const char *key, const char *salt)
 	return(obuf);
 }
 
-char *make_salt() {
+char *make_salt()
+{
 	static char salt[6];
 	int i;
 	for (i=0; i<5; i++)
@@ -320,14 +338,28 @@ char *make_salt() {
 	return(salt);
 }
 
-int pass_ok(const char *password, const char *crypted) {
+int pass_ok(const char *password, const char *crypted)
+{
+    if (!password || !crypted)
+        return 0;
+
 	char buf[40], *salt=buf+1;
 
 	strncpy(buf, crypted, 40);
-	*strchr(buf, '$') = '\0';
+    char *ptr = strchr(buf, '$');
+    if (ptr)
+    {
+        *ptr = '\0';
 
-	if (!strcmp(crypted, MD5_saltcrypt(password, salt)))
-		return(1);
+        if (!strcmp(crypted, MD5_saltcrypt(password, salt)))
+            return(1);
+    }
+    else
+    {
+        //++ may be here need compare non encripted passwords?
+//        if (!strcmp(crypted, password))
+//            return(1);
+    }
 
 	return(0);
 }
@@ -347,6 +379,12 @@ in_addr_t MD5_ip(char *secret, in_addr_t ip)
         } bytes;
         in_addr_t ip;
     } conv;
+
+    if (!secret)
+    {
+        memset(&conv, 4, 0);
+        return conv.ip;
+    }
 
     // MD5sum a secret + the IP address
     memset(&ipbuf, 0, sizeof(ipbuf));
