@@ -7750,12 +7750,22 @@ int pc_unequipitem (struct map_session_data *sd, int n, int type)
         if (!type)
             pc_checkallowskill (sd);
         if (sd->weapontype1 == 0 && sd->weapontype2 == 0)
-            skill_encchant_eremental_end (&sd->bl, -1); //���펝�������͖���ő����t�^����
+            skill_encchant_eremental_end (&sd->bl, -1);
     }
     else
     {
         clif_unequipitemack (sd, n, 0, 0);
     }
+    if(sd->inventory_data[n] && sd->inventory_data[n]->unequip_script)
+    {
+        argrec_t arg[2];
+        arg[0].name = "@slotId";
+        arg[0].v.i = 0;
+        arg[1].name = "@itemId";
+        arg[1].v.i = sd->inventory_data[n]->nameid;
+        run_script_l (sd->inventory_data[n]->unequip_script, 0, sd->bl.id, 0, 2, arg);
+    }
+
     if (!type)
     {
         pc_calcstatus (sd, 0);

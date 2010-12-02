@@ -27,6 +27,7 @@ struct item_data
     int  refine;
     char *use_script;
     char *equip_script;
+    char *unequip_script;
     struct
     {
         unsigned available:1;
