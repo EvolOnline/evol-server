@@ -325,6 +325,9 @@ static void mob_init (struct mob_data *md)
     md->stats[MOB_SPEED] = mob_db[class].speed;
     md->stats[MOB_XP_BONUS] = MOB_XP_BONUS_BASE;
 
+    if (!(mutation_power >> 1))
+        return;
+
     for (i = 0; i < mutations_nr; i++)
     {
         int  stat_nr = MRAND (MOB_XP_BONUS + 1);
@@ -4788,6 +4791,8 @@ static int mob_readdb (void)
                     atoi (str[48 + i * 2]) * battle_config.mvp_item_rate /
                     100;
             }
+            // skip two positions
+
             mob_db[class].mutations_nr = atoi (str[55]);
             mob_db[class].mutation_power = atoi (str[56]);
 
