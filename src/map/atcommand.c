@@ -211,6 +211,9 @@ ATCOMMAND_FUNC (skillpool_unfocus); // [Fate]
 ATCOMMAND_FUNC (skill_learn);   // [Fate]
 ATCOMMAND_FUNC (wgm);
 ATCOMMAND_FUNC (ipcheck);
+ATCOMMAND_FUNC (checkmobstatus);
+ATCOMMAND_FUNC (setmapflag);
+ATCOMMAND_FUNC (warpmob);
 
 /*==========================================
  *AtCommandInfo atcommand_info[]\‘¢‘Ì‚Ì’è‹`
@@ -409,6 +412,9 @@ static AtCommandInfo atcommand_info[] = {
     {AtCommand_IterateBackward, "@sp-unfocus", 80, atcommand_skillpool_unfocus},    // [Fate]
     {AtCommand_IterateBackward, "@skill-learn", 80, atcommand_skill_learn}, // [Fate]
     {AtCommand_Wgm, "@wgm", 0, atcommand_wgm},
+    {AtCommand_Checkmobstatus, "@mobstat", 60, atcommand_checkmobstatus},
+    {AtCommand_SetMapFlag, "@setmapflag", 60, atcommand_setmapflag},
+    {AtCommand_WarpMob, "@warpmob", 60, atcommand_warpmob},
     {AtCommand_IpCheck, "@ipcheck", 60, atcommand_ipcheck},
 
 // add new commands before this line
@@ -8989,6 +8995,7 @@ atcommand_tee (const int fd, struct map_session_data *sd,
     strcat (data, " : ");
     strcat (data, message);
     clif_message (&sd->bl, data);
+    free(data);
     return 0;
 }
 
@@ -9238,6 +9245,222 @@ int atcommand_skill_learn (const int fd, struct map_session_data *sd,
     }
     else
         clif_displaymessage (fd, "Character not found.");
+
+    return 0;
+}
+
+int atcommand_checkmobstatus (const int fd, struct map_session_data *sd,
+                              const char *command, const char *message)
+{
+    if (!fd || !sd || !command)
+        return -1;
+
+    int mobid = 0;
+    char mob_state[5][10] = { "Idle", "Walk", "Attack", "Dead", "Delay" };
+    char output[200];
+    struct mob_data *md;
+    struct block_list *bl;
+
+    memset (output, '\0', sizeof (output));
+
+    if (!message || !*message
+        || sscanf (message, "%d", &mobid) < 1 || !mobid)
+    {
+        clif_displaymessage (fd, "Usage: @mobstat mobid");
+        return -1;
+    }
+
+    if ((bl = map_id2bl (mobid)) != NULL && bl && bl->type == BL_MOB)
+    {
+        nullpo_retr (-1, md = (struct mob_data *) bl);
+
+        if (md->state.state < 5 + MS_IDLE)
+            snprintf (output, sizeof(output), "Name: %s, Status: %s", md->name, mob_state[md->state.state - MS_IDLE]);
+        else
+            snprintf (output, sizeof(output), "Name: %s, Status: %d", md->name, md->state.state - MS_IDLE);
+        clif_displaymessage (fd, output);
+
+        snprintf (output, sizeof(output), "Position: (%d,%d), Destination: (%d,%d), Target Id: %d", md->bl.x, md->bl.y, md->to_x, md->to_y, md->target_id);
+        clif_displaymessage (fd, output);
+
+        snprintf (output, sizeof(output), "Hp: %d", md->hp);
+        clif_displaymessage (fd, output);
+
+        snprintf (output, sizeof(output), "Spawned at: %u(%u), Last thinking time: %u", md->last_spawntime, gettick (), md->last_thinktime);
+        clif_displaymessage (fd, output);
+
+        snprintf (output, sizeof(output), "Timer Id: %u, Can Move tick: %u", md->timer, md->canmove_tick);
+        clif_displaymessage (fd, output);
+    }
+    else
+    {
+        clif_displaymessage (fd, "Monster not found"); // Monster not found.
+        return -1;
+    }
+
+    return 0;
+}
+
+int atcommand_warpmob (const int fd, struct map_session_data *sd,
+                       const char *command, const char *message)
+{
+    if (!fd || !sd || !command)
+        return -1;
+
+    int x, y, mobid = 0;
+    char output[200];
+    struct mob_data *md;
+    struct block_list *bl;
+
+    memset (output, '\0', sizeof (output));
+
+    if (!message || !*message
+        || sscanf (message, "%d %d %d", &mobid, &x, &y) < 1 || !mobid)
+    {
+        clif_displaymessage (fd, "Usage: @warpmob mobid x y");
+        return -1;
+    }
+
+    if ((bl = map_id2bl (mobid)) != NULL && bl && bl->type == BL_MOB)
+    {
+        nullpo_retr (1, md = (struct mob_data *) bl);
+
+        md->bl.x = x;
+        md->bl.y = y;
+
+        md->target_id = 0;
+        md->state.targettype = NONE_ATTACKABLE;
+        md->attacked_id = 0;
+        md->state.skillstate = MSS_IDLE;
+        mob_changestate (md, MS_IDLE, 0);
+
+        clif_fixmobpos(md);
+    }
+    else
+    {
+        clif_displaymessage (fd, "Monster not found"); // Monster not found.
+        return -1;
+    }
+    return 0;
+}
+
+void changemapflag(struct map_session_data *sd, char *mapflagname, int m, int mode)
+{
+    //+++ need check m
+    if (!sd || !mapflagname)
+        return;
+
+    mode = mode ? 1 : 0;
+
+    if (!strncmp(mapflagname,"notrade", 80))
+    {
+        map[m].flag.notrade = mode;
+    }
+    else if (!strncmp(mapflagname,"nodrop", 80))
+    {
+        map[m].flag.no_player_drops = mode;
+    }
+//    else if (!strncmp(mapflagname,"nomagic", 80))
+//    {
+//        map[m].flag.no_magic = mode;
+//    }
+    else if (!strncmp(mapflagname,"snow", 80))
+    {
+        map[m].flag.snow = mode;
+        //clif_specialeffect (&sd->bl, 162, mode);
+    }
+    else if (!strncmp(mapflagname,"rain", 80))
+    {
+        map[m].flag.rain = mode;
+        //clif_specialeffect (&sd->bl, 161, mode);
+    }
+    else if (!strncmp(mapflagname,"fog", 80))
+    {
+        map[m].flag.fog = mode;
+        //clif_specialeffect (&sd->bl, 233, mode);
+    }
+
+    return;
+}
+
+int atcommand_setmapflag (const int fd, struct map_session_data *sd,
+                          const char *command, const char *message)
+{
+    if (!fd || !sd || !command)
+        return -1;
+
+    int mode, nread, m = 0;
+    char mapflagname[81], strmode[11], mapname[81];
+    char output[200];
+
+    memset (mapflagname, '\0', sizeof (mapflagname));
+    memset (strmode, '\0', sizeof (strmode));
+    memset (mapname, '\0', sizeof (mapname));
+    memset (output, '\0', sizeof (output));
+
+    if (!message || !*message
+        || (nread = sscanf (message, "%80s %10s %80s", mapflagname, strmode, mapname)) < 1)
+    {
+        clif_displaymessage (fd, "Usage: @setmapflag mapflag|list|status [mode] [map]");
+        clif_displaymessage (fd, "mode: can be 0, off, false or 1, on, true. Set to 0 if not specified ");
+        return -1;
+    }
+
+    if (mapname[0] == '\0')
+        strcpy (mapname, sd->mapname);
+    if (strstr (mapname, ".gat") == NULL && strstr (mapname, ".afm") == NULL && strlen (mapname) < 13)
+        strcat (mapname, ".gat");
+
+    m = map_mapname2mapid (mapname);
+    if (m == -1)
+    {
+        clif_displaymessage (fd, "Map not found");
+        return -1;
+    }
+
+    if (!strncmp(mapflagname, "list", 80))
+    {
+        clif_displaymessage (fd, "Mapflags list:");
+        clif_displaymessage (fd, "notrade: disable any trade");
+        clif_displaymessage (fd, "nodrop: disable items drop");
+        clif_displaymessage (fd, "nomagic: disable magic");
+        clif_displaymessage (fd, "snow: enable snow effect in map");
+        clif_displaymessage (fd, "rain: enable rain effect in map");
+        clif_displaymessage (fd, "fog: enable fog effect in map");
+        return 0;
+    }
+    else if (!strncmp(mapflagname, "status", 80))
+    {
+        clif_displaymessage (fd, "---Mapflags status---");
+        snprintf (output, sizeof(output), "notrade: %s", map[m].flag.notrade ? "on" : "off");
+        clif_displaymessage (fd, output);
+        snprintf (output, sizeof(output), "nodrop: %s", map[m].flag.no_player_drops ? "on" : "off");
+        clif_displaymessage (fd, output);
+//        snprintf (output, sizeof(output), "nomagic: %s", map[m].flag.no_magic ? "on" : "off");
+//        clif_displaymessage (fd, output);
+        snprintf (output, sizeof(output), "snow: %s", map[m].flag.snow ? "on" : "off");
+        clif_displaymessage (fd, output);
+        snprintf (output, sizeof(output), "rain: %s", map[m].flag.rain ? "on" : "off");
+        clif_displaymessage (fd, output);
+        snprintf (output, sizeof(output), "fog: %s", map[m].flag.fog ? "on" : "off");
+        clif_displaymessage (fd, output);
+        return 0;
+    }
+
+    if(!strncmp(strmode, "on", 10) || !strncmp(strmode, "true", 10) || !strncmp(strmode, "1", 10))
+        mode = 1;
+    else if(!strncmp(strmode, "off", 10) || !strncmp(strmode, "false", 10) || !strncmp(strmode, "0", 10) || nread < 2)
+        mode = 0;
+    else
+    {
+        clif_displaymessage (fd, "Wrong mode");
+        return -1;
+    }
+
+    changemapflag(sd, mapflagname, m, mode);
+
+    snprintf (output, sizeof(output), "Mapflag %s %s", mapflagname, mode ? "on" : "off");
+    clif_displaymessage (fd, output);
 
     return 0;
 }

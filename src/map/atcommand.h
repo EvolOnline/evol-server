@@ -186,6 +186,9 @@ enum AtCommandType
     AtCommand_Wgm,
     AtCommand_IpCheck,
     AtCommand_ListNearby,       // [fate]
+    AtCommand_Checkmobstatus, // [var]
+    AtCommand_SetMapFlag, // [var]
+    AtCommand_WarpMob, // [var]
     // end
     AtCommand_Unknown,
     AtCommand_MAX
