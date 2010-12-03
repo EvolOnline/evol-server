@@ -1000,7 +1000,7 @@ static int op_gain_exp (env_t * env __attribute__ ((unused)), int args_nr __attr
 }
 
 //UFB
-static int op_resurrect (env_t * env, int args_nr, val_t * args)
+static int op_resurrect (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
 {
     if (!args)
         return 1;
