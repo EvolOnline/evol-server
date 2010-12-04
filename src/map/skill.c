@@ -1110,7 +1110,6 @@ int skill_additional_effect (struct block_list *src, struct block_list *bl,
     struct map_session_data *sd = NULL;
     struct map_session_data *dstsd = NULL;
     struct mob_data *md = NULL;
-    struct mob_data *dstmd = NULL;
 
     int  skill, skill2;
     int  rate, luk;
@@ -1155,7 +1154,7 @@ int skill_additional_effect (struct block_list *src, struct block_list *bl,
         dstsd = (struct map_session_data *) bl;
     else if (bl->type == BL_MOB)
     {
-        dstmd = (struct mob_data *) bl; //未使用？
+//        dstmd = (struct mob_data *) bl;
         if (sc_def_mdef > 50)
             sc_def_mdef = 50;
         if (sc_def_vit > 50)
@@ -2330,7 +2329,6 @@ static int skill_timerskill (int tid __attribute__ ((unused)),
     struct mob_data *md = NULL;
     struct block_list *src = map_id2bl (id), *target;
     struct skill_timerskill *skl = NULL;
-    int  range;
 
     nullpo_retr (0, src);
 
@@ -2356,6 +2354,7 @@ static int skill_timerskill (int tid __attribute__ ((unused)),
     skl->timer = -1;
     if (skl->target_id)
     {
+        int  range;
         struct block_list tbl;
         target = map_id2bl (skl->target_id);
         if (skl->skill_id == RG_INTIMIDATE)
@@ -3253,8 +3252,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
     struct mob_data *dstmd = NULL;
     int  i;
     int  sc_def_vit, sc_def_mdef, strip_fix, strip_time, strip_per;
-    int  sc_dex, sc_luk;
-    //クラスチェンジ用ボスモンスターID
+
     int  changeclass[] =
         { 1038, 1039, 1046, 1059, 1086, 1087, 1112, 1115, 1157, 1159, 1190,
         1272, 1312, 1373, 1492
@@ -3269,8 +3267,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
     else if (src->type == BL_MOB)
         md = (struct mob_data *) src;
 
-    sc_dex = battle_get_mdef (bl);
-    sc_luk = battle_get_luk (bl);
+//    sc_dex = battle_get_mdef (bl);
+//    sc_luk = battle_get_luk (bl);
     sc_def_vit = 100 - (3 + battle_get_vit (bl) + battle_get_luk (bl) / 3);
     sc_def_vit = 100 - (3 + battle_get_vit (bl) + battle_get_luk (bl) / 3);
     sc_def_mdef = 100 - (3 + battle_get_mdef (bl) + battle_get_luk (bl) / 3);
@@ -3313,13 +3311,13 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
         {
             int  heal = skill_calc_heal (src, skilllv);
             int  heal_get_jobexp;
-            int  skill;
             struct pc_base_job s_class;
 
             if (dstsd && dstsd->special_state.no_magic_damage)
                 heal = 0;       /* 黄金蟲カード（ヒール量０） */
             if (sd)
             {
+                int  skill;
                 s_class = pc_calc_base_job (sd->status.class);
                 if ((skill = pc_checkskill (sd, HP_MEDITATIO)) > 0) // メディテイティオ
                     heal += heal * (skill * 2 / 100);
@@ -3344,17 +3342,17 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
         }
             break;
 
-        case ALL_RESURRECTION: /* リザレクション */
+        case ALL_RESURRECTION:
             if (bl->type == BL_PC)
             {
-                int  per = 0;
                 struct map_session_data *tsd = (struct map_session_data *) bl;
                 nullpo_retr (1, tsd);
                 if ((map[bl->m].flag.pvp) && tsd->pvp_point < 0)
-                    break;      /* PVPで復活不可能状態 */
+                    break;      /* PVP */
 
                 if (pc_isdead (tsd))
-                {               /* 死亡判定 */
+                {
+                    int  per = 0;
                     clif_skill_nodamage (src, bl, skillid, skilllv, 1);
                     switch (skilllv)
                     {
@@ -3947,11 +3945,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
 
         case KN_BRANDISHSPEAR: /*ブランディッシュスピア */
         {
-            int  c, n = 4, ar;
+            int  c, n = 4;
             int  dir = map_calc_dir (src, bl->x, bl->y);
             struct square tc;
             int  x = bl->x, y = bl->y;
-            ar = skilllv / 3;
+//            ar = skilllv / 3;
             skill_brandishspear_first (&tc, dir, x, y);
             skill_brandishspear_dir (&tc, dir, 4);
             /* 範囲④ */
@@ -4518,9 +4516,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
         case AM_POTIONPITCHER: /* ポーションピッチャー */
         {
             struct block_list tbl;
-            int  i, x, hp = 0, sp = 0;
+            int  x, hp = 0, sp = 0;
             if (sd)
             {
+                int  i;
                 if (sd == dstsd)
                 {               // cancel use on oneself
                     map_freeblock_unlock ();
@@ -6626,8 +6625,8 @@ int skill_unit_onplace (struct skill_unit *src, struct block_list *bl,
             else if (bl->type == BL_MOB && battle_config.mob_warpportal)
             {
                 int  m = map_mapname2mapid (sg->valstr);
-                struct mob_data *md;
-                md = (struct mob_data *) bl;
+//                struct mob_data *md;
+//                md = (struct mob_data *) bl;
                 mob_warp ((struct mob_data *) bl, m, sg->val2 >> 16,
                           sg->val2 & 0xffff, 3);
             }
@@ -7109,7 +7108,7 @@ int skill_castend_pos (int tid, unsigned int tick, int id,
                        int data __attribute__ ((unused)))
 {
     struct map_session_data *sd = map_id2sd (id) /*,*target_sd=NULL */ ;
-    int  range, maxcount;
+    int  range;
 
     nullpo_retr (0, sd);
 
@@ -7210,6 +7209,7 @@ int skill_castend_pos (int tid, unsigned int tick, int id,
 
     if (battle_config.pc_land_skill_limit)
     {
+        int  maxcount;
         maxcount = skill_get_maxcount (sd->skillid);
         if (maxcount > 0)
         {
@@ -8035,7 +8035,7 @@ int skill_use_id (struct map_session_data *sd, int target_id,
                   int skill_num, int skill_lv)
 {
     unsigned int tick;
-    int  casttime = 0, delay = 0, skill, range;
+    int  casttime = 0, delay = 0, range;
     struct map_session_data *target_sd = NULL;
     int  forcecast = 0;
     struct block_list *bl;
@@ -8378,6 +8378,7 @@ int skill_use_id (struct map_session_data *sd, int target_id,
         skill_status_change_end (&sd->bl, SC_CLOAKING, -1);
     if (casttime > 0)
     {
+        int  skill;
         sd->skilltimer =
             add_timer (tick + casttime, skill_castend_id, sd->bl.id, 0);
         if ((skill = pc_checkskill (sd, SA_FREECAST)) > 0)
@@ -8414,7 +8415,7 @@ int skill_use_pos (struct map_session_data *sd,
     struct block_list bl;
     struct status_change *sc_data;
     unsigned int tick;
-    int  casttime = 0, delay = 0, skill, range;
+    int  casttime = 0, delay = 0, range;
 
     nullpo_retr (0, sd);
 
@@ -8504,6 +8505,7 @@ int skill_use_pos (struct map_session_data *sd,
         skill_status_change_end (&sd->bl, SC_CLOAKING, -1);
     if (casttime > 0)
     {
+        int  skill;
         sd->skilltimer =
             add_timer (tick + casttime, skill_castend_pos, sd->bl.id, 0);
         if ((skill = pc_checkskill (sd, SA_FREECAST)) > 0)
@@ -8800,7 +8802,7 @@ int skill_devotion3 (struct block_list *bl, int target)
     // クルセが歩いた時の距離チェック
     struct map_session_data *md;
     struct map_session_data *sd;
-    int  n, r = 0;
+    int  r = 0;
 
     nullpo_retr (1, bl);
 
@@ -8812,6 +8814,7 @@ int skill_devotion3 (struct block_list *bl, int target)
 
     if (pc_checkskill (sd, CR_DEVOTION) + 6 < r)
     {                           // 許容範囲を超えてた
+        int  n;
         for (n = 0; n < 5; n++)
             if (md->dev.val1[n] == target)
                 md->dev.val2[n] = 0;    // 離れた時は、糸を切るだけ
@@ -9175,7 +9178,6 @@ int skill_trap_splash (struct block_list *bl, va_list ap)
     struct skill_unit *unit;
     struct skill_unit_group *sg;
     struct block_list *ss;
-    int  i;
 
     nullpo_retr (0, bl);
     nullpo_retr (0, ap);
@@ -9198,13 +9200,16 @@ int skill_trap_splash (struct block_list *bl, va_list ap)
                                          BF_MISC, tick);
                 break;
             case 0x8f:         /* ブラストマイン */
-            case 0x98:         /* クレイモアートラップ */
+            case 0x98:
+            {
+                int  i;
                 for (i = 0; i < splash_count; i++)
                 {
                     skill_attack (BF_MISC, ss, src, bl, sg->skill_id,
                                   sg->skill_lv, tick,
                                   (sg->val2) ? 0x0500 : 0);
                 }
+            }
             case 0x97:         /* フリージングトラップ */
                 skill_attack (BF_WEAPON, ss, src, bl, sg->skill_id,
                               sg->skill_lv, tick, (sg->val2) ? 0x0500 : 0);
@@ -9299,7 +9304,6 @@ int skill_status_change_active (struct block_list *bl, int type)
 int skill_status_change_end (struct block_list *bl, int type, int tid)
 {
     struct status_change *sc_data;
-    int  opt_flag = 0, calc_flag = 0;
     short *sc_count, *option, *opt1, *opt2, *opt3;
 
     nullpo_retr (0, bl);
@@ -9323,6 +9327,7 @@ int skill_status_change_end (struct block_list *bl, int type, int tid)
     if ((*sc_count) > 0 && sc_data[type].timer != -1
         && (sc_data[type].timer == tid || tid == -1))
     {
+        int  opt_flag = 0, calc_flag = 0;
 
         if (tid == -1)          // タイマから呼ばれていないならタイマ削除をする
             delete_timer (sc_data[type].timer, skill_status_change_timer);
@@ -9466,9 +9471,8 @@ int skill_status_change_end (struct block_list *bl, int type, int tid)
                 break;
             case SC_SELFDESTRUCTION:   /* 自爆 */
             {
-                //自分のダメージは0にして
-                struct mob_data *md = NULL;
-                if (bl->type == BL_MOB && (md = (struct mob_data *) bl))
+//                struct mob_data *md = NULL;
+                if (bl->type == BL_MOB && (struct mob_data *) bl)
                     skill_castend_damage_id (bl, bl, sc_data[type].val2,
                                              sc_data[type].val1, gettick (),
                                              0);
@@ -9958,11 +9962,11 @@ int skill_status_change_timer (int tid, unsigned int tick, int id, int data)
 
         case SC_DANCING:       //ダンススキルの時間SP消費
         {
-            int  s = 0;
             if (sd)
             {
                 if (sd->status.sp > 0 && (--sc_data[type].val3) > 0)
                 {
+                    int  s = 0;
                     switch (sc_data[type].val1)
                     {
                         case BD_RICHMANKIM:    /* ニヨルドの宴 3秒にSP1 */
@@ -11243,7 +11247,6 @@ struct skill_unit_group *skill_initunitgroup (struct block_list *src,
                                               int count, int skillid,
                                               int skilllv, int unit_id)
 {
-    int  i;
     struct skill_unit_group *group = NULL, *list = NULL;
     int  maxsug = 0;
 
@@ -11261,6 +11264,7 @@ struct skill_unit_group *skill_initunitgroup (struct block_list *src,
     }
     if (list)
     {
+        int  i;
         for (i = 0; i < maxsug; i++)    /* 空いているもの検索 */
             if (list[i].group_id == 0)
             {
@@ -11333,10 +11337,10 @@ struct skill_unit_group *skill_initunitgroup (struct block_list *src,
             case BD_RAGNAROK:  /* 神々の黄昏 */
             case CG_MOONLIT:   /* 月明りの泉に落ちる花びら */
             {
-                int  range = 1;
                 int  c = 0;
                 if (sd)
                 {
+                    const int  range = 1;
                     map_foreachinarea (skill_check_condition_use_sub,
                                        sd->bl.m, sd->bl.x - range,
                                        sd->bl.y - range, sd->bl.x + range,
@@ -11355,7 +11359,6 @@ struct skill_unit_group *skill_initunitgroup (struct block_list *src,
 int skill_delunitgroup (struct skill_unit_group *group)
 {
     struct block_list *src;
-    int  i;
 
     nullpo_retr (0, group);
     if (group->unit_count <= 0)
@@ -11371,6 +11374,7 @@ int skill_delunitgroup (struct skill_unit_group *group)
     group->alive_count = 0;
     if (group->unit != NULL)
     {
+        int  i;
         for (i = 0; i < group->unit_count; i++)
             if (group->unit[i].alive)
                 skill_delunit (&group->unit[i]);
@@ -11460,7 +11464,7 @@ struct skill_unit_group_tickset *skill_unitgrouptickset_search (struct
  */
 int skill_unitgrouptickset_delete (struct block_list *bl, int group_id)
 {
-    int  i, s = group_id % MAX_SKILLUNITGROUPTICKSET;
+    int  s = group_id % MAX_SKILLUNITGROUPTICKSET;
     struct skill_unit_group_tickset *set = NULL, *ts;
 
     nullpo_retr (0, bl);
@@ -11476,7 +11480,7 @@ int skill_unitgrouptickset_delete (struct block_list *bl, int group_id)
 
     if (set != NULL)
     {
-
+        int  i;
         for (i = 0; i < MAX_SKILLUNITGROUPTICKSET; i++)
             if ((ts =
                  &set[(i + s) % MAX_SKILLUNITGROUPTICKSET])->group_id ==

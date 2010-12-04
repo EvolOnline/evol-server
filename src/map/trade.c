@@ -106,11 +106,6 @@ void trade_tradeadditem (struct map_session_data *sd, int index, int amount)
 {
     struct map_session_data *target_sd;
     struct item_data *id;
-    int  trade_i;
-    int  trade_weight = 0;
-    int  free = 0;
-    int  c;
-    int  i;
 
     nullpo_retv (sd);
 
@@ -128,6 +123,12 @@ void trade_tradeadditem (struct map_session_data *sd, int index, int amount)
         else if (amount <= sd->status.inventory[index - 2].amount
                  && amount > 0)
         {
+            int  trade_i;
+            int  trade_weight = 0;
+            int  free = 0;
+            int  c;
+            int  i;
+
             // determine free slots of receiver
             for (i = 0; i < MAX_INVENTORY; i++)
             {
@@ -260,12 +261,12 @@ void trade_tradeok (struct map_session_data *sd)
 void trade_tradecancel (struct map_session_data *sd)
 {
     struct map_session_data *target_sd;
-    int  trade_i;
 
     nullpo_retv (sd);
 
     if ((target_sd = map_id2sd (sd->trade_partner)) != NULL)
     {
+        int  trade_i;
         for (trade_i = 0; trade_i < 10; trade_i++)
         {                       //give items back (only virtual)
             if (sd->deal_item_amount[trade_i] != 0)
@@ -312,7 +313,6 @@ void trade_tradecancel (struct map_session_data *sd)
 void trade_tradecommit (struct map_session_data *sd)
 {
     struct map_session_data *target_sd;
-    int  trade_i;
 
     nullpo_retv (sd);
 
@@ -345,6 +345,7 @@ void trade_tradecommit (struct map_session_data *sd)
                 }
                 sd->trade_partner = 0;
                 target_sd->trade_partner = 0;
+                int  trade_i;
                 for (trade_i = 0; trade_i < 10; trade_i++)
                 {
                     if (sd->deal_item_amount[trade_i] != 0)
@@ -415,11 +416,9 @@ void trade_tradecommit (struct map_session_data *sd)
 // [Jaxad0127]
 void trade_verifyzeny (struct map_session_data *sd)
 {
-    struct map_session_data *target_sd;
-
     nullpo_retv (sd);
 
-    if ((target_sd = map_id2sd (sd->trade_partner)) != NULL)
+    if (map_id2sd (sd->trade_partner) != NULL)
     {
         if (sd->deal_zeny > sd->status.zeny)
         {

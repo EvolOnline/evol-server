@@ -1099,7 +1099,6 @@ unsigned char *parse_simpleexpr (unsigned char *p)
     if (!p)
         return 0;
 
-    int  i;
     p = skip_space (p);
 
 #ifdef DEBUG_FUNCIN
@@ -1125,6 +1124,7 @@ unsigned char *parse_simpleexpr (unsigned char *p)
     else if (isdigit (*p) || ((*p == '-' || *p == '+') && isdigit (p[1])))
     {
         char *np;
+        int  i;
         i = strtoul (p, &np, 0);
         add_scripti (i);
         p = np;
@@ -1935,6 +1935,7 @@ void pop_stack (struct script_stack *stack, int start, int end)
         if (stack->stack_data[i].type == C_STR)
         {
             free (stack->stack_data[i].u.str);
+            stack->stack_data[i].u.str = 0;
         }
     }
     if (stack->sp > end)
@@ -2149,6 +2150,7 @@ int buildin_menu (struct script_state *st)
         }
         clif_scriptmenu (script_rid2sd (st), st->oid, buf);
         free (buf);
+        buf = 0;
     }
     else if (sd->npc_menu == 0xff)
     {                           // cansel
@@ -2188,10 +2190,11 @@ int buildin_menu (struct script_state *st)
  */
 int buildin_rand (struct script_state *st)
 {
-    int  range, min, max;
+    int  range;
 
     if (st->end > st->start + 3)
     {
+        int  min, max;
         min = conv_num (st, &(st->stack->stack_data[st->start + 2]));
         max = conv_num (st, &(st->stack->stack_data[st->start + 3]));
         if (max < min)
@@ -2802,7 +2805,7 @@ int buildin_viewpoint (struct script_state *st)
  */
 int buildin_countitem (struct script_state *st)
 {
-    int  nameid = 0, count = 0, i;
+    int  nameid = 0, count = 0;
     struct map_session_data *sd;
 
     struct script_data *data;
@@ -2822,11 +2825,14 @@ int buildin_countitem (struct script_state *st)
         nameid = conv_num (st, data);
 
     if (nameid >= 500)          //if no such ID then skip this iteration
+    {
+        int  i;
         for (i = 0; i < MAX_INVENTORY; i++)
         {
             if (sd->status.inventory[i].nameid == nameid)
                 count += sd->status.inventory[i].amount;
         }
+    }
     else
     {
         if (battle_config.error_log)
@@ -3259,13 +3265,14 @@ int buildin_getpartyname (struct script_state *st)
 int buildin_getpartymember (struct script_state *st)
 {
     struct party *p;
-    int  i, j = 0;
+    int  j = 0;
 
     p = NULL;
     p = party_search (conv_num (st, &(st->stack->stack_data[st->start + 2])));
 
     if (p != NULL)
     {
+        int  i;
         for (i = 0; i < MAX_PARTY; i++)
         {
             if (p->member[i].account_id)
@@ -3680,7 +3687,7 @@ int buildin_getequippercentrefinery (struct script_state *st)
  */
 int buildin_successrefitem (struct script_state *st)
 {
-    int  i, num, ep;
+    int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -3688,6 +3695,7 @@ int buildin_successrefitem (struct script_state *st)
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0)
     {
+        int  ep;
         ep = sd->status.inventory[i].equip;
 
         sd->status.inventory[i].refine++;
@@ -5593,7 +5601,7 @@ int buildin_removemapflag (struct script_state *st)
 
 int buildin_pvpon (struct script_state *st)
 {
-    int  m, i;
+    int  m;
     char *str;
     struct map_session_data *pl_sd = NULL;
 
@@ -5601,6 +5609,7 @@ int buildin_pvpon (struct script_state *st)
     m = map_mapname2mapid (str);
     if (m >= 0 && !map[m].flag.pvp && !map[m].flag.nopvp)
     {
+        int  i;
         map[m].flag.pvp = 1;
         clif_send0199 (m, 1);
 
@@ -5630,7 +5639,7 @@ int buildin_pvpon (struct script_state *st)
 
 int buildin_pvpoff (struct script_state *st)
 {
-    int  m, i;
+    int  m;
     char *str;
     struct map_session_data *pl_sd = NULL;
 
@@ -5644,6 +5653,7 @@ int buildin_pvpoff (struct script_state *st)
         if (battle_config.pk_mode)  // disable ranking options if pk_mode is on [Valaris]
             return 0;
 
+        int  i;
         for (i = 0; i < fd_max; i++)
         {                       //�l�������[�v
             if (session[i] && (pl_sd = session[i]->session_data)
@@ -6951,8 +6961,9 @@ int buildin_gmcommand (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_movenpc (struct script_state *st)
+int buildin_movenpc (struct script_state *st __attribute__ ((unused)))
 {
+/*
     struct map_session_data *sd;
     char *map, *npc;
     int  x, y;
@@ -6963,6 +6974,7 @@ int buildin_movenpc (struct script_state *st)
     x = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     y = conv_num (st, &(st->stack->stack_data[st->start + 4]));
     npc = conv_str (st, &(st->stack->stack_data[st->start + 5]));
+*/
 
     return 0;
 }
@@ -7392,9 +7404,15 @@ void op_add (struct script_state *st)
         strcpy (buf, st->stack->stack_data[st->stack->sp - 1].u.str);
         strcat (buf, st->stack->stack_data[st->stack->sp].u.str);
         if (st->stack->stack_data[st->stack->sp - 1].type == C_STR)
+        {
             free (st->stack->stack_data[st->stack->sp - 1].u.str);
+            st->stack->stack_data[st->stack->sp - 1].u.str = 0;
+        }
         if (st->stack->stack_data[st->stack->sp].type == C_STR)
+        {
             free (st->stack->stack_data[st->stack->sp].u.str);
+            st->stack->stack_data[st->stack->sp].u.str = 0;
+        }
         st->stack->stack_data[st->stack->sp - 1].type = C_STR;
         st->stack->stack_data[st->stack->sp - 1].u.str = buf;
     }
@@ -7807,11 +7825,15 @@ int run_script_main (unsigned char *script, int pos,
         struct map_session_data *sd = map_id2sd (st->rid);
         if (sd /* && sd->npc_stackbuf==NULL */ )
         {
-            if (sd->npc_stackbuf)
-                free (sd->npc_stackbuf);
+            free (sd->npc_stackbuf);
             sd->npc_stackbuf =
                 (char *) aCalloc (sizeof (stack->stack_data[0]) *
                                   stack->sp_max, sizeof (char));
+            if (!sd->npc_stackbuf)
+            {
+                printf("out of memory run_script_main");
+                exit(1);
+            }
             memcpy (sd->npc_stackbuf, stack->stack_data,
                     sizeof (stack->stack_data[0]) * stack->sp_max);
             sd->npc_stack = stack->sp;
@@ -7908,8 +7930,8 @@ int mapreg_setregstr (int num, const char *str)
 {
     char *p;
 
-    if ((p = numdb_search (mapregstr_db, num)) != NULL)
-        free (p);
+    p = numdb_search (mapregstr_db, num);
+    free (p);
 
     if (str == NULL || *str == 0)
     {
@@ -8142,8 +8164,8 @@ int do_final_script ()
 {
     if (mapreg_dirty >= 0)
         script_save_mapreg ();
-    if (script_buf)
-        free (script_buf);
+    free (script_buf);
+    script_buf = 0;
 
     if (mapreg_db)
         numdb_final (mapreg_db, mapreg_db_final);
@@ -8154,10 +8176,10 @@ int do_final_script ()
     if (userfunc_db)
         strdb_final (userfunc_db, userfunc_db_final);
 
-    if (str_data)
-        free (str_data);
-    if (str_buf)
-        free (str_buf);
+    free (str_data);
+    str_data = 0;
+    free (str_buf);
+    str_buf = 0;
 
     return 0;
 }

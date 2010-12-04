@@ -153,6 +153,11 @@ int pc_set_gm_level (int account_id, int level)
 
     GM_num++;
     gm_account = realloc (gm_account, sizeof (struct gm_account) * GM_num);
+    if (!gm_account)
+    {
+        printf("out of memory pc_set_gm_level\n");
+        exit(1);
+    }
     gm_account[GM_num - 1].account_id = account_id;
     gm_account[GM_num - 1].level = level;
     return 0;
@@ -262,8 +267,6 @@ static int pc_spiritball_timer (int tid, unsigned int tick __attribute__ ((unuse
 
 int pc_addspiritball (struct map_session_data *sd, int interval, int max)
 {
-    int  i;
-
     nullpo_retr (0, sd);
 
     if (max > MAX_SKILL_LEVEL)
@@ -273,6 +276,8 @@ int pc_addspiritball (struct map_session_data *sd, int interval, int max)
 
     if (sd->spiritball >= max)
     {
+        int  i;
+
         if (sd->spirit_timer[0] != -1)
         {
             delete_timer (sd->spirit_timer[0], pc_spiritball_timer);
@@ -789,8 +794,8 @@ int pc_authok (int id, int login_id2, time_t connect_until_time,
 {
     struct map_session_data *sd = NULL;
 
-    struct party *p;
-    struct guild *g;
+//    struct party *p;
+//    struct guild *g;
     int  i;
     unsigned long tick = gettick ();
     struct sockaddr_in sai;
@@ -920,10 +925,10 @@ int pc_authok (int id, int login_id2, time_t connect_until_time,
 
     // �p�[�e�B�A�M���h�f�[�^�̗v��
     if (sd->status.party_id > 0
-        && (p = party_search (sd->status.party_id)) == NULL)
+        && party_search (sd->status.party_id) == NULL)
         party_request_info (sd->status.party_id);
     if (sd->status.guild_id > 0
-        && (g = guild_search (sd->status.guild_id)) == NULL)
+        && guild_search (sd->status.guild_id) == NULL)
         guild_request_info (sd->status.guild_id);
 
     // pvp�̐ݒ�
@@ -1052,7 +1057,7 @@ static int pc_calc_skillpoint (struct map_session_data *sd)
  */
 int pc_calc_skilltree (struct map_session_data *sd)
 {
-    int  i, id = 0, flag;
+    int  i, id = 0;
     int  c = 0, s = 0;
     //�]�����{�q�̏ꍇ�̌��̐E�Ƃ��Z�o����
     struct pc_base_job s_class;
@@ -1188,15 +1193,17 @@ int pc_calc_skilltree (struct map_session_data *sd)
     }
     else
     {
+        int  flag;
         // �ʏ��̌v�Z
         do
         {
             flag = 0;
             for (i = 0; (id = skill_tree[s][c][i].id) > 0; i++)
             {
-                int  j, f = 1;
+                int  f = 1;
                 if (!battle_config.skillfree)
                 {
+                    int  j;
                     for (j = 0; j < 5; j++)
                     {
                         if (skill_tree[s][c][i].need[j].id &&
@@ -3676,7 +3683,6 @@ static int can_pick_item_up_from (struct map_session_data *self, int other_id)
 
 int pc_takeitem (struct map_session_data *sd, struct flooritem_data *fitem)
 {
-    int  flag;
     unsigned int tick = gettick ();
     int  can_take;
 
@@ -3711,6 +3717,7 @@ int pc_takeitem (struct map_session_data *sd, struct flooritem_data *fitem)
     {
         /* Can pick up */
 
+        int  flag;
         if ((flag =
              pc_additem (sd, &fitem->item_data, fitem->item_data.amount)))
             // �d��over�Ŏ擾���s
@@ -3776,16 +3783,13 @@ int pc_isUseitem (struct map_session_data *sd, int n)
  */
 int pc_useitem (struct map_session_data *sd, int n)
 {
-    int  nameid, amount;
-
     nullpo_retr (1, sd);
 
     if (n >= 0 && n < MAX_INVENTORY && sd->inventory_data[n])
     {
-        nameid = sd->status.inventory[n].nameid;
-        amount = sd->status.inventory[n].amount;
+        const int amount = sd->status.inventory[n].amount;
         if (sd->status.inventory[n].nameid <= 0
-            || sd->status.inventory[n].amount <= 0
+            || amount <= 0
             || sd->sc_data[SC_BERSERK].timer != -1 || !pc_isUseitem (sd, n))
         {
             clif_useitemack (sd, n, 0, 0);
@@ -4047,11 +4051,11 @@ int pc_steal_item (struct map_session_data *sd, struct block_list *bl)
 {
     if (sd != NULL && bl != NULL && bl->type == BL_MOB)
     {
-        int  i, skill, rate, itemid, flag, count;
         struct mob_data *md;
         md = (struct mob_data *) bl;
         if (!md->state.steal_flag && mob_db[md->class].mexp <= 0 && !(mob_db[md->class].mode & 0x20) && md->sc_data[SC_STONE].timer == -1 && md->sc_data[SC_FREEZE].timer == -1 && (!(md->class > 1324 && md->class < 1364)))   // prevent stealing from treasure boxes [Valaris]
         {
+            int  skill;
             skill =
                 sd->paramc[4] - mob_db[md->class].dex + pc_checkskill (sd,
                                                                        TF_STEAL)
@@ -4059,6 +4063,7 @@ int pc_steal_item (struct map_session_data *sd, struct block_list *bl)
 
             if (0 < skill)
             {
+                int  i, rate, itemid, flag, count;
                 for (count = 8; count <= 8 && count != 0; count--)
                 {
                     i = rand () % 8;
@@ -4115,12 +4120,12 @@ int pc_steal_coin (struct map_session_data *sd, struct block_list *bl)
 {
     if (sd != NULL && bl != NULL && bl->type == BL_MOB)
     {
-        int  rate, skill;
         struct mob_data *md = (struct mob_data *) bl;
         if (md && !md->state.steal_coin_flag && md->sc_data
             && md->sc_data[SC_STONE].timer == -1
             && md->sc_data[SC_FREEZE].timer == -1)
         {
+            int  rate, skill;
             skill = pc_checkskill (sd, RG_STEALCOIN) * 10;
             rate =
                 skill + (sd->status.base_level - mob_db[md->class].lv) * 3 +
@@ -4425,9 +4430,7 @@ static int calc_next_walk_step (struct map_session_data *sd)
 static int pc_walk (int tid, unsigned int tick, int id, int data)
 {
     struct map_session_data *sd;
-    int  i, ctype;
-    int  moveblock;
-    int  x, y, dx, dy;
+    int  i;
 
     sd = map_id2sd (id);
     if (sd == NULL)
@@ -4460,6 +4463,9 @@ static int pc_walk (int tid, unsigned int tick, int id, int data)
     }
     else
     {                           // �}�X�ڋ��E�֓���
+        int  ctype;
+        int  moveblock;
+        int  x, y, dx, dy;
         if (sd->walkpath.path[sd->walkpath.path_pos] >= 8)
             return 1;
 
@@ -4905,7 +4911,6 @@ int pc_attack_timer (int tid, unsigned int tick, int id,
     struct block_list *bl;
     struct status_change *sc_data;
     short *opt;
-    int  dist, skill, range;
     int  attack_spell_delay;
 
     sd = map_id2sd (id);
@@ -4983,6 +4988,7 @@ int pc_attack_timer (int tid, unsigned int tick, int id,
     }
     else
     {
+        int  dist, range;
         dist = distance (sd->bl.x, sd->bl.y, bl->x, bl->y);
         range = sd->attackrange;
         if (sd->status.weapon != 11)
@@ -5006,6 +5012,8 @@ int pc_attack_timer (int tid, unsigned int tick, int id,
         }
         else
         {
+            int  skill;
+
             if (battle_config.pc_attack_direction_change)
                 sd->dir = sd->head_dir = map_calc_dir (&sd->bl, bl->x, bl->y);  // �����ݒ�
 
@@ -5022,6 +5030,7 @@ int pc_attack_timer (int tid, unsigned int tick, int id,
                     && sd->sc_data[SC_CLOAKING].timer != -1)
                     skill_status_change_end (&sd->bl, SC_CLOAKING, -1);
                 map_freeblock_unlock ();
+
                 if (sd->skilltimer != -1 && (skill = pc_checkskill (sd, SA_FREECAST)) > 0)  // �t���[�L���X�g
                     sd->attackabletime =
                         tick + ((sd->aspd << 1) * (150 - skill * 5) / 100);
@@ -5030,7 +5039,7 @@ int pc_attack_timer (int tid, unsigned int tick, int id,
             }
             else if (sd->attackabletime <= tick)
             {
-                if (sd->skilltimer != -1 && (skill = pc_checkskill (sd, SA_FREECAST)) > 0)  // �t���[�L���X�g
+                if (sd->skilltimer != -1 && (skill = pc_checkskill (sd, SA_FREECAST)) > 0)
                     sd->attackabletime =
                         tick + ((sd->aspd << 1) * (150 - skill * 5) / 100);
                 else
@@ -5926,14 +5935,14 @@ int pc_resetstate (struct map_session_data *sd)
  */
 int pc_resetskill (struct map_session_data *sd)
 {
-    int  i, skill;
+    int  i;
 
     nullpo_retr (0, sd);
 
     sd->status.skill_point += pc_calc_skillpoint (sd);
 
     for (i = 1; i < MAX_SKILL; i++)
-        if ((skill = pc_checkskill (sd, i)) > 0)
+        if (pc_checkskill (sd, i) > 0)
         {
             sd->status.skill[i].lv = 0;
             sd->status.skill[i].flags = 0;
@@ -6136,12 +6145,12 @@ int pc_damage (struct block_list *src, struct map_session_data *sd,
                 //�悸����Ă����A�C�e�������J�E���g
                 for (i = 0; i < MAX_INVENTORY; i++)
                 {
-                    int  k;
                     if ((type == 1 && !sd->status.inventory[i].equip)
                         || (type == 2 && sd->status.inventory[i].equip)
                         || type == 3)
                     {
                         //InventoryIndex���i�[
+                        int  k;
                         for (k = 0; k < MAX_INVENTORY; k++)
                         {
                             if (eq_n[k] <= 0)
@@ -8139,7 +8148,7 @@ static int pc_hpheal (struct map_session_data *sd)
 static int pc_natural_heal_hp (struct map_session_data *sd)
 {
     int  bhp;
-    int  inc_num, bonus, skill, hp_flag;
+    int  inc_num, bonus, hp_flag;
 
     nullpo_retr (0, sd);
 
@@ -8234,6 +8243,7 @@ static int pc_natural_heal_hp (struct map_session_data *sd)
 
     return 0;
 
+/*
     if (sd->sc_data[SC_APPLEIDUN].timer != -1)
     {                           // Apple of Idun
         if (sd->inchealhptick >= 6000 && sd->status.hp < sd->status.max_hp)
@@ -8258,6 +8268,7 @@ static int pc_natural_heal_hp (struct map_session_data *sd)
         sd->inchealhptick = 0;
 
     return 0;
+*/
 }
 
 static int pc_natural_heal_sp (struct map_session_data *sd)
@@ -8343,7 +8354,7 @@ static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute
 {
     nullpo_retr (0, sd);
 
-    int  bonus_hp, interval = battle_config.natural_heal_skill_interval;
+    int  interval = battle_config.natural_heal_skill_interval;;
     struct status_change *sc_data = battle_get_sc_data (&sd->bl);
     nullpo_retr (0, sc_data);
 
@@ -8362,6 +8373,7 @@ static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute
 
     if (sd->inchealspirithptick >= interval)
     {
+        int  bonus_hp;
         bonus_hp = sd->nsshealhp;
         while (sd->inchealspirithptick >= interval)
         {
@@ -8394,7 +8406,7 @@ static int pc_spirit_heal_hp (struct map_session_data *sd, int level __attribute
 
 static int pc_spirit_heal_sp (struct map_session_data *sd, int level __attribute__ ((unused)))
 {
-    int  bonus_sp, interval = battle_config.natural_heal_skill_interval;
+    int  interval = battle_config.natural_heal_skill_interval;
 
     nullpo_retr (0, sd);
 
@@ -8412,6 +8424,7 @@ static int pc_spirit_heal_sp (struct map_session_data *sd, int level __attribute
 
     if (sd->inchealspiritsptick >= interval)
     {
+        int  bonus_sp;
         bonus_sp = sd->nsshealsp;
         while (sd->inchealspiritsptick >= interval)
         {
@@ -8655,12 +8668,16 @@ int pc_autosave (int tid __attribute__ ((unused)), unsigned int tick __attribute
 int pc_read_gm_account (int fd)
 {
     int  i = 0;
-    if (gm_account != NULL)
-        free (gm_account);
+    free (gm_account);
     GM_num = 0;
 
     gm_account =
         calloc (sizeof (struct gm_account) * ((RFIFOW (fd, 2) - 4) / 5), 1);
+    if (!gm_account)
+    {
+        printf("out of memory pc_read_gm_account\n");
+        exit(1);
+    }
     for (i = 4; i < RFIFOW (fd, 2); i = i + 5)
     {
         gm_account[GM_num].account_id = RFIFOL (fd, i);
@@ -8678,13 +8695,13 @@ int pc_read_gm_account (int fd)
 int map_day_timer (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {                               // by [yor]
     struct map_session_data *pl_sd = NULL;
-    int  i;
     char tmpstr[1024];
 
     if (battle_config.day_duration > 0)
     {                           // if we want a day
         if (night_flag != 0)
         {
+            int  i;
             strcpy (tmpstr, msg_txt (502)); // The day has arrived!
             night_flag = 0;     // 0=day, 1=night [Yor]
             for (i = 0; i < fd_max; i++)
@@ -8711,13 +8728,13 @@ int map_day_timer (int tid __attribute__ ((unused)), unsigned int tick __attribu
 int map_night_timer (int tid __attribute__ ((unused)), unsigned int tick __attribute__ ((unused)), int id __attribute__ ((unused)), int data __attribute__ ((unused)))
 {                               // by [yor]
     struct map_session_data *pl_sd = NULL;
-    int  i;
     char tmpstr[1024];
 
     if (battle_config.night_duration > 0)
     {                           // if we want a night
         if (night_flag == 0)
         {
+            int  i;
             strcpy (tmpstr, msg_txt (503)); // The night has fallen...
             night_flag = 1;     // 0=day, 1=night [Yor]
             for (i = 0; i < fd_max; i++)
