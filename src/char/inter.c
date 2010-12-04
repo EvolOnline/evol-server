@@ -489,10 +489,6 @@ int mapif_parse_GMmessage (int fd)
 // Wisp/page request to send
 int mapif_parse_WisRequest (int fd __attribute__ ((unused)))
 {
-    // disable here buggy logic
-
-    return 0;
-/*
     struct WisData *wd;
     static int wisid = 0;
     int  index;
@@ -558,7 +554,6 @@ int mapif_parse_WisRequest (int fd __attribute__ ((unused)))
     }
 
     return 0;
-*/
 }
 
 // Wisp/page transmission result
