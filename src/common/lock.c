@@ -37,10 +37,11 @@ int lock_fclose (FILE * fp, const char *filename, int *info, int *cnt)
     if (!filename || !info || !cnt)
         return 1;
 
-    int  ret = 0;
-    char newfile[800];
     if (fp != NULL)
     {
+        char newfile[800];
+        int  ret = 0;
+
         ret = fclose_ (fp);
         if (cnt && (*cnt)%2)
         {

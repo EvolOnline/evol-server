@@ -252,6 +252,7 @@ int inter_config_read (const char *cfgName)
         else if (strcmpi (w1, "inter_log_filename") == 0)
         {
             strncpy (inter_log_filename, w2, sizeof (inter_log_filename));
+            inter_log_filename[sizeof (inter_log_filename) - 1] = 0;
         }
         else if (strcmpi (w1, "db_count") == 0)
         {

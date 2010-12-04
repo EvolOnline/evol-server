@@ -279,18 +279,16 @@ int inter_guild_fromstr (char *str, struct guild *g)
 // ギルド城データの文字列への変換
 int inter_guildcastle_tostr (char *str, struct guild_castle *gc)
 {
-    int  len;
-
     if (!str || !gc)
         return 0;
 
-    len = sprintf (str, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",    // added Guardian HP [Valaris]
-                   gc->castle_id, gc->guild_id, gc->economy, gc->defense,
-                   gc->triggerE, gc->triggerD, gc->nextTime, gc->payTime,
-                   gc->createTime, gc->visibleC, gc->visibleG0, gc->visibleG1,
-                   gc->visibleG2, gc->visibleG3, gc->visibleG4, gc->visibleG5,
-                   gc->visibleG6, gc->visibleG7, gc->Ghp0, gc->Ghp1, gc->Ghp2,
-                   gc->Ghp3, gc->Ghp4, gc->Ghp5, gc->Ghp6, gc->Ghp7);
+    sprintf (str, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",    // added Guardian HP [Valaris]
+             gc->castle_id, gc->guild_id, gc->economy, gc->defense,
+             gc->triggerE, gc->triggerD, gc->nextTime, gc->payTime,
+             gc->createTime, gc->visibleC, gc->visibleG0, gc->visibleG1,
+             gc->visibleG2, gc->visibleG3, gc->visibleG4, gc->visibleG5,
+             gc->visibleG6, gc->visibleG7, gc->Ghp0, gc->Ghp1, gc->Ghp2,
+             gc->Ghp3, gc->Ghp4, gc->Ghp5, gc->Ghp6, gc->Ghp7);
 
     return 0;
 }
@@ -1269,7 +1267,6 @@ int mapif_parse_GuildLeave (int fd __attribute__ ((unused)), int guild_id,
                             int flag, const char *mes)
 {
     struct guild *g = NULL;
-    int  i, j;
 
     if (!mes)
         return 0;
@@ -1277,6 +1274,7 @@ int mapif_parse_GuildLeave (int fd __attribute__ ((unused)), int guild_id,
     g = numdb_search (guild_db, guild_id);
     if (g != NULL)
     {
+        int  i, j;
         for (i = 0; i < MAX_GUILD; i++)
         {
             if (g->member[i].account_id == account_id)
@@ -1285,14 +1283,14 @@ int mapif_parse_GuildLeave (int fd __attribute__ ((unused)), int guild_id,
 //              printf("%d %s\n", i, g->member[i].name);
 
                 if (flag)
-                {               // 追放の場合追放リストに入れる
+                {
                     for (j = 0; j < MAX_GUILDEXPLUSION; j++)
                     {
                         if (g->explusion[j].account_id == 0)
                             break;
                     }
                     if (j == MAX_GUILDEXPLUSION)
-                    {           // 一杯なので古いのを消す
+                    {
                         for (j = 0; j < MAX_GUILDEXPLUSION - 1; j++)
                             g->explusion[j] = g->explusion[j + 1];
                         j = MAX_GUILDEXPLUSION - 1;

@@ -678,6 +678,11 @@ int mmo_auth_init (void)
                 auth_max += 256;
                 auth_dat =
                     realloc (auth_dat, sizeof (struct auth_dat) * auth_max);
+                if (!auth_dat)
+                {
+                    printf("out of memory mmo_auth_init\n");
+                    exit(1);
+                }
             }
 
             memset (&auth_dat[auth_num], '\0', sizeof (struct auth_dat));
@@ -858,6 +863,11 @@ int mmo_auth_init (void)
                 auth_max += 256;
                 auth_dat =
                     realloc (auth_dat, sizeof (struct auth_dat) * auth_max);
+                if (!auth_dat)
+                {
+                    printf("out of memory mmo_auth_init\n");
+                    exit(1);
+                }
             }
 
             memset (&auth_dat[auth_num], '\0', sizeof (struct auth_dat));
@@ -1211,6 +1221,11 @@ int mmo_auth_new (struct mmo_account *account, char sex, char *email)
     {
         auth_max += 256;
         auth_dat = realloc (auth_dat, sizeof (struct auth_dat) * auth_max);
+        if (!auth_dat)
+        {
+            printf("out of memory mmo_auth_new\n");
+            exit(1);
+        }
     }
 
     memset (&auth_dat[i], '\0', sizeof (struct auth_dat));
@@ -2792,7 +2807,6 @@ int parse_admin (int fd)
                                 int  lock;
                                 char line[512];
                                 int  GM_account, GM_level;
-                                int  modify_flag;
                                 char tmpstr[24];
                                 struct timeval tv;
                                 if ((fp2 =
@@ -2803,6 +2817,7 @@ int parse_admin (int fd)
                                          fopen_ (GM_account_filename,
                                                  "r")) != NULL)
                                     {
+                                        int  modify_flag;
                                         gettimeofday (&tv, NULL);
                                         strftime (tmpstr, 23, date_format,
                                                   gmtime (&(tv.tv_sec)));
@@ -3967,7 +3982,6 @@ int parse_login (int fd)
                 if (RFIFOREST (fd) < 86)
                     return 0;
                 {
-                    int  GM_value, len;
                     unsigned char *server_name;
                     account.userid = RFIFOP (fd, 2);
                     account.userid[23] = '\0';
@@ -4013,6 +4027,8 @@ int parse_login (int fd)
                         && account.account_id < MAX_SERVERS
                         && server_fd[account.account_id] == -1)
                     {
+                        int  GM_value, len;
+
                         login_log
                             ("Connection of the char-server '%s' accepted (account: %s, pass: %s, ip: %s)"
                              RETCODE, server_name, account.userid,
@@ -4445,8 +4461,7 @@ int login_config_read (const char *cfgName)
             {
                 if (strcmpi (w2, "clear") == 0)
                 {
-                    if (access_ladmin_allow)
-                        free (access_ladmin_allow);
+                    free (access_ladmin_allow);
                     access_ladmin_allow = NULL;
                     access_ladmin_allownum = 0;
                 }
@@ -4455,10 +4470,14 @@ int login_config_read (const char *cfgName)
                     if (strcmpi (w2, "all") == 0)
                     {
                         // reset all previous values
-                        if (access_ladmin_allow)
-                            free (access_ladmin_allow);
+                        free (access_ladmin_allow);
                         // set to all
                         access_ladmin_allow = calloc (ACO_STRSIZE, 1);
+                        if (!access_ladmin_allow)
+                        {
+                            printf("out of memory login_config_read\n");
+                            exit(1);
+                        }
                         access_ladmin_allownum = 1;
                         access_ladmin_allow[0] = '\0';
                     }
@@ -4595,8 +4614,7 @@ int login_config_read (const char *cfgName)
             {
                 if (strcmpi (w2, "clear") == 0)
                 {
-                    if (access_allow)
-                        free (access_allow);
+                    free (access_allow);
                     access_allow = NULL;
                     access_allownum = 0;
                 }
@@ -4605,10 +4623,14 @@ int login_config_read (const char *cfgName)
                     if (strcmpi (w2, "all") == 0)
                     {
                         // reset all previous values
-                        if (access_allow)
-                            free (access_allow);
+                        free (access_allow);
                         // set to all
                         access_allow = calloc (ACO_STRSIZE, 1);
+                        if (!access_allow)
+                        {
+                            printf("out of memory login_config_read\n");
+                            exit(1);
+                        }
                         access_allownum = 1;
                         access_allow[0] = '\0';
                     }
@@ -4622,6 +4644,11 @@ int login_config_read (const char *cfgName)
                                          (access_allownum + 1) * ACO_STRSIZE);
                         else
                             access_allow = calloc (ACO_STRSIZE, 1);
+                        if (!access_allow)
+                        {
+                            printf("out of memory login_config_read\n");
+                            exit(1);
+                        }
                         strncpy (access_allow +
                                  (access_allownum++) * ACO_STRSIZE, w2,
                                  ACO_STRSIZE);
@@ -4634,8 +4661,7 @@ int login_config_read (const char *cfgName)
             {
                 if (strcmpi (w2, "clear") == 0)
                 {
-                    if (access_deny)
-                        free (access_deny);
+                    free (access_deny);
                     access_deny = NULL;
                     access_denynum = 0;
                 }
@@ -4644,10 +4670,14 @@ int login_config_read (const char *cfgName)
                     if (strcmpi (w2, "all") == 0)
                     {
                         // reset all previous values
-                        if (access_deny)
-                            free (access_deny);
+                        free (access_deny);
                         // set to all
                         access_deny = calloc (ACO_STRSIZE, 1);
+                        if (!access_deny)
+                        {
+                            printf("out of memory login_config_read\n");
+                            exit(1);
+                        }
                         access_denynum = 1;
                         access_deny[0] = '\0';
                     }
@@ -4661,6 +4691,11 @@ int login_config_read (const char *cfgName)
                                          (access_denynum + 1) * ACO_STRSIZE);
                         else
                             access_deny = calloc (ACO_STRSIZE, 1);
+                        if (!access_deny)
+                        {
+                            printf("out of memory login_config_read\n");
+                            exit(1);
+                        }
                         strncpy (access_deny +
                                  (access_denynum++) * ACO_STRSIZE, w2,
                                  ACO_STRSIZE);

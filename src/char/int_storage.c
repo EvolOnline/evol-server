@@ -356,8 +356,7 @@ int storage_db_final (void *k __attribute__ ((unused)),
                       void *data, va_list ap __attribute__ ((unused)))
 {
     struct storage *p = (struct storage *) data;
-    if (p)
-        free (p);
+    free (p);
     return 0;
 }
 
@@ -365,8 +364,7 @@ int guild_storage_db_final (void *k __attribute__ ((unused)),
                             void *data, va_list ap __attribute__ ((unused)))
 {
     struct guild_storage *p = (struct guild_storage *) data;
-    if (p)
-        free (p);
+    free (p);
     return 0;
 }
 

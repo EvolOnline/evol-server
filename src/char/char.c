@@ -2076,13 +2076,14 @@ int parse_tologin (int fd)
                 if (RFIFOREST (fd) < 7)
                     return 0;
                 {
-                    int  acc, sex, i, j;
+                    int  acc, sex;
                     unsigned char buf[7];
                     acc = RFIFOL (fd, 2);
                     sex = RFIFOB (fd, 6);
                     RFIFOSKIP (fd, 7);
                     if (acc > 0)
                     {
+                        int i, j;
                         for (i = 0; i < char_num; i++)
                         {
                             if (char_dat[i].account_id == acc)
@@ -2383,8 +2384,7 @@ int parse_tologin (int fd)
                     return 0;
                 {
                     char buf[32000];
-                    if (gm_account != NULL)
-                        free (gm_account);
+                    free (gm_account);
                     gm_account =
                         calloc (sizeof (struct gm_account) *
                                 ((RFIFOW (fd, 2) - 4) / 5), 1);
@@ -3712,13 +3712,13 @@ int mapif_sendallwos (int sfd, unsigned char *buf, unsigned int len)
 // MAP�T�[�o�[�Ƀf�[�^���M�imap�I�����m�F�L���j
 int mapif_send (int fd, unsigned char *buf, unsigned int len)
 {
-    int  i;
-
     if (!buf)
         return 0;
 
     if (fd >= 0)
     {
+        int  i;
+
         for (i = 0; i < MAX_MAP_SERVERS; i++)
         {
             if (fd == server_fd[i])
@@ -4194,14 +4194,17 @@ void do_final (void)
         online_chars[i] = -1;
     create_online_files ();
     free (online_chars);
+    online_chars = 0;
 
     mmo_char_sync ();
     inter_save ();
 
-    if (gm_account != NULL)
-        free (gm_account);
+    free (gm_account);
+    gm_account = 0;
 
     free (char_dat);
+    char_dat = 0;
+
     delete_session (login_fd);
     delete_session (char_fd);
 

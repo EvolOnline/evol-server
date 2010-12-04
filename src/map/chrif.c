@@ -676,7 +676,7 @@ int chrif_changedgm (int fd)
  */
 int chrif_changedsex (int fd)
 {
-    int  acc, sex, i;
+    int  acc, sex;
     struct map_session_data *sd;
     struct pc_base_job s_class;
 
@@ -700,6 +700,7 @@ int chrif_changedsex (int fd)
                 sd->status.sex = 0;
                 sd->sex = 0;
             }
+            int i;
             // to avoid any problem with equipment and invalid sex, equipment is unequiped.
             for (i = 0; i < MAX_INVENTORY; i++)
             {
@@ -997,7 +998,6 @@ int chrif_ragsrvinfo (int base_rate, int job_rate, int drop_rate)
 {
     char buf[256];
     FILE *fp;
-    int  i;
 
     WFIFOW (char_fd, 0) = 0x2b16;
     WFIFOW (char_fd, 2) = base_rate;
@@ -1008,6 +1008,7 @@ int chrif_ragsrvinfo (int base_rate, int job_rate, int drop_rate)
     {
         if (fgets (buf, 250, fp) != NULL)
         {
+            int  i;
             for (i = 0; buf[i]; i++)
             {
                 if (buf[i] == '\r' || buf[i] == '\n')

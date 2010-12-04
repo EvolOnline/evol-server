@@ -1034,7 +1034,6 @@ int atcommand_charwarp (const int fd, struct map_session_data *sd,
     char character[100];
     int  x = 0, y = 0;
     struct map_session_data *pl_sd;
-    int  m;
 
     if (!fd || !sd || !command)
         return -1;
@@ -1064,6 +1063,7 @@ int atcommand_charwarp (const int fd, struct map_session_data *sd,
         {                       // you can rura+ only lower or same GM level
             if (x > 0 && x < 800 && y > 0 && y < 800)
             {
+                int  m;
                 m = map_mapname2mapid (map_name);
                 if (m >= 0 && map[m].flag.nowarpto
                     && battle_config.any_warp_GM_min_level > pc_isGM (sd))
@@ -1120,7 +1120,6 @@ int atcommand_warp (const int fd, struct map_session_data *sd,
 {
     char map_name[100];
     int  x = 0, y = 0;
-    int  m;
 
     if (!fd || !sd || !command)
         return -1;
@@ -1145,6 +1144,7 @@ int atcommand_warp (const int fd, struct map_session_data *sd,
 
     if (x > 0 && x < 800 && y > 0 && y < 800)
     {
+        int  m;
         m = map_mapname2mapid (map_name);
         if (m >= 0 && map[m].flag.nowarpto
             && battle_config.any_warp_GM_min_level > pc_isGM (sd))
@@ -2191,10 +2191,9 @@ int atcommand_item (const int fd, struct map_session_data *sd,
                     const char *command, const char *message)
 {
     char item_name[100];
-    int  number = 0, item_id, flag;
+    int  number = 0, item_id;
     struct item item_tmp;
     struct item_data *item_data;
-    int  get_count, i;
 
     if (!fd || !sd || !command)
         return -1;
@@ -2219,6 +2218,7 @@ int atcommand_item (const int fd, struct map_session_data *sd,
 
     if (item_id >= 500)
     {
+        int  get_count, i;
         get_count = number;
         if (item_data->type == 4 || item_data->type == 5 ||
             item_data->type == 7 || item_data->type == 8)
@@ -2230,6 +2230,7 @@ int atcommand_item (const int fd, struct map_session_data *sd,
             memset (&item_tmp, 0, sizeof (item_tmp));
             item_tmp.nameid = item_id;
             item_tmp.identify = 1;
+            int  flag;
             if ((flag =
                  pc_additem ((struct map_session_data *) sd, &item_tmp,
                              get_count)))
@@ -2431,7 +2432,6 @@ int atcommand_help (const int fd, struct map_session_data *sd,
                     const char *message __attribute__ ((unused)))
 {
     char buf[2048], w1[2048], w2[2048];
-    int  i, gm_level;
     FILE *fp;
 
     if (!fd || !sd || !command)
@@ -2441,6 +2441,7 @@ int atcommand_help (const int fd, struct map_session_data *sd,
 
     if ((fp = fopen_ (help_txt, "r")) != NULL)
     {
+        int  i, gm_level;
         clif_displaymessage (fd, msg_table[26]);    // Help commands:
         gm_level = pc_isGM (sd);
         while (fgets (buf, sizeof (buf) - 1, fp) != NULL)
@@ -2513,7 +2514,6 @@ int atcommand_pvpoff (const int fd, struct map_session_data *sd,
                       const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
@@ -2526,6 +2526,7 @@ int atcommand_pvpoff (const int fd, struct map_session_data *sd,
 
     if (map[sd->bl.m].flag.pvp)
     {
+        int  i;
         map[sd->bl.m].flag.pvp = 0;
         clif_send0199 (sd->bl.m, 0);
         for (i = 0; i < fd_max; i++)
@@ -2565,7 +2566,6 @@ int atcommand_pvpon (const int fd, struct map_session_data *sd,
                      const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
@@ -2578,6 +2578,7 @@ int atcommand_pvpon (const int fd, struct map_session_data *sd,
 
     if (!map[sd->bl.m].flag.pvp && !map[sd->bl.m].flag.nopvp)
     {
+        int  i;
         map[sd->bl.m].flag.pvp = 1;
         clif_send0199 (sd->bl.m, 1);
         for (i = 0; i < fd_max; i++)
@@ -2902,11 +2903,9 @@ atcommand_charhaircolor (const int fd __attribute__ ((unused)), struct map_sessi
 int atcommand_go (const int fd, struct map_session_data *sd,
                   const char *command, const char *message)
 {
-    int  i;
     int  town;
     char map_name[100];
     char output[200];
-    int  m;
 
     if (!fd || !sd || !command)
         return -1;
@@ -2982,6 +2981,8 @@ int atcommand_go (const int fd, struct map_session_data *sd,
     }
     else
     {
+        int  m;
+        int  i;
         // get possible name of the city and add .gat if not in the name
         map_name[sizeof (map_name) - 1] = '\0';
         for (i = 0; map_name[i]; i++)
@@ -3345,7 +3346,6 @@ int atcommand_produce (const int fd, struct map_session_data *sd,
 {
     char item_name[100];
     int  item_id, attribute = 0, star = 0;
-    int  flag = 0;
     struct item_data *item_data;
     struct item tmp_item;
     char output[200];
@@ -3374,6 +3374,7 @@ int atcommand_produce (const int fd, struct map_session_data *sd,
         (item_id < 4001 || item_id > 4148) &&
         (item_id < 7001 || item_id > 10019) && itemdb_isequip (item_id))
     {
+        int  flag = 0;
         if (attribute < MIN_ATTRIBUTE || attribute > MAX_ATTRIBUTE)
             attribute = ATTRIBUTE_NORMAL;
         if (star < MIN_STAR || star > MAX_STAR)
@@ -4014,7 +4015,6 @@ int atcommand_character_stats (const int fd, struct map_session_data *sd,
     char job_jobname[100];
     char output[200];
     struct map_session_data *pl_sd;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
@@ -4071,6 +4071,7 @@ int atcommand_character_stats (const int fd, struct map_session_data *sd,
                  "(level %d)");
         sprintf (output, msg_table[53], pl_sd->status.name);    // '%s' stats:
         clif_displaymessage (fd, output);
+        int  i;
         for (i = 0; output_table[i].format != NULL; i++)
         {
             sprintf (output, output_table[i].format, output_table[i].value);
@@ -4533,7 +4534,6 @@ int atcommand_character_save (const int fd, struct map_session_data *sd,
     char character[100];
     struct map_session_data *pl_sd;
     int  x = 0, y = 0;
-    int  m;
 
     if (!fd || !sd || !command)
         return -1;
@@ -4557,6 +4557,7 @@ int atcommand_character_save (const int fd, struct map_session_data *sd,
     {
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can change save point only to lower or same gm level
+            int  m;
             m = map_mapname2mapid (map_name);
             if (m < 0)
             {
@@ -4600,13 +4601,13 @@ int atcommand_night (const int fd, struct map_session_data *sd,
                      const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
 
     if (night_flag != 1)
     {
+        int  i;
         night_flag = 1;         // 0=day, 1=night [Yor]
         for (i = 0; i < fd_max; i++)
         {
@@ -4637,13 +4638,13 @@ int atcommand_day (const int fd, struct map_session_data *sd,
                    const char *message __attribute__ ((unused)))
 {
     struct map_session_data *pl_sd;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
 
     if (night_flag != 0)
     {
+        int  i;
         night_flag = 0;         // 0=day, 1=night [Yor]
         for (i = 0; i < fd_max; i++)
         {
@@ -4801,7 +4802,7 @@ int atcommand_character_baselevel (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     char character[100];
-    int  level = 0, i;
+    int  level = 0;
 
     if (!fd || !sd || !command)
         return -1;
@@ -4821,6 +4822,7 @@ int atcommand_character_baselevel (const int fd, struct map_session_data *sd,
     {
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can change base level only lower or same gm level
+            int  i;
 
             if (level > 0)
             {
@@ -4898,7 +4900,7 @@ int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     char character[100];
-    int  max_level = 50, level = 0;
+    int  level = 0;
     //“]¶‚â—{Žq‚Ìê‡‚ÌŒ³‚ÌE‹Æ‚ðŽZo‚·‚é
     struct pc_base_job pl_s_class;
 
@@ -4921,6 +4923,8 @@ int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
         pl_s_class = pc_calc_base_job (pl_sd->status.class);
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can change job level only lower or same gm level
+            int  max_level = 50;
+
             if (pl_s_class.job == 0)
                 max_level -= 40;
             if ((pl_s_class.job == 23) || (pl_s_class.upper == 1 && pl_s_class.type == 2))  //ƒXƒpƒmƒr‚Æ“]¶E‚ÍJobƒŒƒxƒ‹‚ÌÅ‚‚ª70
@@ -5791,7 +5795,6 @@ int atcommand_charskpoint (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     char character[100];
-    int  new_skill_point;
     int  point = 0;
 
     if (!fd || !sd || !command)
@@ -5810,6 +5813,7 @@ int atcommand_charskpoint (const int fd, struct map_session_data *sd,
 
     if ((pl_sd = map_nick2sd (character)) != NULL)
     {
+        int  new_skill_point;
         new_skill_point = (int) pl_sd->status.skill_point + point;
         if (point > 0 && (point > 0x7FFF || new_skill_point > 0x7FFF))  // fix positiv overflow
             new_skill_point = 0x7FFF;
@@ -5848,7 +5852,6 @@ int atcommand_charstpoint (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     char character[100];
-    int  new_status_point;
     int  point = 0;
 
     if (!fd || !sd || !command)
@@ -5867,6 +5870,7 @@ int atcommand_charstpoint (const int fd, struct map_session_data *sd,
 
     if ((pl_sd = map_nick2sd (character)) != NULL)
     {
+        int  new_status_point;
         new_status_point = (int) pl_sd->status.status_point + point;
         if (point > 0 && (point > 0x7FFF || new_status_point > 0x7FFF)) // fix positiv overflow
             new_status_point = 0x7FFF;
@@ -5905,7 +5909,7 @@ int atcommand_charzeny (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     char character[100];
-    int  zeny = 0, new_zeny;
+    int  zeny = 0;
 
     if (!fd || !sd || !command)
         return -1;
@@ -5922,6 +5926,7 @@ int atcommand_charzeny (const int fd, struct map_session_data *sd,
 
     if ((pl_sd = map_nick2sd (character)) != NULL)
     {
+        int  new_zeny;
         new_zeny = pl_sd->status.zeny + zeny;
         if (zeny > 0 && (zeny > MAX_ZENY || new_zeny > MAX_ZENY))   // fix positiv overflow
             new_zeny = MAX_ZENY;
@@ -6013,11 +6018,9 @@ int atcommand_guildrecall (const int fd, struct map_session_data *sd,
                            const char *command, const char *message)
 {
     struct map_session_data *pl_sd;
-    int  i;
     char guild_name[100];
     char output[200];
     struct guild *g;
-    int  count;
 
     if (!fd || !sd || !command)
         return -1;
@@ -6043,7 +6046,9 @@ int atcommand_guildrecall (const int fd, struct map_session_data *sd,
     if ((g = guild_searchname (guild_name)) != NULL ||  // name first to avoid error when name begin with a number
         (g = guild_search (atoi (message))) != NULL)
     {
-        count = 0;
+        int  i;
+        int  count = 0;
+
         for (i = 0; i < fd_max; i++)
         {
             if (session[i] && (pl_sd = session[i]->session_data)
@@ -6084,12 +6089,10 @@ int atcommand_guildrecall (const int fd, struct map_session_data *sd,
 int atcommand_partyrecall (const int fd, struct map_session_data *sd,
                            const char *command, const char *message)
 {
-    int  i;
     struct map_session_data *pl_sd;
     char party_name[100];
     char output[200];
     struct party *p;
-    int  count;
 
     if (!fd || !sd || !command)
         return -1;
@@ -6115,7 +6118,8 @@ int atcommand_partyrecall (const int fd, struct map_session_data *sd,
     if ((p = party_searchname (party_name)) != NULL ||  // name first to avoid error when name begin with a number
         (p = party_search (atoi (message))) != NULL)
     {
-        count = 0;
+        int  i;
+        int  count = 0;
         for (i = 0; i < fd_max; i++)
         {
             if (session[i] && (pl_sd = session[i]->session_data)
@@ -6893,7 +6897,7 @@ int atcommand_chardelitem (const int fd, struct map_session_data *sd,
     struct map_session_data *pl_sd;
     char character[100];
     char item_name[100];
-    int  i, number = 0, item_id, item_position, count;
+    int  number = 0, item_id;
     char output[200];
     struct item_data *item_data;
 
@@ -6924,10 +6928,13 @@ int atcommand_chardelitem (const int fd, struct map_session_data *sd,
         {
             if (pc_isGM (sd) >= pc_isGM (pl_sd))
             {                   // you can kill only lower or same level
+                int  item_position;
                 item_position = pc_search_inventory (pl_sd, item_id);
                 if (item_position >= 0)
                 {
-                    count = 0;
+                    int  i;
+                    int count = 0;
+
                     for (i = 0; i < number && item_position >= 0; i++)
                     {
                         pc_delitem (pl_sd, item_position, 1, 0);
@@ -6979,7 +6986,6 @@ int atcommand_jail (const int fd, struct map_session_data *sd,
 {
     char character[100];
     struct map_session_data *pl_sd;
-    int  x, y;
 
     if (!fd || !sd || !command)
         return -1;
@@ -6997,6 +7003,7 @@ int atcommand_jail (const int fd, struct map_session_data *sd,
     {
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can jail only lower or same GM
+            int  x, y;
             switch (MRAND (2))
             {
                 case 0:
@@ -7277,8 +7284,6 @@ int atcommand_charignorelist (const int fd, struct map_session_data *sd,
     char character[100];
     struct map_session_data *pl_sd;
     char output[200];
-    int  count;
-    int  i;
 
     if (!fd || !sd || !command)
         return -1;
@@ -7295,7 +7300,9 @@ int atcommand_charignorelist (const int fd, struct map_session_data *sd,
 
     if ((pl_sd = map_nick2sd (character)) != NULL)
     {
-        count = 0;
+        int  count = 0;
+        int  i;
+
         for (i = 0;
              i < (int) (sizeof (pl_sd->ignore) / sizeof (pl_sd->ignore[0]));
              i++)
@@ -7652,7 +7659,7 @@ int atcommand_effect (const int fd, struct map_session_data *sd,
                       const char *command, const char *message)
 {
     struct map_session_data *pl_sd;
-    int  type = 0, flag = 0, i;
+    int  type = 0, flag = 0;
 
     if (!fd || !sd || !command)
         return -1;
@@ -7670,6 +7677,7 @@ int atcommand_effect (const int fd, struct map_session_data *sd,
     }
     else
     {
+        int i;
         for (i = 0; i < fd_max; i++)
         {
             if (session[i] && (pl_sd = session[i]->session_data)
@@ -7694,7 +7702,6 @@ atcommand_character_item_list (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     struct item_data *item_data, *item_temp;
-    int  i, j, equip, count, counter, counter2;
     char character[100], output[200], equipstr[100], outputtmp[200];
 
     if (!fd || !sd || !command)
@@ -7716,6 +7723,7 @@ atcommand_character_item_list (const int fd, struct map_session_data *sd,
     {
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can look items only lower or same level
+            int  i, j, equip, count, counter, counter2;
             counter = 0;
             count = 0;
             for (i = 0; i < MAX_INVENTORY; i++)
@@ -7850,7 +7858,6 @@ atcommand_character_storage_list (const int fd, struct map_session_data *sd,
     struct storage *stor;
     struct map_session_data *pl_sd;
     struct item_data *item_data, *item_temp;
-    int  i, j, count, counter, counter2;
     char character[100], output[200], outputtmp[200];
 
     if (!fd || !sd || !command)
@@ -7873,6 +7880,7 @@ atcommand_character_storage_list (const int fd, struct map_session_data *sd,
         {                       // you can look items only lower or same level
             if ((stor = account2storage2 (pl_sd->status.account_id)) != NULL)
             {
+                int  i, j, count, counter, counter2;
                 counter = 0;
                 count = 0;
                 for (i = 0; i < MAX_STORAGE; i++)
@@ -7978,7 +7986,6 @@ atcommand_character_cart_list (const int fd, struct map_session_data *sd,
 {
     struct map_session_data *pl_sd;
     struct item_data *item_data, *item_temp;
-    int  i, j, count, counter, counter2;
     char character[100], output[200], outputtmp[200];
 
     if (!fd || !sd || !command)
@@ -7999,6 +8006,7 @@ atcommand_character_cart_list (const int fd, struct map_session_data *sd,
     {
         if (pc_isGM (sd) >= pc_isGM (pl_sd))
         {                       // you can look items only lower or same level
+            int  i, j, count, counter, counter2;
             counter = 0;
             count = 0;
             for (i = 0; i < MAX_CART; i++)
@@ -8960,10 +8968,12 @@ atcommand_set_magic (const int fd, struct map_session_data *sd,
 
     if ((pl_sd = map_nick2sd (character)) != NULL)
     {
-        int  i;
         if (skill_index == 0)
+        {
+            int  i;
             for (i = 0; i < magic_skills_nr; i++)
                 set_skill (pl_sd, i + magic_base, value);
+        }
         else
             set_skill (pl_sd, skill_index, value);
 

@@ -743,10 +743,8 @@ void *grfio_reads (char *fname, int *size)
         *size = entry->declen;
     return buf2;
   errret:
-    if (buf != NULL)
-        free (buf);
-    if (buf2 != NULL)
-        free (buf2);
+    free (buf);
+    free (buf2);
     if (in != NULL)
         fclose_ (in);
     exit (1);                   //return NULL;
@@ -840,7 +838,7 @@ static int grfio_entryread (char *gfname, int gentry)
         // Get an entry
         for (entry = 0, ofs = 0; entry < entrys; entry++)
         {
-            int  ofs2, srclen, srccount, type;
+            int  ofs2, type;
             char *period_ptr;
             FILELIST aentry;
 
@@ -848,6 +846,7 @@ static int grfio_entryread (char *gfname, int gentry)
             type = grf_filelist[ofs2 + 12];
             if (type != 0)
             {                   // Directory Index ... skip
+                int srclen, srccount;
                 fname =
                     decode_filename (grf_filelist + ofs + 6,
                                      grf_filelist[ofs] - 6);
@@ -953,7 +952,7 @@ static int grfio_entryread (char *gfname, int gentry)
         // Get an entry
         for (entry = 0, ofs = 0; entry < entrys; entry++)
         {
-            int  ofs2, srclen, srccount, type;
+            int  ofs2, type;
             FILELIST aentry;
 
             fname = grf_filelist + ofs;
@@ -967,6 +966,7 @@ static int grfio_entryread (char *gfname, int gentry)
             type = grf_filelist[ofs2 + 12];
             if (type == 1 || type == 3 || type == 5)
             {
+                int srclen, srccount;
                 srclen = getlong (grf_filelist + ofs2);
                 if (grf_filelist[ofs2 + 12] == 3)
                 {
@@ -1133,15 +1133,14 @@ int grfio_add (char *fname)
  */
 void grfio_final (void)
 {
-    int  lop;
-
-    if (filelist != NULL)
-        free (filelist);
+    free (filelist);
     filelist = NULL;
     filelist_entrys = filelist_maxentry = 0;
 
     if (gentry_table != NULL)
     {
+        int  lop;
+
         for (lop = 0; lop < gentry_entrys; lop++)
         {
             if (gentry_table[lop] != NULL)

@@ -621,11 +621,11 @@ int mapif_parse_PartyChangeOption (int fd, int party_id, int account_id,
 int mapif_parse_PartyLeave (int fd __attribute__ ((unused)), int party_id, int account_id)
 {
     struct party *p;
-    int  i;
 
     p = numdb_search (party_db, party_id);
     if (p != NULL)
     {
+        int  i;
         for (i = 0; i < MAX_PARTY; i++)
         {
             if (p->member[i].account_id == account_id)

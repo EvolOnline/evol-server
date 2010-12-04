@@ -160,7 +160,6 @@ static int connect_client (int listen_fd)
     int  fd;
     struct sockaddr_in client_address;
     unsigned int len;
-    int  result;
     int  yes = 1;               // reuse fix
 
     //printf("connect_client : %d\n",listen_fd);
@@ -204,7 +203,7 @@ static int connect_client (int listen_fd)
         ioctlsocket (fd, FIONBIO, &val);
     }
 #else
-    result = fcntl (fd, F_SETFL, O_NONBLOCK);
+    fcntl (fd, F_SETFL, O_NONBLOCK);
 #endif
 
     CREATE (session[fd], struct socket_data, 1);
@@ -301,7 +300,7 @@ int make_connection (long ip, int port)
 {
     struct sockaddr_in server_address;
     int  fd;
-    int  result;
+//    int  result;
     int  yes = 1;               // reuse fix
 
     fd = socket (AF_INET, SOCK_STREAM, 0);
@@ -332,12 +331,11 @@ int make_connection (long ip, int port)
         ioctlsocket (fd, FIONBIO, &val);
     }
 #else
-    result = fcntl (fd, F_SETFL, O_NONBLOCK);
+    fcntl (fd, F_SETFL, O_NONBLOCK);
 #endif
 
-    result =
-        connect (fd, (struct sockaddr *) (&server_address),
-                 sizeof (struct sockaddr_in));
+    connect (fd, (struct sockaddr *) (&server_address),
+             sizeof (struct sockaddr_in));
 
     FD_SET (fd, &readfds);
 

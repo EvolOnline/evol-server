@@ -346,6 +346,7 @@ int pass_ok(const char *password, const char *crypted)
 	char buf[40], *salt=buf+1;
 
 	strncpy(buf, crypted, 40);
+    buf[39] = 0;
     char *ptr = strchr(buf, '$');
     if (ptr)
     {
