@@ -394,15 +394,19 @@ void map_foreachinarea (int (*func) (struct block_list *, va_list), int m,
     if (type == 0 || type != BL_MOB)
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
+            const int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                bl = map[m].block[bx + by * map[m].bxs];
-                c = map[m].block_count[bx + by * map[m].bxs];
+                const int b2 = bx + by1;
+                bl = map[m].block[b2];
+                c = map[m].block_count[b2];
                 for (i = 0; i < c && bl; i++, bl = bl->next)
                 {
-                    if (bl && type && bl->type != type)
+                    if (!bl)
                         continue;
-                    if (bl && bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                    if (type && bl->type != type)
+                        continue;
+                    if (bl->x >= x0 && bl->x <= x1 && bl->y >= y0
                         && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
                         bl_list[bl_list_count++] = bl;
                 }
@@ -411,10 +415,12 @@ void map_foreachinarea (int (*func) (struct block_list *, va_list), int m,
     if (type == 0 || type == BL_MOB)
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
+            const int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                bl = map[m].block_mob[bx + by * map[m].bxs];
-                c = map[m].block_mob_count[bx + by * map[m].bxs];
+                const int b2 = bx + by1;
+                bl = map[m].block_mob[b2];
+                c = map[m].block_mob_count[b2];
                 for (i = 0; i < c && bl; i++, bl = bl->next)
                 {
                     if (bl && bl->x >= x0 && bl->x <= x1 && bl->y >= y0
@@ -499,10 +505,10 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
 
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
-            int by1 = by * map[m].bxs;
+            const int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                int b2 = bx + by1;
+                const int b2 = bx + by1;
                 bl = map[m].block[b2];
                 if (bl)
                 {
@@ -560,10 +566,10 @@ void map_foreachinmovearea (int (*func) (struct block_list *, va_list), int m,
 
         for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
         {
-            int by1 = by * map[m].bxs;
+            const int by1 = by * map[m].bxs;
             for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
             {
-                int b2 = bx + by1;
+                const int b2 = bx + by1;
                 bl = map[m].block[b2];
                 if (bl)
                 {
