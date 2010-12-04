@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cppcheck --enable=all --force -j 5 -v src 1>check1.txt 2>check2.txt

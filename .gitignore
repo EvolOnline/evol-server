@@ -9,8 +9,11 @@ eathena-monitor
 magic-interpreter-parser.h
 magic-interpreter-parser.c
 magic-interpreter-lexer.c
+/tools/cppcheck
 make1.txt
 make2.txt
+check1.txt
+check2.txt
 gmon.out
 gprof.png
 gprof.txt
