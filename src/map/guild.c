@@ -398,11 +398,10 @@ int guild_created (int account_id, int guild_id)
     /* The guild name is valid and not already taken. */
     if (guild_id > 0)
     {
-        struct guild *g;
         sd->status.guild_id = guild_id;
         sd->guild_sended = 0;
 
-        if ((g = numdb_search (guild_db, guild_id)) != NULL)
+        if (numdb_search (guild_db, guild_id) != NULL)
         {
             printf ("guild_created(): ID already exists!\n");
             exit (1);
@@ -690,9 +689,8 @@ int guild_member_added (int guild_id, int account_id,
                         int char_id __attribute__ ((unused)), int flag)
 {
     struct map_session_data *sd = map_id2sd (account_id), *sd2;
-    struct guild *g;
 
-    if ((g = guild_search (guild_id)) == NULL)
+    if (guild_search (guild_id) == NULL)
         return 0;
 
     if ((sd == NULL || sd->guild_invite == 0) && flag == 0)
@@ -1913,9 +1911,8 @@ int guild_checkcastles (struct guild *g)
 {
     nullpo_retr (0, g);
 
-    int  i, nb_cas = 0, id, cas_id = 0;
+    int  i, nb_cas = 0, cas_id = 0;
     struct guild_castle *gc;
-    id = g->guild_id;
     for (i = 0; i < MAX_GUILDCASTLE; i++)
     {
         gc = guild_castle_search (i);

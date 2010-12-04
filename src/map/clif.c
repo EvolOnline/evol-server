@@ -837,13 +837,12 @@ static int current_weapon(struct map_session_data *sd)
  */
 static int clif_set0078 (struct map_session_data *sd, unsigned char *buf)
 {
-    int  level = 0;
-
     nullpo_retr (0, sd);
     nullpo_retr (0, buf);
 
     if (sd->disguise > 23 && sd->disguise < 4001)
     {                           // mob disguises [Valaris]
+        int  level = 0;
         WBUFW (buf, 0) = 0x78;
         WBUFL (buf, 2) = sd->bl.id;
         WBUFW (buf, 6) = battle_get_speed (&sd->bl);
@@ -928,12 +927,12 @@ static int clif_set0078 (struct map_session_data *sd, unsigned char *buf)
  */
 static int clif_set007b (struct map_session_data *sd, unsigned char *buf)
 {
-    int  level = 0;
     nullpo_retr (0, sd);
     nullpo_retr (0, buf);
 
     if (sd->disguise > 23 && sd->disguise < 4001)
     {                           // mob disguises [Valaris]
+        int  level = 0;
         WBUFW (buf, 0) = 0x7b;
         WBUFL (buf, 2) = sd->bl.id;
         WBUFW (buf, 6) = battle_get_speed (&sd->bl);
@@ -1509,13 +1508,10 @@ int clif_walkok (struct map_session_data *sd)
  */
 int clif_movechar (struct map_session_data *sd)
 {
-    int  fd;
     int  len;
     unsigned char buf[256];
 
     nullpo_retr (0, sd);
-
-    fd = sd->fd;
 
     len = clif_set007b (sd, buf);
 
@@ -1899,7 +1895,7 @@ int clif_cutin (struct map_session_data *sd, char *image, int type)
  */
 int clif_additem (struct map_session_data *sd, int n, int amount, int fail)
 {
-    int  fd, j;
+    int  fd;
     unsigned char *buf;
 
     nullpo_retr (0, sd);
@@ -1954,6 +1950,7 @@ int clif_additem (struct map_session_data *sd, int n, int amount, int fail)
         }
         else
         {
+            int  j;
             if (sd->status.inventory[n].card[0] > 0
                 && (j = itemdb_viewid (sd->status.inventory[n].card[0])) > 0)
                 WBUFW (buf, 11) = j;
@@ -3303,7 +3300,7 @@ int clif_tradestart (struct map_session_data *sd, int type)
 int clif_tradeadditem (struct map_session_data *sd,
                        struct map_session_data *tsd, int index, int amount)
 {
-    int  fd, j;
+    int  fd;
 
     nullpo_retr (0, sd);
     nullpo_retr (0, tsd);
@@ -3351,6 +3348,7 @@ int clif_tradeadditem (struct map_session_data *sd,
         }
         else
         {
+            int  j;
             if (sd->status.inventory[index].card[0] > 0
                 && (j =
                     itemdb_viewid (sd->status.inventory[index].card[0])) > 0)
@@ -3490,7 +3488,7 @@ int clif_updatestorageamount (struct map_session_data *sd,
 int clif_storageitemadded (struct map_session_data *sd, struct storage *stor,
                            int index, int amount)
 {
-    int  fd, j;
+    int  fd;
 
     nullpo_retr (0, sd);
     nullpo_retr (0, stor);
@@ -3524,6 +3522,7 @@ int clif_storageitemadded (struct map_session_data *sd, struct storage *stor,
     }
     else
     {
+        int  j;
         if (stor->storage_[index].card[0] > 0
             && (j = itemdb_viewid (stor->storage_[index].card[0])) > 0)
             WFIFOW (fd, 13) = j;
@@ -3579,7 +3578,7 @@ int clif_guildstorageitemadded (struct map_session_data *sd,
                                 struct guild_storage *stor, int index,
                                 int amount)
 {
-    int  view, fd, j;
+    int  view, fd;
 
     nullpo_retr (0, sd);
     nullpo_retr (0, stor);
@@ -3613,6 +3612,7 @@ int clif_guildstorageitemadded (struct map_session_data *sd,
     }
     else
     {
+        int  j;
         if (stor->storage_[index].card[0] > 0
             && (j = itemdb_viewid (stor->storage_[index].card[0])) > 0)
             WFIFOW (fd, 13) = j;
@@ -5160,7 +5160,7 @@ int clif_item_skill (struct map_session_data *sd, int skillid, int skilllv,
 int clif_cart_additem (struct map_session_data *sd, int n, int amount,
                        int fail __attribute__ ((unused)))
 {
-    int  view, j, fd;
+    int  view, fd;
     unsigned char *buf;
 
     nullpo_retr (0, sd);
@@ -5194,6 +5194,7 @@ int clif_cart_additem (struct map_session_data *sd, int n, int amount,
     }
     else
     {
+        int  j;
         if (sd->status.cart[n].card[0] > 0
             && (j = itemdb_viewid (sd->status.cart[n].card[0])) > 0)
             WBUFW (buf, 13) = j;
@@ -5537,7 +5538,6 @@ int clif_party_leaved (struct party *p, struct map_session_data *sd,
                        int account_id, char *name, int flag)
 {
     unsigned char buf[64];
-    int  i;
 
     nullpo_retr (0, p);
     nullpo_retr (0, name);
@@ -5550,9 +5550,12 @@ int clif_party_leaved (struct party *p, struct map_session_data *sd,
     if ((flag & 0xf0) == 0)
     {
         if (sd == NULL)
+        {
+            int  i;
             for (i = 0; i < MAX_PARTY; i++)
                 if ((sd = p->member[i].sd) != NULL)
                     break;
+        }
         if (sd != NULL)
             clif_send (buf, packet_len_table[0x105], &sd->bl, PARTY);
     }
@@ -8226,7 +8229,7 @@ void clif_parse_SkillUp (int fd, struct map_session_data *sd)
  */
 void clif_parse_UseSkillToId (int fd, struct map_session_data *sd)
 {
-    int  skillnum, skilllv, lv, target_id;
+    int  skillnum, skilllv, target_id;
     unsigned int tick = gettick ();
 
     nullpo_retv (sd);
@@ -8266,6 +8269,7 @@ void clif_parse_UseSkillToId (int fd, struct map_session_data *sd)
     }
     else
     {
+        int  lv;
         sd->skillitem = sd->skillitemlv = -1;
         if (skillnum == MO_EXTREMITYFIST)
         {
@@ -8303,7 +8307,7 @@ void clif_parse_UseSkillToId (int fd, struct map_session_data *sd)
  */
 void clif_parse_UseSkillToPos (int fd, struct map_session_data *sd)
 {
-    int  skillnum, skilllv, lv, x, y;
+    int  skillnum, skilllv, x, y;
     unsigned int tick = gettick ();
     int  skillmoreinfo;
 
@@ -8357,6 +8361,7 @@ void clif_parse_UseSkillToPos (int fd, struct map_session_data *sd)
     }
     else
     {
+        int  lv;
         sd->skillitem = sd->skillitemlv = -1;
         if ((lv = pc_checkskill (sd, skillnum)) > 0)
         {
@@ -9240,7 +9245,6 @@ void clif_parse_GMReqNoChat (int fd, struct map_session_data *sd)
     int  limit = RFIFOW (fd, 7);
     struct block_list *bl = map_id2bl (tid);
     struct map_session_data *dstsd;
-    int  dstfd;
 
     nullpo_retv (sd);
 
@@ -9258,6 +9262,7 @@ void clif_parse_GMReqNoChat (int fd, struct map_session_data *sd)
         if ((tid == bl->id && type == 2 && !pc_isGM (sd))
             || (pc_isGM (sd) > pc_isGM (dstsd)))
         {
+            int  dstfd;
             dstfd = dstsd->fd;
             WFIFOW (dstfd, 0) = 0x14b;
             WFIFOB (dstfd, 2) = (type == 2) ? 1 : type;
@@ -9301,7 +9306,6 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
     char output[1024];
     char *nick;                 // S 00cf <nick>.24B <type>.B: 00 (/ex nick) deny speech from nick, 01 (/in nick) allow speech from nick
     int  i;
-    int  pos;
 
     nullpo_retv (sd);
 
@@ -9314,6 +9318,7 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
     {                           // type
         if (strlen (nick) >= 4 && strlen (nick) < 24)
         {                       // do something only if nick can be exist
+            int  pos;
             pos = -1;
             for (i = 0; i < (sizeof (sd->ignore) / sizeof (sd->ignore[0]));
                  i++)
@@ -9482,18 +9487,18 @@ void clif_parse_PMIgnoreAll (int fd, struct map_session_data *sd)
     return;
 }
 
-void clif_parse_skillMessage (int fd, struct map_session_data *sd __attribute__ ((unused)))
+void clif_parse_skillMessage (int fd __attribute__ ((unused)), struct map_session_data *sd __attribute__ ((unused)))
 {                               // Added by RoVeRT
-    int  skillid, skilllv, x, y;
-    char *mes;
+//    int  skillid, skilllv, x, y;
+//    char *mes;
 
-    skilllv = RFIFOW (fd, 2);
-    skillid = RFIFOW (fd, 4);
+//    skilllv = RFIFOW (fd, 2);
+//    skillid = RFIFOW (fd, 4);
 
-    y = RFIFOB (fd, 6);
-    x = RFIFOB (fd, 8);
+//    y = RFIFOB (fd, 6);
+//    x = RFIFOB (fd, 8);
 
-    mes = RFIFOP (fd, 10);
+//    mes = RFIFOP (fd, 10);
 
     // skill 220 = graffiti
 //  printf("skill: %d %d location: %3d %3d message: %s\n", skillid, skilllv, x, y, (char*)mes);

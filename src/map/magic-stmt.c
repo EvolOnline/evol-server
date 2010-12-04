@@ -1010,12 +1010,12 @@ static int op_resurrect (env_t * env __attribute__ ((unused)), int args_nr __att
     if (!sd || !pc_isdead (sd))
         return 1;
 
-    int perc_hp = (ARGINT (1) > 0) ? (ARGINT (1) > 100) ? 100 : (ARGINT (1) / 100) : 50;
-    int perc_mp = (ARGINT (2) > 0) ? (ARGINT (2) > 100) ? 100 : (ARGINT (2) / 100) : 50;
-
     // 3rd param == 1 then restore the char hp and sp in percentage
     if(ARGINT (3) == 1)
     {
+        int perc_hp = (ARGINT (1) > 0) ? (ARGINT (1) > 100) ? 100 : (ARGINT (1) / 100) : 50;
+        int perc_mp = (ARGINT (2) > 0) ? (ARGINT (2) > 100) ? 100 : (ARGINT (2) / 100) : 50;
+
         sd->status.hp = sd->status.max_hp * perc_hp;
         sd->status.sp = sd->status.max_sp * perc_mp;
     }

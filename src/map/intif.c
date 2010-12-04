@@ -561,7 +561,6 @@ int intif_guild_castle_datasave (int castle_id, int index, int value)
 int intif_parse_WisMessage (int fd)
 {                               // rewritten by [Yor]
     struct map_session_data *sd;
-    int  i;
     char *wisp_source;
 
     if (battle_config.etc_log)
@@ -578,6 +577,7 @@ int intif_parse_WisMessage (int fd)
         else
         {
             wisp_source = RFIFOP (fd, 8);   // speed up
+            int  i;
             // if player ignore the source character
             for (i = 0; i < (sizeof (sd->ignore) / sizeof (sd->ignore[0]));
                  i++)

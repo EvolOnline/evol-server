@@ -525,14 +525,15 @@ int npc_do_ontimer_sub (void *key, void *data, va_list ap)
     nullpo_retr (0, c);
 //  struct map_session_data *sd=va_arg(ap,struct map_session_data *);
     int  option = va_arg (ap, int);
-    int  tick = 0;
     char temp[11];
     char event[50];
 
     if (ev->nd->bl.id == (int) *c && (p = strchr (p, ':')) && p
         && strncasecmp ("::OnTimer", p, 8) == 0)
     {
+        int  tick = 0;
         sscanf (&p[9], "%10s", temp);
+        temp[10] = 0;
         tick = atoi (temp);
 
         strcpy (event, ev->nd->name);
@@ -611,7 +612,7 @@ int npc_timerevent_import (void *key, void *data, va_list ap)
 int npc_timerevent (int tid __attribute__ ((unused)),
                     unsigned int tick, int id, int data)
 {
-    int  next, t;
+    int  t;
     struct npc_data *nd = (struct npc_data *) map_id2bl (id);
     struct npc_timerevent_list *te;
     if (nd == NULL || nd->u.scr.nexttimer < 0)
@@ -627,6 +628,7 @@ int npc_timerevent (int tid __attribute__ ((unused)),
     nd->u.scr.nexttimer++;
     if (nd->u.scr.timeramount > nd->u.scr.nexttimer)
     {
+        int  next;
         next = nd->u.scr.timer_event[nd->u.scr.nexttimer].timer - t;
         nd->u.scr.timerid = add_timer (tick + next, npc_timerevent, id, next);
     }
@@ -1096,7 +1098,7 @@ int npc_buylist (struct map_session_data *sd, int n,
 {
     struct npc_data *nd;
     double z;
-    int  i, j, w, skill, itemamount = 0, new = 0;
+    int  i, j, w, skill, new = 0;
 
     nullpo_retr (3, sd);
     nullpo_retr (3, item_list);
@@ -1125,7 +1127,7 @@ int npc_buylist (struct map_session_data *sd, int n,
             z += (double) pc_modifybuyvalue (sd,
                                              nd->u.shop_item[j].value) *
                 item_list[i * 2];
-        itemamount += item_list[i * 2];
+//        itemamount += item_list[i * 2];
 
         switch (pc_checkadditem (sd, item_list[i * 2 + 1], item_list[i * 2]))
         {
@@ -1214,7 +1216,7 @@ int npc_selllist (struct map_session_data *sd, int n,
                   unsigned short *item_list)
 {
     double z;
-    int  i, skill, itemamount = 0;
+    int  i, skill;
 
     nullpo_retr (1, sd);
     nullpo_retr (1, item_list);
@@ -1239,7 +1241,7 @@ int npc_selllist (struct map_session_data *sd, int n,
             z += (double) pc_modifysellvalue (sd,
                                               itemdb_value_sell (nameid)) *
                 item_list[i * 2 + 1];
-        itemamount += item_list[i * 2 + 1];
+//        itemamount += item_list[i * 2 + 1];
     }
 
     if (z > MAX_ZENY)
@@ -1726,9 +1728,6 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
     }
     else if (sscanf (w4, "%d,%d,%d", &class, &xs, &ys) == 3)
     {
-       // �ڐG�^NPC
-        int  i, j;
-
         if (xs >= 0)
             xs = xs * 2 + 1;
         if (ys >= 0)
@@ -1736,6 +1735,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
 
         if (class >= 0)
         {
+            int  i, j;
             for (i = 0; i < ys; i++)
             {
                 for (j = 0; j < xs; j++)
@@ -2098,7 +2098,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
     char mapname[24], savemap[16];
     int  savex, savey;
     char drop_arg1[16], drop_arg2[16];
-    int  drop_id = 0, drop_type = 0, drop_per = 0;
+    int  drop_per = 0;
 
     // �����̌��`�F�b�N
 //  if (    sscanf(w1,"%[^,],%d,%d,%d",mapname,&x,&y,&dir) != 4 )
@@ -2175,7 +2175,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
         if (sscanf (w4, "%15[^,],%15[^,],%d", drop_arg1, drop_arg2, &drop_per) ==
             3)
         {
-            int  i;
+            int  drop_id = 0, drop_type = 0;
             if (strcmp (drop_arg1, "random") == 0)
                 drop_id = -1;
             else if (itemdb_exists ((drop_id = atoi (drop_arg1))) == NULL)
@@ -2189,6 +2189,7 @@ static int npc_parse_mapflag (char *w1, char *w2, char *w3, char *w4)
 
             if (drop_id != 0)
             {
+                int  i;
                 for (i = 0; i < MAX_DROP_PER_MAP; i++)
                 {
                     if (map[m].drop_list[i].drop_id == 0)
@@ -2330,20 +2331,14 @@ static void npc_free_internal (struct npc_data *nd)
     }
     if (nd->bl.subtype == SCRIPT)
     {
-        if (nd->u.scr.timer_event)
-            free (nd->u.scr.timer_event);
+        free (nd->u.scr.timer_event);
+        nd->u.scr.timer_event = 0;
         if (nd->u.scr.src_id == 0)
         {
-            if (nd->u.scr.script)
-            {
-                free (nd->u.scr.script);
-                nd->u.scr.script = NULL;
-            }
-            if (nd->u.scr.label_list)
-            {
-                free (nd->u.scr.label_list);
-                nd->u.scr.label_list = NULL;
-            }
+            free (nd->u.scr.script);
+            nd->u.scr.script = NULL;
+            free (nd->u.scr.label_list);
+            nd->u.scr.label_list = NULL;
         }
     }
     else if (nd->bl.subtype == MESSAGE && nd->u.message)
@@ -2401,11 +2396,8 @@ int do_final_npc (void)
                 npc_free_internal (nd);
             else if (bl->type == BL_MOB && (md = (struct mob_data *) bl))
             {
-                if (md->lootitem)
-                {
-                    free (md->lootitem);
-                    md->lootitem = NULL;
-                }
+                free (md->lootitem);
+                md->lootitem = NULL;
                 free (md);
                 md = NULL;
             }
@@ -2446,11 +2438,8 @@ int do_init_npc (void)
 
     for (nsl = npc_src_first; nsl; nsl = nsl->next)
     {
-        if (nsl->prev)
-        {
-            free (nsl->prev);
-            nsl->prev = NULL;
-        }
+        free (nsl->prev);
+        nsl->prev = NULL;
         fp = fopen_ (nsl->name, "r");
         if (fp == NULL)
         {

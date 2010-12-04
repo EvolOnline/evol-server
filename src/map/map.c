@@ -749,7 +749,8 @@ int map_delobjectnofree (int id, int type)
     {
         fprintf (stderr, "Incorrect type: expected %d, got %d\n", type,
                  object[id]->type);
-        *((char *) 0) = 0;      // break for backtrace
+        exit(1);
+//        *((char *) 0) = 0;      // break for backtrace
     }
 
     map_delblock (object[id]);
@@ -1703,6 +1704,7 @@ static struct
 
 #define NO_WATER 1000000
 
+/*
 static int map_waterheight (char *mapname)
 {
     if (!mapname)
@@ -1717,6 +1719,7 @@ static int map_waterheight (char *mapname)
     }
     return NO_WATER;
 }
+*/
 
 static void map_readwater (char *watertxt)
 {
@@ -1761,13 +1764,12 @@ static void map_readwater (char *watertxt)
 static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
 {
     unsigned char *gat = "";
-    int  s;
     int  x, y, xs, ys;
     struct gat_1cell
     {
         char type;
     }   *p;
-    int  wh;
+//    int  wh;
     size_t size;
 
     // read & convert fn
@@ -1782,7 +1784,7 @@ static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
     xs = map[m].xs = *(short *) (gat);
     ys = map[m].ys = *(short *) (gat + 2);
     printf ("\n%i %i\n", xs, ys);
-    map[m].gat = calloc (s = map[m].xs * map[m].ys, 1);
+    map[m].gat = calloc (map[m].xs * map[m].ys, 1);
     if (map[m].gat == NULL)
     {
         printf ("out of memory : map_readmap gat\n");
@@ -1794,7 +1796,7 @@ static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
     memset (&map[m].flag, 0, sizeof (map[m].flag));
     if (battle_config.pk_mode)
         map[m].flag.pvp = 1;    // make all maps pvp for pk_mode [Valaris]
-    wh = map_waterheight (map[m].name);
+//    wh = map_waterheight (map[m].name);
     for (y = 0; y < ys; y++)
     {
         p = (struct gat_1cell *) (gat + y * xs + 4);

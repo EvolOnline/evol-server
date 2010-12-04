@@ -110,7 +110,7 @@ struct item_data *itemdb_searchname (const char *str)
  */
 int itemdb_searchrandomid (int flags)
 {
-    int  nameid = 0, i, index, count;
+    int  nameid = 0, count;
     struct random_item_data *list = NULL;
 
     struct
@@ -140,8 +140,10 @@ int itemdb_searchrandomid (int flags)
 
         if (count > 0)
         {
+            int  i;
             for (i = 0; i < 1000; i++)
             {
+                int  index;
                 index = MRAND (count);
                 if (MRAND (1000000) < list[index].per)
                 {
@@ -778,10 +780,9 @@ static int itemdb_final (void *key __attribute__ ((unused)),
 
     nullpo_retr (0, id = data);
 
-    if (id->use_script)
-        free (id->use_script);
-    if (id->equip_script)
-        free (id->equip_script);
+    free (id->use_script);
+    free (id->equip_script);
+    free (id->unequip_script);
     free (id);
 
     return 0;

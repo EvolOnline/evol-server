@@ -377,11 +377,11 @@ int mob_once_spawn (struct map_session_data *sd, char *mapname,
 
     if (class < 0)
     {                           // ランダムに召喚
-        int  i = 0;
         int  j = -class - 1;
-        int  k;
         if (j >= 0 && j < MAX_RANDOMMONSTER)
         {
+            int  i = 0;
+            int  k;
             do
             {
                 class = MPRAND (1001, 1000);
@@ -529,10 +529,7 @@ int mob_spawn_guardian (struct map_session_data *sd, char *mapname,
         return 0;
 
     struct mob_data *md = NULL;
-    int  m, count = 1, lv = 255;
-
-    if (sd)
-        lv = sd->status.base_level;
+    int  m, count = 1;
 
     if (sd && strcmp (mapname, "this") == 0)
         m = sd->bl.m;
@@ -773,11 +770,9 @@ static int mob_walktoxy_sub (struct mob_data *md);
  */
 static int mob_walk (struct mob_data *md, unsigned int tick, int data)
 {
-    int  moveblock;
-    int  i, ctype;
+    int  i;
     static int dirx[8] = { 0, -1, -1, -1, 0, 1, 1, 1 };
     static int diry[8] = { 1, 1, 0, -1, -1, -1, 0, 1 };
-    int  x, y, dx, dy;
 
     nullpo_retr (0, md);
 
@@ -798,6 +793,10 @@ static int mob_walk (struct mob_data *md, unsigned int tick, int data)
     }
     else
     {
+        int  moveblock;
+        int  ctype;
+        int  x, y, dx, dy;
+
         if (md->walkpath.path[md->walkpath.path_pos] >= 8)
             return 1;
 
@@ -1628,7 +1627,7 @@ static int mob_ai_sub_hard_activesearch (struct block_list *bl, va_list ap)
 {
     struct map_session_data *tsd = NULL;
     struct mob_data *smd, *tmd = NULL;
-    int  mode, race, dist, *pcc;
+    int  mode, *pcc;
 
     nullpo_retr (0, bl);
     nullpo_retr (0, ap);
@@ -1654,6 +1653,7 @@ static int mob_ai_sub_hard_activesearch (struct block_list *bl, va_list ap)
     // アクティブでターゲット射程内にいるなら、ロックする
     if (mode & 0x04)
     {
+        int  race;
         race = mob_db[smd->class].race;
         //対象がPCの場合
         if (tsd &&
@@ -1661,8 +1661,7 @@ static int mob_ai_sub_hard_activesearch (struct block_list *bl, va_list ap)
             tsd->bl.m == smd->bl.m &&
             tsd->invincible_timer == -1 &&
             !pc_isinvisible (tsd) &&
-            (dist =
-             distance (smd->bl.x, smd->bl.y, tsd->bl.x, tsd->bl.y)) < 9)
+            (distance (smd->bl.x, smd->bl.y, tsd->bl.x, tsd->bl.y)) < 9)
         {
             if (mode & 0x20 ||
                 (tsd->sc_data[SC_TRICKDEAD].timer == -1 &&
@@ -1681,8 +1680,7 @@ static int mob_ai_sub_hard_activesearch (struct block_list *bl, va_list ap)
         //対象がMobの場合
         else if (tmd &&
                  tmd->bl.m == smd->bl.m &&
-                 (dist =
-                  distance (smd->bl.x, smd->bl.y, tmd->bl.x, tmd->bl.y)) < 9)
+                 (distance (smd->bl.x, smd->bl.y, tmd->bl.x, tmd->bl.y)) < 9)
         {
             if (mob_can_reach (smd, bl, 12) &&  // 到達可能性判定
                 MRAND (1000) < 1000 / (++(*pcc)))
@@ -1703,7 +1701,7 @@ static int mob_ai_sub_hard_activesearch (struct block_list *bl, va_list ap)
 static int mob_ai_sub_hard_lootsearch (struct block_list *bl, va_list ap)
 {
     struct mob_data *md;
-    int  mode, dist, *itc;
+    int  mode, *itc;
 
     nullpo_retr (0, bl);
     nullpo_retr (0, ap);
@@ -1726,7 +1724,7 @@ static int mob_ai_sub_hard_lootsearch (struct block_list *bl, va_list ap)
                 && md->lootitem_count >= LOOTITEM_SIZE))
             return 0;
         if (bl->m == md->bl.m
-            && (dist = distance (md->bl.x, md->bl.y, bl->x, bl->y)) < 9)
+            && distance (md->bl.x, md->bl.y, bl->x, bl->y) < 9)
         {
             if (mob_can_reach (md, bl, 12) &&   // Reachability judging
                 MRAND (1000) < 1000 / (++(*itc)))
@@ -1791,7 +1789,7 @@ static int mob_ai_sub_hard_slavemob (struct mob_data *md, unsigned int tick)
 {
     struct mob_data *mmd = NULL;
     struct block_list *bl;
-    int  mode, race, old_dist;
+    int  mode, old_dist;
 
     nullpo_retr (0, md);
 
@@ -1891,6 +1889,7 @@ static int mob_ai_sub_hard_slavemob (struct mob_data *md, unsigned int tick)
         if (sd != NULL && !pc_isdead (sd) && sd->invincible_timer == -1
             && !pc_isinvisible (sd))
         {
+            int  race;
 
             race = mob_db[md->class].race;
             if (mode & 0x20 ||
@@ -2011,7 +2010,7 @@ static int mob_ai_sub_hard (struct block_list *bl, va_list ap)
     struct block_list *tbl = NULL;
     struct flooritem_data *fitem;
     unsigned int tick;
-    int  i, dx, dy, ret, dist;
+    int  i, dist;
     int  attack_type = 0;
     int  mode, race;
 
@@ -2136,6 +2135,8 @@ static int mob_ai_sub_hard (struct block_list *bl, va_list ap)
     {
         if ((tbl = map_id2bl (md->target_id)))
         {
+            int  ret;
+            int  dx, dy;
             if (tbl->type == BL_PC)
                 tsd = (struct map_session_data *) tbl;
             else if (tbl->type == BL_MOB)
@@ -2501,7 +2502,6 @@ static int mob_delay_item_drop (int tid __attribute__ ((unused)),
 {
     struct delay_item_drop *ditem;
     struct item temp_item;
-    int  flag;
 
     nullpo_retr (0, ditem = (struct delay_item_drop *) id);
 
@@ -2512,6 +2512,7 @@ static int mob_delay_item_drop (int tid __attribute__ ((unused)),
 
     if (battle_config.item_auto_get == 1)
     {
+        int  flag;
         if (ditem->first_sd
             && (flag =
                 pc_additem (ditem->first_sd, &temp_item, ditem->amount)))
@@ -2541,12 +2542,12 @@ static int mob_delay_item_drop2 (int tid __attribute__ ((unused)),
                                  int id, int data __attribute__ ((unused)))
 {
     struct delay_item_drop2 *ditem;
-    int  flag;
 
     nullpo_retr (0, ditem = (struct delay_item_drop2 *) id);
 
     if (battle_config.item_auto_get == 1)
     {
+        int  flag;
         if (ditem->first_sd
             && (flag =
                 pc_additem (ditem->first_sd, &ditem->item_data,
@@ -2673,7 +2674,8 @@ int mob_damage (struct block_list *src, struct mob_data *md, int damage,
     unsigned int tick = gettick ();
     struct map_session_data *mvp_sd = NULL, *second_sd = NULL, *third_sd =
         NULL;
-    double dmg_rate, tdmg, temp;
+    double temp;
+//    double tdmg, temp;
     struct item item;
     int  ret;
     int  drop_rate;
@@ -2946,7 +2948,7 @@ int mob_damage (struct block_list *src, struct mob_data *md, int damage,
     // map外に消えた人は計算から除くので
     // overkill分は無いけどsumはmax_hpとは違う
 
-    tdmg = 0;
+//    tdmg = 0;
     for (i = 0, count = 0, mvp_damage = 0; i < DAMAGELOG_SIZE; i++)
     {
         if (md->dmglog[i].id == 0)
@@ -2958,7 +2960,7 @@ int mob_damage (struct block_list *src, struct mob_data *md, int damage,
         if (tmpsd[i]->bl.m != md->bl.m || pc_isdead (tmpsd[i]))
             continue;
 
-        tdmg += (double) md->dmglog[i].dmg;
+//        tdmg += (double) md->dmglog[i].dmg;
         if (mvp_damage < md->dmglog[i].dmg)
         {
             third_sd = second_sd;
@@ -2971,11 +2973,12 @@ int mob_damage (struct block_list *src, struct mob_data *md, int damage,
     // [MouseJstr]
     if ((map[md->bl.m].flag.pvp == 0) || (battle_config.pvp_exp == 1))
     {
-
+/*
         if ((double) max_hp < tdmg)
             dmg_rate = ((double) max_hp) / tdmg;
         else
             dmg_rate = 1;
+*/
 
         // 経験値の分配
         for (i = 0; i < DAMAGELOG_SIZE; i++)
@@ -3827,7 +3830,7 @@ int mobskill_castend_pos (int tid, unsigned int tick, int id, int data __attribu
 {
     struct mob_data *md = NULL;
     struct block_list *bl;
-    int  range, maxcount;
+    int  range;
 
     //mobskill_castend_id同様詠唱したMobが詠唱完了時にもういないというのはありそうなのでnullpoから除外
     if ((bl = map_id2bl (id)) == NULL)
@@ -3924,6 +3927,7 @@ int mobskill_castend_pos (int tid, unsigned int tick, int id, int data __attribu
 
     if (battle_config.monster_land_skill_limit == 1)
     {
+        int  maxcount;
         maxcount = skill_get_maxcount (md->skillid);
         if (maxcount > 0)
         {

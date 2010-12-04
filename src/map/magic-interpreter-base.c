@@ -521,11 +521,12 @@ void spell_bind (character_t * subject, invocation_t * invocation)
         if (invocation->flags & INVOCATION_FLAG_BOUND
             || invocation->subject || invocation->next_invocation)
         {
-            int *i = NULL;
+//            int *i = NULL;
             fprintf (stderr,
                      "[magic] INTERNAL ERROR: Attempt to re-bind spell invocation `%s'\n",
                      invocation->spell->name);
-            *i = 1;
+//            *i = 1;
+            exit(1);
             return;
         }
 
