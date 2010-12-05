@@ -422,72 +422,14 @@ static int itemdb_readdb (void)
             if ((p = strchr (p + 1, '{')) == NULL)
                 continue;
             id->equip_script = parse_script (p, lines);
+
+            if ((p = strchr (p + 1, '{')) == NULL)
+                continue;
+            id->unequip_script = parse_script (p, lines);
         }
         fclose_ (fp);
         printf ("read %s done (count=%d)\n", filename[i], ln);
     }
-    return 0;
-}
-
-//itemdb_unequip
-static int itemdb_read_unequip (void)
-{
-    FILE *fp;
-    char line[2024];
-    int  ln = 0, lines = 0;
-    int  nameid;
-    char *str[32], *p, *np;
-    struct item_data *id;
-    char filename[] = "db/item_unequip.txt";
-
-    fp = fopen_ (filename, "r");
-    if (fp == NULL)
-    {
-        printf ("can't read %s\n", filename);
-        return -11;
-    }
-
-    lines = 0;
-    while (fgets (line, 2020, fp))
-    {
-        lines++;
-        if (line[0] == '/' && line[1] == '/')
-            continue;
-        memset (str, 0, sizeof (str));
-        np = p = line;
-        while (*p == '\t' || *p == ' ')
-            p++;
-        str[0] = p;
-        p = strchr (p, ',');
-        if (p)
-        {
-            *p++ = 0;
-            np = p;
-        }
-
-        if (str[0] == NULL)
-            continue;
-
-        nameid = atoi (str[0]);
-        if (nameid <= 0 || nameid >= 20000)
-            continue;
-        ln++;
-
-        //ID,script
-        id = itemdb_search (nameid);
-        if (id)
-        {
-            id->unequip_script = NULL;
-
-            if ((p = strchr (np, '{')) == NULL)
-                continue;
-
-            id->unequip_script = parse_script (p, lines);
-        }
-    }
-    fclose_ (fp);
-    printf ("read %s done (count=%d)\n", filename, ln);
-
     return 0;
 }
 
@@ -836,7 +778,6 @@ static void itemdb_read (void)
 {
     itemdb_read_itemslottable ();
     itemdb_readdb ();
-    itemdb_read_unequip ();
     itemdb_read_randomitem ();
     itemdb_read_itemavail ();
     itemdb_read_noequip ();
