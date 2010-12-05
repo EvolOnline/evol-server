@@ -2061,7 +2061,7 @@ static int mob_ai_sub_hard (struct block_list *bl, va_list ap)
         struct map_session_data *asd = map_id2sd (md->attacked_id);
         if (asd)
         {
-            if (asd->invincible_timer == -1 && !pc_isinvisible (asd))
+            if (asd->invincible_timer == -1 && !pc_isinvisible (asd) && !pc_isdead(asd))
             {
                 map_foreachinarea (mob_ai_sub_hard_linksearch, md->bl.m,
                                    md->bl.x - 13, md->bl.y - 13,
