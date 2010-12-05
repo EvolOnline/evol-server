@@ -21,6 +21,7 @@
 #include "battle.h"
 #include "party.h"
 #include "npc.h"
+#include "tmw.h"
 
 #ifdef MEMWATCH
 #include "memwatch.h"
@@ -4694,7 +4695,15 @@ static int mob_readdb (void)
             memcpy (mob_db[class].name, str[1], 24);
             memcpy (mob_db[class].jname, str[2], 24);
             mob_db[class].lv = atoi (str[3]);
+            if (!mob_db[class].lv)
+            {
+                printf("mob level error. Id %d\n", class);
+            }
             mob_db[class].max_hp = atoi (str[4]);
+            if (!mob_db[class].max_hp)
+            {
+                printf("mob hp error. Id %d\n", class);
+            }
             mob_db[class].max_sp = atoi (str[5]);
 
             mob_db[class].base_exp = atoi (str[6]);
@@ -4741,7 +4750,15 @@ static int mob_readdb (void)
             mob_db[class].speed = atoi (str[25]);
             mob_db[class].adelay = atoi (str[26]);
             mob_db[class].amotion = atoi (str[27]);
+            if (!mob_db[class].amotion)
+            {
+                printf("mob amotion error. Id %d\n", class);
+            }
             mob_db[class].dmotion = atoi (str[28]);
+            if (!mob_db[class].dmotion)
+            {
+                printf("mob dmotion error. Id %d\n", class);
+            }
 
             for (i = 0; i < 8; i++)
             {
@@ -4799,6 +4816,10 @@ static int mob_readdb (void)
 
             mob_db[class].mutations_nr = atoi (str[55]);
             mob_db[class].mutation_power = atoi (str[56]);
+            if (mob_db[class].mutation_power && !mob_db[class].mutations_nr)
+            {
+                printf("mob mutations error. Id %d\n", class);
+            }
 
             for (i = 0; i < MAX_RANDOMMONSTER; i++)
                 mob_db[class].summonper[i] = 0;
@@ -5098,6 +5119,7 @@ static int mob_readskilldb (void)
             if ((mob_id = atoi (sp[0])) <= 0)
                 continue;
 
+            tmw_TrimStr(sp[1]);
             if (strcmp (sp[1], "clear") == 0)
             {
                 memset (mob_db[mob_id].skill, 0,
@@ -5117,6 +5139,7 @@ static int mob_readskilldb (void)
                 continue;
             }
 
+            tmw_TrimStr(sp[2]);
             ms->state = atoi (sp[2]);
             for (j = 0; j < sizeof (state) / sizeof (state[0]); j++)
             {
@@ -5130,8 +5153,10 @@ static int mob_readskilldb (void)
             ms->casttime = atoi (sp[6]);
             ms->delay = atoi (sp[7]);
             ms->cancel = atoi (sp[8]);
+            tmw_TrimStr(sp[8]);
             if (strcmp (sp[8], "yes") == 0)
                 ms->cancel = 1;
+            tmw_TrimStr(sp[9]);
             ms->target = atoi (sp[9]);
             for (j = 0; j < sizeof (target) / sizeof (target[0]); j++)
             {
@@ -5139,11 +5164,13 @@ static int mob_readskilldb (void)
                     ms->target = target[j].id;
             }
             ms->cond1 = -1;
+            tmw_TrimStr(sp[10]);
             for (j = 0; j < sizeof (cond1) / sizeof (cond1[0]); j++)
             {
                 if (strcmp (sp[10], cond1[j].str) == 0)
                     ms->cond1 = cond1[j].id;
             }
+            tmw_TrimStr(sp[11]);
             ms->cond2 = atoi (sp[11]);
             for (j = 0; j < sizeof (cond2) / sizeof (cond2[0]); j++)
             {
