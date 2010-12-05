@@ -937,7 +937,7 @@ static int mob_check_attack (struct mob_data *md)
         mode = md->mode;
 
     race = mob_db[md->class].race;
-    if (!(mode & 0x80))
+    if (!(mode & 0x80) && !(mode & 0x10000))
     {
         md->target_id = 0;
         md->state.targettype = NONE_ATTACKABLE;
@@ -970,6 +970,7 @@ static int mob_attack (struct mob_data *md, unsigned int tick,
                        int data __attribute__ ((unused)))
 {
     struct block_list *tbl = NULL;
+    int mode;
 
     nullpo_retr (0, md);
 
@@ -988,7 +989,15 @@ static int mob_attack (struct mob_data *md, unsigned int tick,
     if (mobskill_use (md, tick, -2))    // スキル使用
         return 0;
 
-    md->target_lv = battle_weapon_attack (&md->bl, tbl, tick, 0);
+    if (!md->mode)
+        mode = mob_db[md->class].mode;
+    else
+        mode = md->mode;
+
+    if (mode & 0x80)
+        md->target_lv = battle_weapon_attack (&md->bl, tbl, tick, 0);
+    else
+        md->target_lv = 0;
 
     if (!(battle_config.monster_cloak_check_type & 2)
         && md->sc_data[SC_CLOAKING].timer != -1)
