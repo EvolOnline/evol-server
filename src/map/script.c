@@ -7476,10 +7476,16 @@ void op_2num (struct script_state *st, int op, int i1, int i2)
             i1 *= i2;
             break;
         case C_DIV:
-            i1 /= i2;
+            if (i2)
+                i1 /= i2;
+            else
+                i1 = 0;
             break;
         case C_MOD:
-            i1 %= i2;
+            if (i2)
+                i1 %= i2;
+            else
+                i1 = 0;
             break;
         case C_AND:
             i1 &= i2;
