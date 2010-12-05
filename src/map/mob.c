@@ -2640,7 +2640,17 @@ int mob_deleteslave_sub (struct block_list *bl, va_list ap)
 
     id = va_arg (ap, int);
     if (md->master_id > 0 && md->master_id == id)
-        mob_damage (NULL, md, md->hp, 1);
+    {
+        if (mob_db[md->class].mode & 0x20000)
+        {
+            md->master_id = 0;
+            md->master_dist = 0;
+        }
+        else
+        {
+            mob_damage (NULL, md, md->hp, 1);
+        }
+    }
     return 0;
 }
 
