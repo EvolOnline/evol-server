@@ -5541,6 +5541,7 @@ int battle_config_read (const char *cfgName)
         battle_config.mob_skill_use = 1;
         battle_config.mob_count_rate = 100;
         battle_config.mob_map_limit = 500;
+        battle_config.mob_skill_spawn_limit = 30;
         battle_config.quest_skill_learn = 0;
         battle_config.quest_skill_reset = 1;
         battle_config.basic_skill_check = 1;
@@ -5834,6 +5835,8 @@ int battle_config_read (const char *cfgName)
             "mob_count_rate", &battle_config.mob_count_rate},
             {
             "mob_map_limit", &battle_config.mob_map_limit},
+            {
+            "mob_skill_spawn_limit", &battle_config.mob_skill_spawn_limit},
             {
             "quest_skill_learn", &battle_config.quest_skill_learn},
             {
@@ -6308,6 +6311,9 @@ int battle_config_read (const char *cfgName)
 
         if (battle_config.mob_map_limit < 1)
             battle_config.mob_map_limit = 1;
+
+        if (battle_config.mob_skill_spawn_limit < 1)
+            battle_config.mob_skill_spawn_limit = 1;
 
         add_timer_func_list (battle_delay_damage_sub,
                              "battle_delay_damage_sub");

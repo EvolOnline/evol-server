@@ -3620,10 +3620,14 @@ int mob_summonslave (struct mob_data *md2, int *value, int amount, int flag)
     if (count < 1)
         return 0;
 
+    if (mob_countslave (md2) > battle_config.mob_skill_spawn_limit)
+        return 0;
+
     for (k = 0; k < count; k++)
     {
         amount = a;
         class = value[k];
+
         if (class <= 1000 || class > 2000)
             continue;
 
@@ -4433,15 +4437,23 @@ int mobskill_use (struct mob_data *md, unsigned int tick, int event)
                     flag = !map[md->bl.m].flag.town;
                     break;
                 case MSC_SLAVELT:  // slave < num
+                    if (c2 > battle_config.mob_skill_spawn_limit)
+                        c2 = battle_config.mob_skill_spawn_limit;
                     flag = (mob_countslave (md) < c2);
                     break;
                 case MSC_ATTACKPCGT:   // attack pc > num
+                    if (c2 > battle_config.mob_skill_spawn_limit)
+                        c2 = battle_config.mob_skill_spawn_limit;
                     flag = (mob_counttargeted (md, NULL, 0) > c2);
                     break;
                 case MSC_SLAVELE:  // slave <= num
+                    if (c2 > battle_config.mob_skill_spawn_limit)
+                        c2 = battle_config.mob_skill_spawn_limit;
                     flag = (mob_countslave (md) <= c2);
                     break;
                 case MSC_ATTACKPCGE:   // attack pc >= num
+                    if (c2 > battle_config.mob_skill_spawn_limit)
+                        c2 = battle_config.mob_skill_spawn_limit;
                     flag = (mob_counttargeted (md, NULL, 0) >= c2);
                     break;
                 case MSC_SKILLUSED:    // specificated skill used
