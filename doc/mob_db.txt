@@ -1,5 +1,4 @@
 # ID,	Name,		Jname,		LV,	HP,	SP,	EXP,	JEXP,	Range1,	ATK1,	ATK2,	DEF,	MDEF,	STR,	AGI,	VIT,	INT,	DEX,	LUK,	Range2,	Range3,	Scale,	Race,	Element,Mode,	Speed,	Adelay,	Amotion,Dmotion,Drop1id,Drop1per,	Drop2id,Drop2per,	Drop3id,Drop3per,	Drop4id,Drop4per,	Drop5id,Drop5per,	Drop6id,Drop6per,	Drop7id,Drop7per,	Drop8id,Drop8per,	MEXP,	ExpPer,	MVP1id,	MVP1per,MVP2id,	MVP2per,MVP3id,	MVP3per,mutation count,mutation strength
-1004,	Hive,		Hive,		1,	250,	0,	0,	5,	1,	0,	0,	10,	10,	2,	8,	10,	0,	0,	20,	1,	1,	1,	1,	20,	65536,	800,	800,	672,	480,	520,	7500,		0,	0,		0,	0,		0,	0,		0,	0,		0,	0,		0,	0,		0,	0,		0,	0,	,	,	,	,	,	,	2,		50
 
 ID          id
 Name        name
@@ -26,24 +25,40 @@ Scale
 Race        
 Element     
 Mode        mob mode
-    CANMOVE            | 0x0001 |      1
-    LOOTER             | 0x0002 |      2
-    AGGRESSIVE         | 0x0004 |      4
-    ASSIST             | 0x0008 |      8
-    CASTSENSOR_IDLE    | 0x0010 |     16
-    BOSS               | 0x0020 |     32
-    PLANT              | 0x0040 |     64
-    CANATTACK          | 0x0080 |    128
-    DETECTOR           | 0x0100 |    256
-    CASTSENSOR_CHASE   | 0x0200 |    512
-    CHANGECHASE        | 0x0400 |   1024
-    ANGRY              | 0x0800 |   2048
-    CHANGETARGET_MELEE | 0x1000 |   4096
-    CHANGETARGET_CHASE | 0x2000 |   8192
-    TARGETWEAK         | 0x4000 |  16384
-    RANDOMTARGET       | 0x8000 |  32768 (not implemented)
-    SKILLATTACKONLY    | 0x10000|  65536
-    WITHOUTMASTER      | 0x20000|  131072
+    CANMOVE            | 0x0001  |      1
+        mob can move
+
+    LOOTER             | 0x0002  |      2
+        mob can collect loot (drops)
+
+    AGGRESSIVE         | 0x0004  |      4
+        mod aggressive
+
+    ASSIST             | 0x0008  |      8
+        mob can attack enemy of same mobs class
+
+    CASTSENSOR_IDLE    | 0x0010  |     16
+    BOSS               | 0x0020  |     32
+    PLANT              | 0x0040  |     64
+    CANATTACK          | 0x0080  |    128
+        can attack
+
+    DETECTOR           | 0x0100  |    256
+    CASTSENSOR_CHASE   | 0x0200  |    512
+    CHANGECHASE        | 0x0400  |   1024
+    ANGRY              | 0x0800  |   2048
+    CHANGETARGET_MELEE | 0x1000  |   4096
+    CHANGETARGET_CHASE | 0x2000  |   8192
+    TARGETWEAK         | 0x4000  |  16384
+    RANDOMTARGET       | 0x8000  |  32768 (not implemented)
+    SKILLATTACKONLY    | 0x10000 |  65536
+        allow attack only by skills
+
+    WITHOUTMASTER      | 0x20000 |  131072
+        allow stay alive if master dead
+
+    ALLOWREUSESLAVE    | 0x40000 |  262144
+        allow reuse mob for new master
 
 Speed       move speed. less is better speed.
 Adelay      
