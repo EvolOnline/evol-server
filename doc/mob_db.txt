@@ -25,39 +25,39 @@ Scale
 Race        
 Element     
 Mode        mob mode
-    CANMOVE            | 0x0001  |      1
+    CANMOVE            | 0x0001  | 0000 0000  0000 0000 0000 0001 | 1
         mob can move
 
-    LOOTER             | 0x0002  |      2
+    LOOTER             | 0x0002  | 0000 0000  0000 0000 0000 0010 | 2
         mob can collect loot (drops)
 
-    AGGRESSIVE         | 0x0004  |      4
+    AGGRESSIVE         | 0x0004  | 0000 0000  0000 0000 0000 0100 | 4
         mod aggressive
 
-    ASSIST             | 0x0008  |      8
+    ASSIST             | 0x0008  | 0000 0000  0000 0000 0000 1000 | 8
         mob can attack enemy of same mobs class
 
-    CASTSENSOR_IDLE    | 0x0010  |     16
-    BOSS               | 0x0020  |     32
-    PLANT              | 0x0040  |     64
-    CANATTACK          | 0x0080  |    128
+    CASTSENSOR_IDLE    | 0x0010  | 0000 0000  0000 0000 0001 0000 | 16
+    BOSS               | 0x0020  | 0000 0000  0000 0000 0010 0000 | 32
+    PLANT              | 0x0040  | 0000 0000  0000 0000 0100 0000 | 64
+    CANATTACK          | 0x0080  | 0000 0000  0000 0000 1000 0000 | 128
         can attack
 
-    DETECTOR           | 0x0100  |    256
-    CASTSENSOR_CHASE   | 0x0200  |    512
-    CHANGECHASE        | 0x0400  |   1024
-    ANGRY              | 0x0800  |   2048
-    CHANGETARGET_MELEE | 0x1000  |   4096
-    CHANGETARGET_CHASE | 0x2000  |   8192
-    TARGETWEAK         | 0x4000  |  16384
-    RANDOMTARGET       | 0x8000  |  32768 (not implemented)
-    SKILLATTACKONLY    | 0x10000 |  65536
+    DETECTOR           | 0x0100  | 0000 0000  0000 0001 0000 0000 | 256
+    CASTSENSOR_CHASE   | 0x0200  | 0000 0000  0000 0010 0000 0000 | 512
+    CHANGECHASE        | 0x0400  | 0000 0000  0000 0100 0000 0000 | 1024
+    ANGRY              | 0x0800  | 0000 0000  0000 1000 0000 0000 | 2048
+    CHANGETARGET_MELEE | 0x1000  | 0000 0000  0001 0000 0000 0000 | 4096
+    CHANGETARGET_CHASE | 0x2000  | 0000 0000  0010 0000 0000 0000 | 8192
+    TARGETWEAK         | 0x4000  | 0000 0000  0100 0000 0000 0000 | 16384
+    RANDOMTARGET       | 0x8000  | 0000 0000  1000 0000 0000 0000 | 32768 (not implemented)
+    SKILLATTACKONLY    | 0x10000 | 0000 0001  0000 0000 0000 0000 | 65536
         allow attack only by skills
 
-    WITHOUTMASTER      | 0x20000 |  131072
+    WITHOUTMASTER      | 0x20000 | 0000 0010  0000 0000 0000 0000 | 131072
         allow stay alive if master dead
 
-    ALLOWREUSESLAVE    | 0x40000 |  262144
+    ALLOWREUSESLAVE    | 0x40000 | 0000 0100  0000 0000 0000 0000 | 262144
         allow reuse mob for new master
 
 Speed       move speed. less is better speed.
