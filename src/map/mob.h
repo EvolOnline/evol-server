@@ -11,7 +11,7 @@ struct mob_skill
     short permillage;
     int  casttime, delay;
     short cancel;
-    short cond1, cond2;
+    short cond1, cond2, cond3;
     short target;
     int  val[5];
     short emotion;

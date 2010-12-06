@@ -4383,7 +4383,7 @@ int mobskill_use (struct mob_data *md, unsigned int tick, int event)
 
     for (i = 0; i < mob_db[md->class].maxskill; i++)
     {
-        int  c2 = ms[i].cond2, flag = 0;
+        int  c2 = ms[i].cond2, c3 = ms[i].cond3, flag = 0;
         struct mob_data *fmd = NULL;
 
         // ƒfƒBƒŒƒC’†
@@ -4404,7 +4404,13 @@ int mobskill_use (struct mob_data *md, unsigned int tick, int event)
                     flag = 1;
                     break;
                 case MSC_MYHPLTMAXRATE:    // HP< maxhp%
-                    flag = (md->hp < max_hp * c2 / 100);
+                    if (c3 > battle_config.mob_skill_spawn_limit)
+                        c3 = battle_config.mob_skill_spawn_limit;
+
+                    if (!c3 || mob_countslave (md) < c3)
+                        flag = (md->hp < max_hp * c2 / 100);
+                    else
+                        flag = 0;
                     break;
                 case MSC_MYSTATUSON:   // status[num] on
                 case MSC_MYSTATUSOFF:  // status[num] off
@@ -5179,7 +5185,7 @@ static int mob_readskilldb (void)
                 continue;
 
             memset (sp, 0, sizeof (sp));
-            for (i = 0, p = line; i < 18 && p; i++)
+            for (i = 0, p = line; i < 19 && p; i++)
             {
                 sp[i] = p;
                 if ((p = strchr (p, ',')) != NULL)
@@ -5246,13 +5252,16 @@ static int mob_readskilldb (void)
                 if (strcmp (sp[11], cond2[j].str) == 0)
                     ms->cond2 = cond2[j].id;
             }
-            ms->val[0] = atoi (sp[12]);
-            ms->val[1] = atoi (sp[13]);
-            ms->val[2] = atoi (sp[14]);
-            ms->val[3] = atoi (sp[15]);
-            ms->val[4] = atoi (sp[16]);
-            if (sp[17] != NULL && strlen (sp[17]) > 2)
-                ms->emotion = atoi (sp[17]);
+
+            tmw_TrimStr(sp[12]);
+            ms->cond3 = atoi (sp[12]);
+            ms->val[0] = atoi (sp[13]);
+            ms->val[1] = atoi (sp[14]);
+            ms->val[2] = atoi (sp[15]);
+            ms->val[3] = atoi (sp[16]);
+            ms->val[4] = atoi (sp[17]);
+            if (sp[17] != NULL && strlen (sp[18]) > 2)
+                ms->emotion = atoi (sp[18]);
             else
                 ms->emotion = -1;
             mob_db[mob_id].maxskill = i + 1;
