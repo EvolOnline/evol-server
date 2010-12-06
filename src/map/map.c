@@ -442,13 +442,93 @@ void map_foreachinarea (int (*func) (struct block_list *, va_list), int m,
             printf ("map_foreachinarea: *WARNING* block count too many!\n");
     }
 
-    map_freeblock_lock ();      // メモリからの解放を禁止する
+    map_freeblock_lock ();
 
     for (i = blockcount; i < bl_list_count; i++)
-        if (bl_list[i]->prev)   // 有効かどうかチェック
+        if (bl_list[i]->prev)
             func (bl_list[i], ap);
 
-    map_freeblock_unlock ();    // 解放を許可する
+    map_freeblock_unlock ();
+
+    va_end (ap);
+    bl_list_count = blockcount;
+}
+
+void map_foreachinarea_cond (int (*func) (struct block_list *, va_list), int m,
+                        int x0, int y0, int x1, int y1, int type, ...)
+{
+    if (!func)
+        return;
+
+    int  bx, by;
+    struct block_list *bl = NULL;
+    va_list ap = NULL;
+    int  blockcount = bl_list_count, i, c;
+
+    if (m < 0)
+        return;
+    va_start (ap, type);
+    if (x0 < 0)
+        x0 = 0;
+    if (y0 < 0)
+        y0 = 0;
+    if (x1 >= map[m].xs)
+        x1 = map[m].xs - 1;
+    if (y1 >= map[m].ys)
+        y1 = map[m].ys - 1;
+    if (type == 0 || type != BL_MOB)
+        for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
+        {
+            const int by1 = by * map[m].bxs;
+            for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
+            {
+                const int b2 = bx + by1;
+                bl = map[m].block[b2];
+                c = map[m].block_count[b2];
+                for (i = 0; i < c && bl; i++, bl = bl->next)
+                {
+                    if (!bl)
+                        continue;
+                    if (type && bl->type != type)
+                        continue;
+                    if (bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                        && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
+                        bl_list[bl_list_count++] = bl;
+                }
+            }
+        }
+    if (type == 0 || type == BL_MOB)
+        for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
+        {
+            const int by1 = by * map[m].bxs;
+            for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
+            {
+                const int b2 = bx + by1;
+                bl = map[m].block_mob[b2];
+                c = map[m].block_mob_count[b2];
+                for (i = 0; i < c && bl; i++, bl = bl->next)
+                {
+                    if (bl && bl->x >= x0 && bl->x <= x1 && bl->y >= y0
+                        && bl->y <= y1 && bl_list_count < BL_LIST_MAX)
+                        bl_list[bl_list_count++] = bl;
+                }
+            }
+        }
+
+    if (bl_list_count >= BL_LIST_MAX)
+    {
+        if (battle_config.error_log)
+            printf ("map_foreachinarea_cond: *WARNING* block count too many!\n");
+    }
+
+    map_freeblock_lock ();
+
+    for (i = blockcount; i < bl_list_count; i++)
+        if (bl_list[i]->prev)
+            if (func (bl_list[i], ap))
+                break;
+
+    map_freeblock_unlock ();
 
     va_end (ap);
     bl_list_count = blockcount;

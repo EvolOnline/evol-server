@@ -738,6 +738,8 @@ int  map_addblock (struct block_list *);
 int  map_delblock (struct block_list *);
 void map_foreachinarea (int (*)(struct block_list *, va_list), int, int, int,
                         int, int, int, ...);
+void map_foreachinarea_cond (int (*)(struct block_list *, va_list), int, int, int,
+                             int, int, int, ...);
 // -- moonsoul (added map_foreachincell)
 void map_foreachincell (int (*)(struct block_list *, va_list), int, int, int,
                         int, ...);

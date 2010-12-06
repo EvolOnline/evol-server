@@ -3568,6 +3568,35 @@ int mob_countslave (struct mob_data *md)
     return c;
 }
 
+static int mob_find_slave (struct block_list *bl, va_list ap)
+{
+    struct mob_data *tmd;
+    struct mob_data *md;
+    int class;
+    int *amount;
+
+    nullpo_retr (0, bl);
+    nullpo_retr (0, ap);
+    nullpo_retr (0, tmd = (struct mob_data *) bl);
+    nullpo_retr (0, md = va_arg (ap, struct mob_data *));
+    nullpo_retr (0, class = va_arg (ap, int));
+    nullpo_retr (0, amount = va_arg (ap, int*));
+
+    if ((*amount) <= 0)
+        return 1;
+
+    if (!tmd->master_id && tmd->class == class && mob_db[tmd->class].mode & 0x40000)
+    {
+        tmd->master_id = md->bl.id;
+        tmd->master_dist = distance (md->bl.x, md->bl.y, tmd->bl.x, tmd->bl.y);
+        (*amount) --;
+        if ((*amount) <= 0)
+            return 1;
+    }
+
+    return 0;
+}
+
 /*==========================================
  * Žè‰ºMOB¢Š«
  *------------------------------------------
@@ -3597,6 +3626,15 @@ int mob_summonslave (struct mob_data *md2, int *value, int amount, int flag)
         class = value[k];
         if (class <= 1000 || class > 2000)
             continue;
+
+        if (flag)
+        {
+            map_foreachinarea_cond (mob_find_slave, md2->bl.m,
+                                    md2->bl.x - 13, md2->bl.y - 13,
+                                    md2->bl.x + 13, md2->bl.y + 13,
+                                    BL_MOB, md2, class, &amount);
+        }
+
         for (; amount > 0; amount--)
         {
             int  x = 0, y = 0, c = 0, i = 0;
