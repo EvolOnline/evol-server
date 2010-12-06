@@ -207,6 +207,9 @@ int map_addblock (struct block_list *bl)
 
     if (bl->type == BL_MOB)
     {
+        if (map[m].mob_num > battle_config.mob_map_limit)
+            return 1;
+
         bl->next =
             map[m].block_mob[x / BLOCK_SIZE + (y / BLOCK_SIZE) * map[m].bxs];
         bl->prev = &bl_head;
@@ -215,6 +218,7 @@ int map_addblock (struct block_list *bl)
         map[m].block_mob[x / BLOCK_SIZE + (y / BLOCK_SIZE) * map[m].bxs] = bl;
         map[m].block_mob_count[x / BLOCK_SIZE +
                                (y / BLOCK_SIZE) * map[m].bxs]++;
+        map[m].mob_num++;
     }
     else
     {
@@ -258,6 +262,8 @@ int map_delblock (struct block_list *bl)
 
     if (bl->type == BL_PC)
         map[bl->m].users--;
+    if (bl->type == BL_MOB &&  map[bl->m].mob_num > 0)
+        map[bl->m].mob_num--;
 
     if (bl->next)
         bl->next->prev = bl->prev;
@@ -1793,6 +1799,8 @@ static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
 
     map[m].npc_num = 0;
     map[m].users = 0;
+    map[m].mob_num = 0;
+
     memset (&map[m].flag, 0, sizeof (map[m].flag));
     if (battle_config.pk_mode)
         map[m].flag.pvp = 1;    // make all maps pvp for pk_mode [Valaris]

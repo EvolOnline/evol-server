@@ -1296,7 +1296,7 @@ int mob_spawn (int id)
 
     nullpo_retr (-1, md = (struct mob_data *) bl);
 
-    if (!md || !md->bl.type || md->bl.type != BL_MOB)
+    if (!md || !md->bl.type || md->bl.type != BL_MOB || map[md->bl.m].mob_num > battle_config.mob_map_limit)
         return -1;
 
     md->last_spawntime = tick;

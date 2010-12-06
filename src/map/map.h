@@ -567,6 +567,7 @@ struct map_data
     short bxs, bys;
     int  npc_num;
     int  users;
+    int  mob_num;
     struct
     {
         unsigned alias:1;

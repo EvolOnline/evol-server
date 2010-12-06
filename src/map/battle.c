@@ -5540,6 +5540,7 @@ int battle_config_read (const char *cfgName)
         battle_config.monster_loot_type = 0;
         battle_config.mob_skill_use = 1;
         battle_config.mob_count_rate = 100;
+        battle_config.mob_map_limit = 500;
         battle_config.quest_skill_learn = 0;
         battle_config.quest_skill_reset = 1;
         battle_config.basic_skill_check = 1;
@@ -5831,6 +5832,8 @@ int battle_config_read (const char *cfgName)
             "mob_skill_use", &battle_config.mob_skill_use},
             {
             "mob_count_rate", &battle_config.mob_count_rate},
+            {
+            "mob_map_limit", &battle_config.mob_map_limit},
             {
             "quest_skill_learn", &battle_config.quest_skill_learn},
             {
@@ -6302,6 +6305,9 @@ int battle_config_read (const char *cfgName)
         // at least 1 client must be accepted
         if ((battle_config.packet_ver_flag & 63) == 0)  // added by [Yor]
             battle_config.packet_ver_flag = 63; // accept all clients
+
+        if (battle_config.mob_map_limit < 1)
+            battle_config.mob_map_limit = 1;
 
         add_timer_func_list (battle_delay_damage_sub,
                              "battle_delay_damage_sub");
