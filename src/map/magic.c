@@ -92,6 +92,7 @@ int magic_message (character_t * caster, char *spell_,
 
     spell = magic_find_spell (spell_invocation);
     free (spell_invocation);
+    spell_invocation = 0;
 
     if (spell)
     {

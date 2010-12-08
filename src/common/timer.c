@@ -352,4 +352,5 @@ int do_timer (unsigned int tick)
 void timer_final ()
 {
     free (timer_data);
+    timer_data = 0;
 }

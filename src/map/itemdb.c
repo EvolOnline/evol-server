@@ -723,8 +723,11 @@ static int itemdb_final (void *key __attribute__ ((unused)),
     nullpo_retr (0, id = data);
 
     free (id->use_script);
+    id->use_script = 0;
     free (id->equip_script);
+    id->equip_script = 0;
     free (id->unequip_script);
+    id->unequip_script = 0;
     free (id);
 
     return 0;

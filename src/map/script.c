@@ -820,6 +820,7 @@ static int add_str (const unsigned char *p)
         return i;
     }
     free (lowcase);
+    lowcase = 0;
 
     i = calc_hash (p);
     if (str_hash[i] == 0)

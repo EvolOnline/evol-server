@@ -81,6 +81,7 @@ void magic_clear_var (val_t * v)
     {
         case TY_STRING:
             free (v->v.v_string);
+            v->v.v_string = 0;
             break;
         case TY_AREA:
             free_area (v->v.v_area);

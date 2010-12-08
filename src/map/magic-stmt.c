@@ -66,9 +66,11 @@ static void clear_activation_record (cont_activation_record_t * ar)
     {
         case CONT_STACK_FOREACH:
             free (ar->c.c_foreach.entities);
+            ar->c.c_foreach.entities = 0;
             break;
         case CONT_STACK_PROC:
             free (ar->c.c_proc.old_actuals);
+            ar->c.c_proc.old_actuals = 0;
             break;
     }
 }

@@ -362,12 +362,12 @@ int delete_session (int fd)
     FD_CLR (fd, &readfds);
     if (session[fd])
     {
-        if (session[fd]->rdata)
-            free (session[fd]->rdata);
-        if (session[fd]->wdata)
-            free (session[fd]->wdata);
-        if (session[fd]->session_data)
-            free (session[fd]->session_data);
+        free (session[fd]->rdata);
+        session[fd]->rdata = 0;
+        free (session[fd]->wdata);
+        session[fd]->wdata = 0;
+        free (session[fd]->session_data);
+        session[fd]->session_data = 0;
         free (session[fd]);
     }
     session[fd] = NULL;

@@ -1832,7 +1832,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
 
         // ���g���Ȃ��̂Ńo�b�t�@����
         free (srcbuf);
-
+        srcbuf = 0;
     }
     else
     {
@@ -2344,6 +2344,7 @@ static void npc_free_internal (struct npc_data *nd)
     else if (nd->bl.subtype == MESSAGE && nd->u.message)
     {
         free (nd->u.message);
+        nd->u.message = 0;
     }
     free (nd);
 }
@@ -2413,9 +2414,15 @@ void ev_release (struct dbn *db, int which)
         return;
 
     if (which & 0x1)
+    {
         free (db->key);
+        db->key = 0;
+    }
     if (which & 0x2)
+    {
         free (db->data);
+        db->data = 0;
+    }
 }
 
 /*==========================================

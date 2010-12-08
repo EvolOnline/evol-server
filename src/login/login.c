@@ -5156,7 +5156,9 @@ void do_final (void)
     mmo_auth_sync ();
 
     free (auth_dat);
+    auth_dat = 0;
     free (gm_account_db);
+    gm_account_db = 0;
     for (i = 0; i < MAX_SERVERS; i++)
     {
         if ((fd = server_fd[i]) >= 0)

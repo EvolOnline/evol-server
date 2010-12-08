@@ -1318,8 +1318,9 @@ int map_quit (struct map_session_data *sd)
     else if (sd->state.storage_flag == 2)
         storage_guild_storage_quit (sd, 1);
 
-    if (sd->npc_stackbuf && sd->npc_stackbuf != NULL)
-        free (sd->npc_stackbuf);
+//    if (sd->npc_stackbuf && sd->npc_stackbuf != NULL)
+    free (sd->npc_stackbuf);
+    sd->npc_stackbuf = 0;
 
     map_delblock (&sd->bl);
 
@@ -1900,6 +1901,7 @@ static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
         }
     }
     free (gat);
+    gat = 0;
 
     map[m].bxs = (xs + BLOCK_SIZE - 1) / BLOCK_SIZE;
     map[m].bys = (ys + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -1996,6 +1998,7 @@ int map_readallmap (void)
     }
 
     free (waterlist);
+    waterlist = 0;
     printf ("\rMaps Loaded: %d %60s\n", map_num, "");
     printf ("\rMaps Removed: %d \n", maps_removed);
     return 0;
@@ -2362,16 +2365,16 @@ void do_final (void)
 
     for (i = 0; i <= map_num; i++)
     {
-        if (map[i].gat)
-            free (map[i].gat);
-        if (map[i].block)
-            free (map[i].block);
-        if (map[i].block_mob)
-            free (map[i].block_mob);
-        if (map[i].block_count)
-            free (map[i].block_count);
-        if (map[i].block_mob_count)
-            free (map[i].block_mob_count);
+        free (map[i].gat);
+        map[i].gat = 0;
+        free (map[i].block);
+        map[i].block = 0;
+        free (map[i].block_mob);
+        map[i].block_mob = 0;
+        free (map[i].block_count);
+        map[i].block_count = 0;
+        free (map[i].block_mob_count);
+        map[i].block_mob_count = 0;
     }
     do_final_script ();
     do_final_itemdb ();

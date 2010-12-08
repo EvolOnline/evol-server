@@ -1146,6 +1146,7 @@ void grfio_final (void)
             if (gentry_table[lop] != NULL)
             {
                 free (gentry_table[lop]);
+                gentry_table[lop] = 0;
             }
         }
         free (gentry_table);
