@@ -2503,3 +2503,22 @@ int map_scriptcont (struct map_session_data *sd, int id)
 
     return 0;
 }
+
+int map_setcells(int m, int x1, int y1, int x2, int y2, int type)
+{
+    int i, j;
+
+    if (x1 < 0 || x1 >= map[m].xs - 1 || y1 < 0 || y1 >= map[m].ys - 1 ||
+        x2 < 0 || x2 >= map[m].xs - 1 || y2 < 0 || y2 >= map[m].ys - 1)
+        return 1;
+
+    for (i = x1; i <= x2; i++ )
+    {
+        for (j = y1; j <= y2; j++)
+        {
+            map_setcell(m, i, j, type);
+//            clif_changemapcell(0, m, i, j, map_getcell(m, i, j), ALL_SAMEMAP);
+        }
+    }
+    return 0;
+}

@@ -43,6 +43,91 @@
 #include "memwatch.h"
 #endif
 
+//
+// struct script_state* st;
+//
+
+/// Returns the script_data at the target index
+#define script_getdata(st,i) ( &((st)->stack->stack_data[(st)->start + (i)]) )
+/// Returns if the stack contains data at the target index
+#define script_hasdata(st,i) ( (st)->end > (st)->start + (i) )
+/// Returns the index of the last data in the stack
+#define script_lastdata(st) ( (st)->end - (st)->start - 1 )
+/// Pushes an int into the stack
+#define script_pushint(st,val) push_val((st)->stack, C_INT, (val))
+/// Pushes a string into the stack (script engine frees it automatically)
+#define script_pushstr(st,val) push_str((st)->stack, C_STR, (val))
+/// Pushes a copy of a string into the stack
+#define script_pushstrcopy(st,val) push_str((st)->stack, C_STR, aStrdup(val))
+/// Pushes a constant string into the stack (must never change or be freed)
+#define script_pushconststr(st,val) push_str((st)->stack, C_CONSTSTR, (val))
+/// Pushes a nil into the stack
+#define script_pushnil(st) push_val((st)->stack, C_NOP, 0)
+/// Pushes a copy of the data in the target index
+#define script_pushcopy(st,i) push_copy((st)->stack, (st)->start + (i))
+
+#define script_isstring(st,i) data_isstring(script_getdata(st,i))
+#define script_isint(st,i) data_isint(script_getdata(st,i))
+
+#define script_getnum(st,val) conv_num(st, script_getdata(st,val))
+#define script_getstr(st,val) conv_str(st, script_getdata(st,val))
+#define script_getref(st,val) ( script_getdata(st,val)->ref )
+
+// Note: "top" functions/defines use indexes relative to the top of the stack
+//       -1 is the index of the data at the top
+
+/// Returns the script_data at the target index relative to the top of the stack
+#define script_getdatatop(st,i) ( &((st)->stack->stack_data[(st)->stack->sp + (i)]) )
+/// Pushes a copy of the data in the target index relative to the top of the stack
+#define script_pushcopytop(st,i) push_copy((st)->stack, (st)->stack->sp + (i))
+/// Removes the range of values [start,end[ relative to the top of the stack
+#define script_removetop(st,start,end) ( pop_stack((st)->stack, ((st)->stack->sp + (start)), (st)->stack->sp + (end)) )
+
+//
+// struct script_data* data;
+//
+
+/// Returns if the script data is a string
+#define data_isstring(data) ( (data)->type == C_STR || (data)->type == C_CONSTSTR )
+/// Returns if the script data is an int
+#define data_isint(data) ( (data)->type == C_INT )
+/// Returns if the script data is a reference
+#define data_isreference(data) ( (data)->type == C_NAME )
+/// Returns if the script data is a label
+#define data_islabel(data) ( (data)->type == C_POS )
+/// Returns if the script data is an internal script function label
+#define data_isfunclabel(data) ( (data)->type == C_USERFUNC_POS )
+
+/// Returns if this is a reference to a constant
+#define reference_toconstant(data) ( str_data[reference_getid(data)].type == C_INT )
+/// Returns if this a reference to a param
+#define reference_toparam(data) ( str_data[reference_getid(data)].type == C_PARAM )
+/// Returns if this a reference to a variable
+//##TODO confirm it's C_NAME [FlavioJS]
+#define reference_tovariable(data) ( str_data[reference_getid(data)].type == C_NAME )
+/// Returns the unique id of the reference (id and index)
+#define reference_getuid(data) ( (data)->u.num )
+/// Returns the id of the reference
+#define reference_getid(data) ( (int32)(reference_getuid(data) & 0x00ffffff) )
+/// Returns the array index of the reference
+#define reference_getindex(data) ( (int32)(((uint32)(reference_getuid(data) & 0xff000000)) >> 24) )
+/// Returns the name of the reference
+#define reference_getname(data) ( str_buf + str_data[reference_getid(data)].str )
+/// Returns the linked list of uid-value pairs of the reference (can be NULL)
+#define reference_getref(data) ( (data)->ref )
+/// Returns the value of the constant
+#define reference_getconstant(data) ( str_data[reference_getid(data)].val )
+/// Returns the type of param
+#define reference_getparamtype(data) ( str_data[reference_getid(data)].val )
+
+/// Composes the uid of a reference from the id and the index
+#define reference_uid(id,idx) ( (int32)((((uint32)(id)) & 0x00ffffff) | (((uint32)(idx)) << 24)) )
+
+#define FETCH(n, t) \
+    if( script_hasdata(st,n) ) \
+        (t)=script_getnum(st,n);
+
+
 #define SCRIPT_BLOCK_SIZE 256
 enum
 { LABEL_NEXTLINE = 1, LABEL_START };
@@ -320,6 +405,7 @@ int  buildin_shop (struct script_state *st);    // [MadCamel]
 int  buildin_isdead (struct script_state *st);  // [Jaxad0127]
 int  buildin_fakenpcname (struct script_state *st); //[Kage]
 int  buildin_unequip_by_id (struct script_state *st);   // [Freeyorp]
+int  buildin_setcollision (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -741,6 +827,8 @@ struct
     buildin_fakenpcname, "fakenpcname", "ssi"},
     {
     buildin_unequip_by_id, "unequipbyid", "i"}, // [Freeyorp]
+    {
+    buildin_setcollision, "setcollision", "siiiii"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -7291,6 +7379,28 @@ int buildin_fakenpcname (struct script_state *st)
     npc_enable (name, 0);
     npc_enable (name, 1);
 
+    return 0;
+}
+
+int buildin_setcollision (struct script_state *st)
+{
+    struct map_session_data *sd;
+    sd = script_rid2sd (st);
+    const char *map;
+    int x1, y1, x2, y2, m, type;
+
+    map = script_getstr(st, 2);
+
+    if( (m = map_mapname2mapid(map)) < 0 )
+        return 0;
+
+    x1 = script_getnum(st, 3);
+    y1 = script_getnum(st, 4);
+    x2 = script_getnum(st, 5);
+    y2 = script_getnum(st, 6);
+    type = script_getnum(st, 7);
+
+    map_setcells(m, x1, y1, x2, y2, type);
     return 0;
 }
 

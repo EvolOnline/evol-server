@@ -554,6 +554,13 @@ enum
 enum
 { ATK_LUCKY = 1, ATK_FLEE, ATK_DEF };   // 囲まれペナルティ計算用
 
+enum
+{
+    CELL_WALLABLE = 1,
+    CELL_SHOOTABLE = 2,
+    CELL_WATER = 4
+};
+
 struct map_data
 {
     char name[24];
@@ -806,6 +813,7 @@ struct map_session_data *map_get_prev_session (struct map_session_data
 // gat関連
 int  map_getcell (int, int, int);
 int  map_setcell (int, int, int, int);
+int  map_setcells(int, int, int, int, int, int);
 
 // その他
 int  map_check_dir (int s_dir, int t_dir);
