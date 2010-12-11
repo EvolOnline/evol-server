@@ -791,7 +791,7 @@ char *map_charid2nick (int);
 
 struct map_session_data *map_id2sd (int);
 struct block_list *map_id2bl (int);
-int  map_mapname2mapid (char *);
+int  map_mapname2mapid (const char *);
 int  map_mapname2ipport (char *, int *, int *);
 int  map_setipport (char *name, unsigned long ip, int port);
 int  map_eraseipport (char *name, unsigned long ip, int port);

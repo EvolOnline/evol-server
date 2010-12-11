@@ -1577,7 +1577,7 @@ void map_removenpc (void)
  * map–¼‚©‚çmap”Ô†‚Ö•ÏŠ·
  *------------------------------------------
  */
-int map_mapname2mapid (char *name)
+int map_mapname2mapid (const char *name)
 {
     if (!name)
         return -1;
