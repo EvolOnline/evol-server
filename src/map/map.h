@@ -828,4 +828,14 @@ int  map_who (int fd);
 void map_helpscreen () __attribute__((noreturn));         // [Valaris]
 int  map_delmap (char *mapname);
 
+//Useful typedefs from jA [Skotlex]
+typedef struct map_session_data TBL_PC;
+typedef struct npc_data         TBL_NPC;
+typedef struct mob_data         TBL_MOB;
+typedef struct flooritem_data   TBL_ITEM;
+typedef struct chat_data        TBL_CHAT;
+typedef struct skill_unit       TBL_SKILL;
+typedef struct pet_data         TBL_PET;
+typedef struct homun_data       TBL_HOM;
+
 #endif

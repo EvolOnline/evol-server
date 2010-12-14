@@ -2035,6 +2035,11 @@ void pop_stack (struct script_stack *stack, int start, int end)
     stack->sp -= end - start;
 }
 
+#define BUILDIN_DEF(x,args) { buildin_ ## x , #x , args }
+#define BUILDIN_DEF2(x,x2,args) { buildin_ ## x , x2 , args }
+#define BUILDIN_FUNC(x) int buildin_ ## x (struct script_state* st)
+#define BUILDIN_FUNCU(x) int buildin_ ## x (struct script_state* st __attribute__ ((unused)))
+
 //
 // ���ߍ��݊֐�
 //
@@ -2042,7 +2047,7 @@ void pop_stack (struct script_stack *stack, int start, int end)
  *
  *------------------------------------------
  */
-int buildin_mes (struct script_state *st)
+BUILDIN_FUNC(mes)
 {
     conv_str (st, &(st->stack->stack_data[st->start + 2]));
     clif_scriptmes (script_rid2sd (st), st->oid,
@@ -2054,9 +2059,12 @@ int buildin_mes (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_goto (struct script_state *st)
+BUILDIN_FUNC(goto)
 {
     int  pos;
+
+    if (!st)
+        return 0;
 
     if (st->stack->stack_data[st->start + 2].type != C_POS)
     {
@@ -2075,10 +2083,16 @@ int buildin_goto (struct script_state *st)
  * ���[�U�[���`�֐��̌Ăяo��
  *------------------------------------------
  */
-int buildin_callfunc (struct script_state *st)
+BUILDIN_FUNC(callfunc)
 {
     char *scr;
     char *str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
+    if (!str)
+    {
+        printf ("script:callfunc: function cant be null!\n");
+        st->state = END;
+        return 0;
+    }
 
     if ((scr = strdb_search (script_get_userfunc_db (), str)))
     {
@@ -2108,7 +2122,7 @@ int buildin_callfunc (struct script_state *st)
  * �T�u���[�e�B���̌Ăяo��
  *------------------------------------------
  */
-int buildin_callsub (struct script_state *st)
+BUILDIN_FUNC(callsub)
 {
     int  pos = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     int  i, j;
@@ -2130,7 +2144,7 @@ int buildin_callsub (struct script_state *st)
  * �����̏���
  *------------------------------------------
  */
-int buildin_getarg (struct script_state *st)
+BUILDIN_FUNC(getarg)
 {
     int  num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     int  max, stsp;
@@ -2157,7 +2171,7 @@ int buildin_getarg (struct script_state *st)
  * �T�u���[�`��/���[�U�[���`�֐��̏I��
  *------------------------------------------
  */
-int buildin_return (struct script_state *st)
+BUILDIN_FUNC(return)
 {
     if (st->end > st->start + 2)
     {                           // �߂��l�L��
@@ -2171,7 +2185,7 @@ int buildin_return (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_next (struct script_state *st)
+BUILDIN_FUNC(next)
 {
     st->state = STOP;
     clif_scriptnext (script_rid2sd (st), st->oid);
@@ -2182,14 +2196,14 @@ int buildin_next (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_close (struct script_state *st)
+BUILDIN_FUNC(close)
 {
     st->state = END;
     clif_scriptclose (script_rid2sd (st), st->oid);
     return 0;
 }
 
-int buildin_close2 (struct script_state *st)
+BUILDIN_FUNC(close2)
 {
     st->state = STOP;
     clif_scriptclose (script_rid2sd (st), st->oid);
@@ -2200,7 +2214,7 @@ int buildin_close2 (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_menu (struct script_state *st)
+BUILDIN_FUNC(menu)
 {
     char *buf;
     int  i, len = 0;            // [fate] len is the total # of bytes we need to transmit the string choices
@@ -2210,6 +2224,11 @@ int buildin_menu (struct script_state *st)
     struct map_session_data *sd;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        st->state = END;
+        return 1;
+    }
 
     // We don't need to do this iteration if the player cancels, strictly speaking.
     for (i = st->start + 2; i < st->end; i += 2)
@@ -2277,7 +2296,7 @@ int buildin_menu (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_rand (struct script_state *st)
+BUILDIN_FUNC(rand)
 {
     int  range;
 
@@ -2308,7 +2327,7 @@ int buildin_rand (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_pow (struct script_state *st)
+BUILDIN_FUNC(pow)
 {
     int  a, b;
 
@@ -2324,7 +2343,7 @@ int buildin_pow (struct script_state *st)
  * Check whether the PC is at the specified location
  *------------------------------------------
  */
-int buildin_isat (struct script_state *st)
+BUILDIN_FUNC(isat)
 {
     int  x, y;
     char *str;
@@ -2348,11 +2367,14 @@ int buildin_isat (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_warp (struct script_state *st)
+BUILDIN_FUNC(warp)
 {
     int  x, y;
     char *str;
     struct map_session_data *sd = script_rid2sd (st);
+
+    if (!sd)
+        return 1;
 
     str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     x = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -2398,7 +2420,7 @@ int buildin_areawarp_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_areawarp (struct script_state *st)
+BUILDIN_FUNC(areawarp)
 {
     int  x, y, m;
     char *str;
@@ -2426,7 +2448,7 @@ int buildin_areawarp (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_heal (struct script_state *st)
+BUILDIN_FUNC(heal)
 {
     int  hp, sp;
 
@@ -2440,7 +2462,7 @@ int buildin_heal (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_itemheal (struct script_state *st)
+BUILDIN_FUNC(itemheal)
 {
     int  hp, sp;
 
@@ -2454,7 +2476,7 @@ int buildin_itemheal (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_percentheal (struct script_state *st)
+BUILDIN_FUNC(percentheal)
 {
     int  hp, sp;
 
@@ -2468,7 +2490,7 @@ int buildin_percentheal (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_jobchange (struct script_state *st)
+BUILDIN_FUNC(jobchange)
 {
     int  job, upper = -1;
 
@@ -2486,7 +2508,7 @@ int buildin_jobchange (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_input (struct script_state *st)
+BUILDIN_FUNC(input)
 {
     struct map_session_data *sd = NULL;
     int  num =
@@ -2499,6 +2521,9 @@ int buildin_input (struct script_state *st)
     char postfix = name[strlen (name) - 1];
 
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     if (sd->state.menu_or_input)
     {
         sd->state.menu_or_input = 0;
@@ -2553,7 +2578,7 @@ int buildin_input (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_if (struct script_state *st)
+BUILDIN_FUNC(if)
 {
     int  sel, i;
 
@@ -2579,11 +2604,12 @@ int buildin_if (struct script_state *st)
  * �ϐ��ݒ�
  *------------------------------------------
  */
-int buildin_set (struct script_state *st)
+BUILDIN_FUNC(set)
 {
     struct map_session_data *sd = NULL;
     int  num = st->stack->stack_data[st->start + 2].u.num;
     char *name = str_buf + str_data[num & 0x00ffffff].str;
+
     char prefix = *name;
     char postfix = name[strlen (name) - 1];
 
@@ -2616,7 +2642,7 @@ int buildin_set (struct script_state *st)
  * �z���ϐ��ݒ�
  *------------------------------------------
  */
-int buildin_setarray (struct script_state *st)
+BUILDIN_FUNC(setarray)
 {
     struct map_session_data *sd = NULL;
     int  num = st->stack->stack_data[st->start + 2].u.num;
@@ -2649,7 +2675,7 @@ int buildin_setarray (struct script_state *st)
  * �z���ϐ��N���A
  *------------------------------------------
  */
-int buildin_cleararray (struct script_state *st)
+BUILDIN_FUNC(cleararray)
 {
     struct map_session_data *sd = NULL;
     int  num = st->stack->stack_data[st->start + 2].u.num;
@@ -2682,7 +2708,7 @@ int buildin_cleararray (struct script_state *st)
  * �z���ϐ��R�s�[
  *------------------------------------------
  */
-int buildin_copyarray (struct script_state *st)
+BUILDIN_FUNC(copyarray)
 {
     struct map_session_data *sd = NULL;
     int  num = st->stack->stack_data[st->start + 2].u.num;
@@ -2732,7 +2758,7 @@ static int getarraysize (struct script_state *st, int num, int postfix)
     return c + 1;
 }
 
-int buildin_getarraysize (struct script_state *st)
+BUILDIN_FUNC(getarraysize)
 {
     int  num = st->stack->stack_data[st->start + 2].u.num;
     char *name = str_buf + str_data[num & 0x00ffffff].str;
@@ -2753,7 +2779,7 @@ int buildin_getarraysize (struct script_state *st)
  * �z���ϐ������v�f�폜
  *------------------------------------------
  */
-int buildin_deletearray (struct script_state *st)
+BUILDIN_FUNC(deletearray)
 {
     struct map_session_data *sd = NULL;
     int  num = st->stack->stack_data[st->start + 2].u.num;
@@ -2793,7 +2819,7 @@ int buildin_deletearray (struct script_state *st)
  * �w���v�f���\���l(�L�[)�������
  *------------------------------------------
  */
-int buildin_getelementofarray (struct script_state *st)
+BUILDIN_FUNC(getelementofarray)
 {
     if (st->stack->stack_data[st->start + 2].type == C_NAME)
     {
@@ -2824,7 +2850,7 @@ int buildin_getelementofarray (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_setlook (struct script_state *st)
+BUILDIN_FUNC(setlook)
 {
     int  type, val;
 
@@ -2840,7 +2866,7 @@ int buildin_setlook (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_cutin (struct script_state *st)
+BUILDIN_FUNC(cutin)
 {
     int  type;
 
@@ -2857,7 +2883,7 @@ int buildin_cutin (struct script_state *st)
  * �J�[�h�̃C���X�g���\������
  *------------------------------------------
  */
-int buildin_cutincard (struct script_state *st)
+BUILDIN_FUNC(cutincard)
 {
     int  itemid;
 
@@ -2873,7 +2899,7 @@ int buildin_cutincard (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_viewpoint (struct script_state *st)
+BUILDIN_FUNC(viewpoint)
 {
     int  type, x, y, id, color;
 
@@ -2892,7 +2918,7 @@ int buildin_viewpoint (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_countitem (struct script_state *st)
+BUILDIN_FUNC(countitem)
 {
     int  nameid = 0, count = 0;
     struct map_session_data *sd;
@@ -2900,6 +2926,11 @@ int buildin_countitem (struct script_state *st)
     struct script_data *data;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     data = &(st->stack->stack_data[st->start + 2]);
     get_val (st, data);
@@ -2936,13 +2967,18 @@ int buildin_countitem (struct script_state *st)
  * �d�ʃ`�F�b�N
  *------------------------------------------
  */
-int buildin_checkweight (struct script_state *st)
+BUILDIN_FUNC(checkweight)
 {
     int  nameid = 0, amount;
     struct map_session_data *sd;
     struct script_data *data;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     data = &(st->stack->stack_data[st->start + 2]);
     get_val (st, data);
@@ -2962,7 +2998,6 @@ int buildin_checkweight (struct script_state *st)
         push_val (st->stack, C_INT, 0);
     }
 
-    sd = script_rid2sd (st);
     if (itemdb_weight (nameid) * amount + sd->weight > sd->max_weight)
     {
         push_val (st->stack, C_INT, 0);
@@ -2979,7 +3014,7 @@ int buildin_checkweight (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_getitem (struct script_state *st)
+BUILDIN_FUNC(getitem)
 {
     int  nameid, amount, flag = 0;
     struct item item_tmp;
@@ -2987,6 +3022,8 @@ int buildin_getitem (struct script_state *st)
     struct script_data *data;
 
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
 
     data = &(st->stack->stack_data[st->start + 2]);
     get_val (st, data);
@@ -3041,7 +3078,7 @@ int buildin_getitem (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_getitem2 (struct script_state *st)
+BUILDIN_FUNC(getitem2)
 {
     int  nameid, amount, flag = 0;
     int  iden, ref, attr, c1, c2, c3, c4;
@@ -3051,6 +3088,8 @@ int buildin_getitem2 (struct script_state *st)
     struct script_data *data;
 
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
 
     data = &(st->stack->stack_data[st->start + 2]);
     get_val (st, data);
@@ -3131,7 +3170,7 @@ int buildin_getitem2 (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_makeitem (struct script_state *st)
+BUILDIN_FUNC(makeitem)
 {
     int  nameid, amount, flag = 0;
     int  x, y, m;
@@ -3191,13 +3230,15 @@ int buildin_makeitem (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_delitem (struct script_state *st)
+BUILDIN_FUNC(delitem)
 {
     int  nameid = 0, amount, i;
     struct map_session_data *sd;
     struct script_data *data;
 
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
 
     data = &(st->stack->stack_data[st->start + 2]);
     get_val (st, data);
@@ -3219,7 +3260,7 @@ int buildin_delitem (struct script_state *st)
         //printf("wrong item ID or amount<=0 : delitem %i,\n",nameid,amount);
         return 0;
     }
-    sd = script_rid2sd (st);
+//    sd = script_rid2sd (st);
 
     for (i = 0; i < MAX_INVENTORY; i++)
     {
@@ -3229,6 +3270,8 @@ int buildin_delitem (struct script_state *st)
             || sd->status.inventory[i].amount <= 0)
             continue;
     }
+    int isOk = 0;
+
     for (i = 0; i < MAX_INVENTORY; i++)
     {
         if (sd->status.inventory[i].nameid == nameid)
@@ -3236,6 +3279,7 @@ int buildin_delitem (struct script_state *st)
             if (sd->status.inventory[i].amount >= amount)
             {
                 pc_delitem (sd, i, amount, 0);
+                isOk = 1;
                 break;
             }
             else
@@ -3249,6 +3293,11 @@ int buildin_delitem (struct script_state *st)
         }
     }
 
+    if (!isOk && sd)
+    {
+        printf ("script del bug. Account=%d, item=%d\n", sd->bl.id, nameid);
+        MAP_LOG ("script del bug. Account=%d, item=%d\n", sd->bl.id, nameid);
+    }
     return 0;
 }
 
@@ -3256,7 +3305,7 @@ int buildin_delitem (struct script_state *st)
  *�L�����֌W�̃p�����[�^�擾
  *------------------------------------------
  */
-int buildin_readparam (struct script_state *st)
+BUILDIN_FUNC(readparam)
 {
     int  type;
     struct map_session_data *sd;
@@ -3283,7 +3332,7 @@ int buildin_readparam (struct script_state *st)
  *�L�����֌W��ID�擾
  *------------------------------------------
  */
-int buildin_getcharid (struct script_state *st)
+BUILDIN_FUNC(getcharid)
 {
     int  num;
     struct map_session_data *sd;
@@ -3318,7 +3367,6 @@ char *buildin_getpartyname_sub (int party_id)
 {
     struct party *p;
 
-    p = NULL;
     p = party_search (party_id);
 
     if (p != NULL)
@@ -3332,7 +3380,7 @@ char *buildin_getpartyname_sub (int party_id)
     return 0;
 }
 
-int buildin_getpartyname (struct script_state *st)
+BUILDIN_FUNC(getpartyname)
 {
     char *name;
     int  party_id;
@@ -3351,12 +3399,11 @@ int buildin_getpartyname (struct script_state *st)
  *�w��ID��PT�l���ƃ����o�[ID�擾
  *------------------------------------------
  */
-int buildin_getpartymember (struct script_state *st)
+BUILDIN_FUNC(getpartymember)
 {
     struct party *p;
     int  j = 0;
 
-    p = NULL;
     p = party_search (conv_num (st, &(st->stack->stack_data[st->start + 2])));
 
     if (p != NULL)
@@ -3397,7 +3444,7 @@ char *buildin_getguildname_sub (int guild_id)
     return 0;
 }
 
-int buildin_getguildname (struct script_state *st)
+BUILDIN_FUNC(getguildname)
 {
     char *name;
     int  guild_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -3429,7 +3476,7 @@ char *buildin_getguildmaster_sub (int guild_id)
     return 0;
 }
 
-int buildin_getguildmaster (struct script_state *st)
+BUILDIN_FUNC(getguildmaster)
 {
     char *master;
     int  guild_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -3441,7 +3488,7 @@ int buildin_getguildmaster (struct script_state *st)
     return 0;
 }
 
-int buildin_getguildmasterid (struct script_state *st)
+BUILDIN_FUNC(getguildmasterid)
 {
     char *master;
     struct map_session_data *sd = NULL;
@@ -3467,12 +3514,18 @@ int buildin_getguildmasterid (struct script_state *st)
  * �L�����N�^�̖��O
  *------------------------------------------
  */
-int buildin_strcharinfo (struct script_state *st)
+BUILDIN_FUNC(strcharinfo)
 {
     struct map_session_data *sd;
     int  num;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_str (st->stack, C_CONSTSTR, "");
+        return 1;
+    }
+
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     if (num == 0)
     {
@@ -3512,7 +3565,7 @@ unsigned int equip[10] =
  * GetEquipID(Pos);     Pos: 1-10
  *------------------------------------------
  */
-int buildin_getequipid (struct script_state *st)
+BUILDIN_FUNC(getequipid)
 {
     int  i, num;
     struct map_session_data *sd;
@@ -3545,7 +3598,7 @@ int buildin_getequipid (struct script_state *st)
  * ����������i���B���j���[�p�j
  *------------------------------------------
  */
-int buildin_getequipname (struct script_state *st)
+BUILDIN_FUNC(getequipname)
 {
     int  i, num;
     struct map_session_data *sd;
@@ -3577,12 +3630,17 @@ int buildin_getequipname (struct script_state *st)
  * getbrokenid [Valaris]
  *------------------------------------------
  */
-int buildin_getbrokenid (struct script_state *st)
+BUILDIN_FUNC(getbrokenid)
 {
     int  i, num, id = 0, brokencounter = 0;
     struct map_session_data *sd;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     for (i = 0; i < MAX_INVENTORY; i++)
@@ -3607,13 +3665,15 @@ int buildin_getbrokenid (struct script_state *st)
  * repair [Valaris]
  *------------------------------------------
  */
-int buildin_repair (struct script_state *st)
+BUILDIN_FUNC(repair)
 {
     int  i, num;
     int  repaircounter = 0;
     struct map_session_data *sd;
 
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     for (i = 0; i < MAX_INVENTORY; i++)
@@ -3640,7 +3700,7 @@ int buildin_repair (struct script_state *st)
  * �����`�F�b�N
  *------------------------------------------
  */
-int buildin_getequipisequiped (struct script_state *st)
+BUILDIN_FUNC(getequipisequiped)
 {
     int  i, num;
     struct map_session_data *sd;
@@ -3664,13 +3724,19 @@ int buildin_getequipisequiped (struct script_state *st)
  * �����i���B�\�`�F�b�N
  *------------------------------------------
  */
-int buildin_getequipisenableref (struct script_state *st)
+BUILDIN_FUNC(getequipisenableref)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0 && num < 7 && sd->inventory_data[i]
         && (num != 1 || sd->inventory_data[i]->def > 1
@@ -3693,13 +3759,25 @@ int buildin_getequipisenableref (struct script_state *st)
  * �����i�Ӓ��`�F�b�N
  *------------------------------------------
  */
-int buildin_getequipisidentify (struct script_state *st)
+BUILDIN_FUNC(getequipisidentify)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0)
         push_val (st->stack, C_INT, sd->status.inventory[i].identify);
@@ -3713,7 +3791,7 @@ int buildin_getequipisidentify (struct script_state *st)
  * �����i���B�x
  *------------------------------------------
  */
-int buildin_getequiprefinerycnt (struct script_state *st)
+BUILDIN_FUNC(getequiprefinerycnt)
 {
     int  i, num;
     struct map_session_data *sd;
@@ -3733,13 +3811,25 @@ int buildin_getequiprefinerycnt (struct script_state *st)
  * �����i����LV
  *------------------------------------------
  */
-int buildin_getequipweaponlv (struct script_state *st)
+BUILDIN_FUNC(getequipweaponlv)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0 && sd->inventory_data[i])
         push_val (st->stack, C_INT, sd->inventory_data[i]->wlv);
@@ -3753,13 +3843,25 @@ int buildin_getequipweaponlv (struct script_state *st)
  * �����i���B������
  *------------------------------------------
  */
-int buildin_getequippercentrefinery (struct script_state *st)
+BUILDIN_FUNC(getequippercentrefinery)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0)
         push_val (st->stack, C_INT,
@@ -3774,13 +3876,19 @@ int buildin_getequippercentrefinery (struct script_state *st)
  * ���B����
  *------------------------------------------
  */
-int buildin_successrefitem (struct script_state *st)
+BUILDIN_FUNC(successrefitem)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+        return 1;
+
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0)
     {
@@ -3803,13 +3911,19 @@ int buildin_successrefitem (struct script_state *st)
  * ���B���s
  *------------------------------------------
  */
-int buildin_failedrefitem (struct script_state *st)
+BUILDIN_FUNC(failedrefitem)
 {
     int  i, num;
     struct map_session_data *sd;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+        return 1;
+
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (i >= 0)
     {
@@ -3829,7 +3943,7 @@ int buildin_failedrefitem (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_statusup (struct script_state *st)
+BUILDIN_FUNC(statusup)
 {
     int  type;
     struct map_session_data *sd;
@@ -3845,7 +3959,7 @@ int buildin_statusup (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_statusup2 (struct script_state *st)
+BUILDIN_FUNC(statusup2)
 {
     int  type, val;
     struct map_session_data *sd;
@@ -3862,7 +3976,7 @@ int buildin_statusup2 (struct script_state *st)
  * �����i�ɂ����\�͒l�{�[�i�X
  *------------------------------------------
  */
-int buildin_bonus (struct script_state *st)
+BUILDIN_FUNC(bonus)
 {
     int  type, val;
     struct map_session_data *sd;
@@ -3879,7 +3993,7 @@ int buildin_bonus (struct script_state *st)
  * �����i�ɂ����\�͒l�{�[�i�X
  *------------------------------------------
  */
-int buildin_bonus2 (struct script_state *st)
+BUILDIN_FUNC(bonus2)
 {
     int  type, type2, val;
     struct map_session_data *sd;
@@ -3897,7 +4011,7 @@ int buildin_bonus2 (struct script_state *st)
  * �����i�ɂ����\�͒l�{�[�i�X
  *------------------------------------------
  */
-int buildin_bonus3 (struct script_state *st)
+BUILDIN_FUNC(bonus3)
 {
     int  type, type2, type3, val;
     struct map_session_data *sd;
@@ -3916,7 +4030,7 @@ int buildin_bonus3 (struct script_state *st)
  * �X�L������
  *------------------------------------------
  */
-int buildin_skill (struct script_state *st)
+BUILDIN_FUNC(skill)
 {
     int  id, level, flag = 1;
     struct map_session_data *sd;
@@ -3936,12 +4050,15 @@ int buildin_skill (struct script_state *st)
  * [Fate] Sets the skill level permanently
  *------------------------------------------
  */
-int buildin_setskill (struct script_state *st)
+BUILDIN_FUNC(setskill)
 {
     int  id, level;
     struct map_session_data *sd;
 
     id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (id < 0 || id >= MAX_SKILL)
+        return 1;
+
     level = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     sd = script_rid2sd (st);
 
@@ -3955,7 +4072,7 @@ int buildin_setskill (struct script_state *st)
  * �M���h�X�L���擾
  *------------------------------------------
  */
-int buildin_guildskill (struct script_state *st)
+BUILDIN_FUNC(guildskill)
 {
     int  id, level;
     struct map_session_data *sd;
@@ -3976,7 +4093,7 @@ int buildin_guildskill (struct script_state *st)
  * �X�L�����x������
  *------------------------------------------
  */
-int buildin_getskilllv (struct script_state *st)
+BUILDIN_FUNC(getskilllv)
 {
     int  id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     push_val (st->stack, C_INT, pc_checkskill (script_rid2sd (st), id));
@@ -3992,7 +4109,7 @@ int buildin_getskilllv (struct script_state *st)
  *            10004 : GD_EXTENSION                     
  *------------------------------------------
  */
-int buildin_getgdskilllv (struct script_state *st)
+BUILDIN_FUNC(getgdskilllv)
 {
     int  guild_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     int  skill_id = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -4021,7 +4138,7 @@ int buildin_getgdskilllv (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_basicskillcheck (struct script_state *st)
+BUILDIN_FUNC(basicskillcheck)
 {
     push_val (st->stack, C_INT, battle_config.basic_skill_check);
     return 0;
@@ -4031,7 +4148,7 @@ int buildin_basicskillcheck (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_getgmlevel (struct script_state *st)
+BUILDIN_FUNC(getgmlevel)
 {
     push_val (st->stack, C_INT, pc_isGM (script_rid2sd (st)));
     return 0;
@@ -4041,7 +4158,7 @@ int buildin_getgmlevel (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_end (struct script_state *st)
+BUILDIN_FUNC(end)
 {
     st->state = END;
     return 0;
@@ -4052,11 +4169,16 @@ int buildin_end (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_getopt2 (struct script_state *st)
+BUILDIN_FUNC(getopt2)
 {
     struct map_session_data *sd;
 
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     push_val (st->stack, C_INT, sd->opt2);
 
@@ -4068,13 +4190,16 @@ int buildin_getopt2 (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_setopt2 (struct script_state *st)
+BUILDIN_FUNC(setopt2)
 {
     int  new;
     struct map_session_data *sd;
 
     new = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     if (!(new ^ sd->opt2))
         return 0;
     sd->opt2 = new;
@@ -4088,13 +4213,18 @@ int buildin_setopt2 (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_checkoption (struct script_state *st)
+BUILDIN_FUNC(checkoption)
 {
     int  type;
     struct map_session_data *sd;
 
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     if (sd->status.option & type)
     {
@@ -4112,7 +4242,7 @@ int buildin_checkoption (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_setoption (struct script_state *st)
+BUILDIN_FUNC(setoption)
 {
     int  type;
     struct map_session_data *sd;
@@ -4129,7 +4259,7 @@ int buildin_setoption (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_checkcart (struct script_state *st)
+BUILDIN_FUNC(checkcart)
 {
     struct map_session_data *sd;
 
@@ -4150,7 +4280,7 @@ int buildin_checkcart (struct script_state *st)
  * �J�[�g���t����
  *------------------------------------------
  */
-int buildin_setcart (struct script_state *st)
+BUILDIN_FUNC(setcart)
 {
     struct map_session_data *sd;
 
@@ -4165,7 +4295,7 @@ int buildin_setcart (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_checkfalcon (struct script_state *st)
+BUILDIN_FUNC(checkfalcon)
 {
     struct map_session_data *sd;
 
@@ -4187,7 +4317,7 @@ int buildin_checkfalcon (struct script_state *st)
  * �����t����
  *------------------------------------------
  */
-int buildin_setfalcon (struct script_state *st)
+BUILDIN_FUNC(setfalcon)
 {
     struct map_session_data *sd;
 
@@ -4202,7 +4332,7 @@ int buildin_setfalcon (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_checkriding (struct script_state *st)
+BUILDIN_FUNC(checkriding)
 {
     struct map_session_data *sd;
 
@@ -4224,7 +4354,7 @@ int buildin_checkriding (struct script_state *st)
  * �y�R�y�R����
  *------------------------------------------
  */
-int buildin_setriding (struct script_state *st)
+BUILDIN_FUNC(setriding)
 {
     struct map_session_data *sd;
 
@@ -4238,7 +4368,7 @@ int buildin_setriding (struct script_state *st)
  *	�Z�[�u�|�C���g�̕ۑ�
  *------------------------------------------
  */
-int buildin_savepoint (struct script_state *st)
+BUILDIN_FUNC(savepoint)
 {
     int  x, y;
     char *str;
@@ -4260,7 +4390,7 @@ int buildin_savepoint (struct script_state *st)
  *  other value.
  *------------------------------------------
  */
-int buildin_gettimetick (struct script_state *st)   /* Asgard Version */
+BUILDIN_FUNC(gettimetick)   /* Asgard Version */
 {
     int  type;
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -4299,7 +4429,7 @@ int buildin_gettimetick (struct script_state *st)   /* Asgard Version */
  * 7: Year
  *------------------------------------------
  */
-int buildin_gettime (struct script_state *st)   /* Asgard Version */
+BUILDIN_FUNC(gettime)   /* Asgard Version */
 {
     int  type;
     time_t timer;
@@ -4344,7 +4474,7 @@ int buildin_gettime (struct script_state *st)   /* Asgard Version */
  * GetTimeStr("TimeFMT", Length);
  *------------------------------------------
  */
-int buildin_gettimestr (struct script_state *st)
+BUILDIN_FUNC(gettimestr)
 {
     char *tmpstr;
     char *fmtstr;
@@ -4366,14 +4496,18 @@ int buildin_gettimestr (struct script_state *st)
  * �J�v���q�ɂ��J��
  *------------------------------------------
  */
-int buildin_openstorage (struct script_state *st)
+BUILDIN_FUNC(openstorage)
 {
 //  int sync = 0;
 //  if (st->end >= 3) sync = conv_num(st,& (st->stack->stack_data[st->start+2]));
     struct map_session_data *sd = script_rid2sd (st);
 
+    if (!sd)
+        return 1;
+
 //  if (sync) {
     st->state = STOP;
+//+++ why set this flag?
     sd->npc_flags.storage = 1;
 //  } else st->state = END;
 
@@ -4381,11 +4515,15 @@ int buildin_openstorage (struct script_state *st)
     return 0;
 }
 
-int buildin_guildopenstorage (struct script_state *st)
+BUILDIN_FUNC(guildopenstorage)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  ret;
+
     st->state = STOP;
+
+//+++ why no set storage flag?
+
     ret = storage_guild_storageopen (sd);
     push_val (st->stack, C_INT, ret);
     return 0;
@@ -4395,7 +4533,7 @@ int buildin_guildopenstorage (struct script_state *st)
  * �A�C�e���ɂ����X�L������
  *------------------------------------------
  */
-int buildin_itemskill (struct script_state *st)
+BUILDIN_FUNC(itemskill)
 {
     int  id, lv;
     char *str;
@@ -4409,6 +4547,8 @@ int buildin_itemskill (struct script_state *st)
     if (sd->skilltimer != -1)
         return 0;
 
+//+++ may be need chaeck skillitem?
+
     sd->skillitem = id;
     sd->skillitemlv = lv;
     clif_item_skill (sd, id, lv, str);
@@ -4419,7 +4559,7 @@ int buildin_itemskill (struct script_state *st)
  * NPC�Ōo���l�グ��
  *------------------------------------------
  */
-int buildin_getexp (struct script_state *st)
+BUILDIN_FUNC(getexp)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  base = 0, job = 0;
@@ -4438,7 +4578,7 @@ int buildin_getexp (struct script_state *st)
  * �����X�^�[����
  *------------------------------------------
  */
-int buildin_monster (struct script_state *st)
+BUILDIN_FUNC(monster)
 {
     int  class, amount, x, y;
     char *str, *map, *event = "";
@@ -4461,7 +4601,7 @@ int buildin_monster (struct script_state *st)
  * �����X�^�[����
  *------------------------------------------
  */
-int buildin_areamonster (struct script_state *st)
+BUILDIN_FUNC(areamonster)
 {
     int  class, amount, x0, y0, x1, y1;
     char *str, *map, *event = "";
@@ -4488,7 +4628,13 @@ int buildin_areamonster (struct script_state *st)
  */
 int buildin_killmonster_sub (struct block_list *bl, va_list ap)
 {
+    if (!bl || !ap)
+        return 0;
+
     char *event = va_arg (ap, char *);
+    if (!event)
+        return 0;
+
     int  allflag = va_arg (ap, int);
 
     if (!allflag)
@@ -4507,7 +4653,7 @@ int buildin_killmonster_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_killmonster (struct script_state *st)
+BUILDIN_FUNC(killmonster)
 {
     char *mapname, *event;
     int  m, allflag = 0;
@@ -4530,7 +4676,7 @@ int buildin_killmonsterall_sub (struct block_list *bl,
     return 0;
 }
 
-int buildin_killmonsterall (struct script_state *st)
+BUILDIN_FUNC(killmonsterall)
 {
     char *mapname;
     int  m;
@@ -4547,7 +4693,7 @@ int buildin_killmonsterall (struct script_state *st)
  * �C�x���g��s
  *------------------------------------------
  */
-int buildin_doevent (struct script_state *st)
+BUILDIN_FUNC(doevent)
 {
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4559,7 +4705,7 @@ int buildin_doevent (struct script_state *st)
  * NPC���̃C�x���g��s
  *------------------------------------------
  */
-int buildin_donpcevent (struct script_state *st)
+BUILDIN_FUNC(donpcevent)
 {
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4571,7 +4717,7 @@ int buildin_donpcevent (struct script_state *st)
  * �C�x���g�^�C�}�[�ǉ�
  *------------------------------------------
  */
-int buildin_addtimer (struct script_state *st)
+BUILDIN_FUNC(addtimer)
 {
     char *event;
     int  tick;
@@ -4585,7 +4731,7 @@ int buildin_addtimer (struct script_state *st)
  * �C�x���g�^�C�}�[�폜
  *------------------------------------------
  */
-int buildin_deltimer (struct script_state *st)
+BUILDIN_FUNC(deltimer)
 {
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4597,7 +4743,7 @@ int buildin_deltimer (struct script_state *st)
  * �C�x���g�^�C�}�[�̃J�E���g�l�ǉ�
  *------------------------------------------
  */
-int buildin_addtimercount (struct script_state *st)
+BUILDIN_FUNC(addtimercount)
 {
     char *event;
     int  tick;
@@ -4611,7 +4757,7 @@ int buildin_addtimercount (struct script_state *st)
  * NPC�^�C�}�[������
  *------------------------------------------
  */
-int buildin_initnpctimer (struct script_state *st)
+BUILDIN_FUNC(initnpctimer)
 {
     struct npc_data *nd;
     if (st->end > st->start + 2)
@@ -4629,7 +4775,7 @@ int buildin_initnpctimer (struct script_state *st)
  * NPC�^�C�}�[�J�n
  *------------------------------------------
  */
-int buildin_startnpctimer (struct script_state *st)
+BUILDIN_FUNC(startnpctimer)
 {
     struct npc_data *nd;
     if (st->end > st->start + 2)
@@ -4646,7 +4792,7 @@ int buildin_startnpctimer (struct script_state *st)
  * NPC�^�C�}�[���~
  *------------------------------------------
  */
-int buildin_stopnpctimer (struct script_state *st)
+BUILDIN_FUNC(stopnpctimer)
 {
     struct npc_data *nd;
     if (st->end > st->start + 2)
@@ -4663,7 +4809,7 @@ int buildin_stopnpctimer (struct script_state *st)
  * NPC�^�C�}�[���񏊓�
  *------------------------------------------
  */
-int buildin_getnpctimer (struct script_state *st)
+BUILDIN_FUNC(getnpctimer)
 {
     struct npc_data *nd;
     int  type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -4680,10 +4826,22 @@ int buildin_getnpctimer (struct script_state *st)
             val = npc_gettimerevent_tick (nd);
             break;
         case 1:
-            val = (nd->u.scr.nexttimer >= 0);
+            if (nd)
+                val = (nd->u.scr.nexttimer >= 0);
+            else
+            {
+                push_val (st->stack, C_INT, 0);
+                return 1;
+            }
             break;
         case 2:
-            val = nd->u.scr.timeramount;
+            if (nd)
+                val = nd->u.scr.timeramount;
+            else
+            {
+                push_val (st->stack, C_INT, 0);
+                return 1;
+            }
             break;
         default:
             break;
@@ -4696,7 +4854,7 @@ int buildin_getnpctimer (struct script_state *st)
  * NPC�^�C�}�[�l�ݒ�
  *------------------------------------------
  */
-int buildin_setnpctimer (struct script_state *st)
+BUILDIN_FUNC(setnpctimer)
 {
     int  tick;
     struct npc_data *nd;
@@ -4715,7 +4873,7 @@ int buildin_setnpctimer (struct script_state *st)
  * �V�̐��A�i�E���X
  *------------------------------------------
  */
-int buildin_announce (struct script_state *st)
+BUILDIN_FUNC(announce)
 {
     char *str;
     int  flag;
@@ -4739,6 +4897,9 @@ int buildin_announce (struct script_state *st)
  */
 int buildin_mapannounce_sub (struct block_list *bl, va_list ap)
 {
+    if (!ap)
+        return 0;
+
     char *str;
     int  len, flag;
     str = va_arg (ap, char *);
@@ -4748,7 +4909,7 @@ int buildin_mapannounce_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_mapannounce (struct script_state *st)
+BUILDIN_FUNC(mapannounce)
 {
     char *mapname, *str;
     int  flag, m;
@@ -4769,7 +4930,7 @@ int buildin_mapannounce (struct script_state *st)
  * �V�̐��A�i�E���X�i����G���A�j
  *------------------------------------------
  */
-int buildin_areaannounce (struct script_state *st)
+BUILDIN_FUNC(areaannounce)
 {
     char *map, *str;
     int  flag, m;
@@ -4796,7 +4957,7 @@ int buildin_areaannounce (struct script_state *st)
  * ���[�U�[������
  *------------------------------------------
  */
-int buildin_getusers (struct script_state *st)
+BUILDIN_FUNC(getusers)
 {
     int  flag = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     struct block_list *bl = map_id2bl ((flag & 0x08) ? st->oid : st->rid);
@@ -4804,6 +4965,11 @@ int buildin_getusers (struct script_state *st)
     switch (flag & 0x07)
     {
         case 0:
+            if (!bl)
+            {
+                push_val (st->stack, C_INT, 0);
+                return 1;
+            }
             val = map[bl->m].users;
             break;
         case 1:
@@ -4820,7 +4986,7 @@ int buildin_getusers (struct script_state *st)
  * �}�b�v�w�胆�[�U�[������
  *------------------------------------------
  */
-int buildin_getmapusers (struct script_state *st)
+BUILDIN_FUNC(getmapusers)
 {
     char *str;
     int  m;
@@ -4841,12 +5007,16 @@ int buildin_getmapusers (struct script_state *st)
 int buildin_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
                               va_list ap)
 {
+    if (!ap)
+        return 0;
     int *users = va_arg (ap, int *);
-    (*users)++;
+    if (users)
+        (*users)++;
+
     return 0;
 }
 
-int buildin_getareausers (struct script_state *st)
+BUILDIN_FUNC(getareausers)
 {
     char *str;
     int  m, x0, y0, x1, y1, users = 0;
@@ -4872,8 +5042,14 @@ int buildin_getareausers (struct script_state *st)
  */
 int buildin_getareadropitem_sub (struct block_list *bl, va_list ap)
 {
+    if (!ap || !bl)
+        return 0;
+
     int  item = va_arg (ap, int);
     int *amount = va_arg (ap, int *);
+    if (!amount)
+        return 0;
+
     struct flooritem_data *drop = (struct flooritem_data *) bl;
 
     if (drop->item_data.nameid == item)
@@ -4882,7 +5058,7 @@ int buildin_getareadropitem_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_getareadropitem (struct script_state *st)
+BUILDIN_FUNC(getareadropitem)
 {
     char *str;
     int  m, x0, y0, x1, y1, item, amount = 0;
@@ -4922,7 +5098,7 @@ int buildin_getareadropitem (struct script_state *st)
  * NPC�̗L����
  *------------------------------------------
  */
-int buildin_enablenpc (struct script_state *st)
+BUILDIN_FUNC(enablenpc)
 {
     char *str;
     str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4934,7 +5110,7 @@ int buildin_enablenpc (struct script_state *st)
  * NPC�̖�����
  *------------------------------------------
  */
-int buildin_disablenpc (struct script_state *st)
+BUILDIN_FUNC(disablenpc)
 {
     char *str;
     str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4942,7 +5118,7 @@ int buildin_disablenpc (struct script_state *st)
     return 0;
 }
 
-int buildin_enablearena (struct script_state *st)   // Added by RoVeRT
+BUILDIN_FUNC(enablearena)   // Added by RoVeRT
 {
     struct npc_data *nd = (struct npc_data *) map_id2bl (st->oid);
     struct chat_data *cd;
@@ -4960,10 +5136,11 @@ int buildin_enablearena (struct script_state *st)   // Added by RoVeRT
     return 0;
 }
 
-int buildin_disablearena (struct script_state *st)  // Added by RoVeRT
+BUILDIN_FUNC(disablearena)  // Added by RoVeRT
 {
     struct npc_data *nd = (struct npc_data *) map_id2bl (st->oid);
-    nd->arenaflag = 0;
+    if (nd)
+        nd->arenaflag = 0;
 
     return 0;
 }
@@ -4972,7 +5149,7 @@ int buildin_disablearena (struct script_state *st)  // Added by RoVeRT
  * �B���Ă���NPC�̕\��
  *------------------------------------------
  */
-int buildin_hideoffnpc (struct script_state *st)
+BUILDIN_FUNC(hideoffnpc)
 {
     char *str;
     str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4984,7 +5161,7 @@ int buildin_hideoffnpc (struct script_state *st)
  * NPC���n�C�f�B���O
  *------------------------------------------
  */
-int buildin_hideonnpc (struct script_state *st)
+BUILDIN_FUNC(hideonnpc)
 {
     char *str;
     str = conv_str (st, &(st->stack->stack_data[st->start + 2]));
@@ -4996,7 +5173,7 @@ int buildin_hideonnpc (struct script_state *st)
  * ���Ԉُ��ɂ�����
  *------------------------------------------
  */
-int buildin_sc_start (struct script_state *st)
+BUILDIN_FUNC(sc_start)
 {
     struct block_list *bl;
     int  type, tick, val1;
@@ -5008,6 +5185,9 @@ int buildin_sc_start (struct script_state *st)
                         (st, &(st->stack->stack_data[st->start + 5])));
     else
         bl = map_id2bl (st->rid);
+    if (!bl)
+        return 0;
+
     if (bl->type == BL_PC
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
@@ -5015,7 +5195,7 @@ int buildin_sc_start (struct script_state *st)
     return 0;
 }
 
-int buildin_sc_startv2 (struct script_state *st)
+BUILDIN_FUNC(sc_startv2)
 {
     struct block_list *bl;
     int  type, tick, val1, val2;
@@ -5028,6 +5208,9 @@ int buildin_sc_startv2 (struct script_state *st)
                         (st, &(st->stack->stack_data[st->start + 6])));
     else
         bl = map_id2bl (st->rid);
+    if (!bl)
+        return 0;
+
     if (bl->type == BL_PC
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
@@ -5039,7 +5222,7 @@ int buildin_sc_startv2 (struct script_state *st)
  * ���Ԉُ��ɂ�����(�m���w��)
  *------------------------------------------
  */
-int buildin_sc_start2 (struct script_state *st)
+BUILDIN_FUNC(sc_start2)
 {
     struct block_list *bl;
     int  type, tick, val1, per;
@@ -5052,6 +5235,9 @@ int buildin_sc_start2 (struct script_state *st)
                         (st, &(st->stack->stack_data[st->start + 6])));
     else
         bl = map_id2bl (st->rid);
+    if (!bl)
+        return 0;
+
     if (bl->type == BL_PC
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
@@ -5064,12 +5250,15 @@ int buildin_sc_start2 (struct script_state *st)
  * ���Ԉُ킪����
  *------------------------------------------
  */
-int buildin_sc_end (struct script_state *st)
+BUILDIN_FUNC(sc_end)
 {
     struct block_list *bl;
     int  type;
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     bl = map_id2bl (st->rid);
+    if (!bl)
+        return 0;
+
     if (bl->type == BL_PC
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
@@ -5079,12 +5268,18 @@ int buildin_sc_end (struct script_state *st)
     return 0;
 }
 
-int buildin_sc_check (struct script_state *st)
+BUILDIN_FUNC(sc_check)
 {
     struct block_list *bl;
     int  type;
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     bl = map_id2bl (st->rid);
+    if (!bl)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 0;
+    }
+
     if (bl->type == BL_PC
         && ((struct map_session_data *) bl)->state.potionpitcher_flag)
         bl = map_id2bl (((struct map_session_data *) bl)->skilltarget);
@@ -5098,7 +5293,7 @@ int buildin_sc_check (struct script_state *st)
  * ���Ԉُ��ϐ����v�Z�����m�����Ԃ�
  *------------------------------------------
  */
-int buildin_getscrate (struct script_state *st)
+BUILDIN_FUNC(getscrate)
 {
     struct block_list *bl;
     int  sc_def = 100, sc_def_mdef2, sc_def_vit2, sc_def_int2, sc_def_luk2;
@@ -5138,7 +5333,7 @@ int buildin_getscrate (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_debugmes (struct script_state *st)
+BUILDIN_FUNC(debugmes)
 {
     conv_str (st, &(st->stack->stack_data[st->start + 2]));
     printf ("script debug : %d %d : %s\n", st->rid, st->oid,
@@ -5150,7 +5345,7 @@ int buildin_debugmes (struct script_state *st)
  * Added - AppleGirl For Advanced Classes, (Updated for Cleaner Script Purposes)
  *------------------------------------------
  */
-int buildin_resetlvl (struct script_state *st)
+BUILDIN_FUNC(resetlvl)
 {
     struct map_session_data *sd;
 
@@ -5165,7 +5360,7 @@ int buildin_resetlvl (struct script_state *st)
  * �X�e�[�^�X���Z�b�g
  *------------------------------------------
  */
-int buildin_resetstatus (struct script_state *st)
+BUILDIN_FUNC(resetstatus)
 {
     struct map_session_data *sd;
     sd = script_rid2sd (st);
@@ -5177,7 +5372,7 @@ int buildin_resetstatus (struct script_state *st)
  * �X�L�����Z�b�g
  *------------------------------------------
  */
-int buildin_resetskill (struct script_state *st)
+BUILDIN_FUNC(resetskill)
 {
     struct map_session_data *sd;
     sd = script_rid2sd (st);
@@ -5189,7 +5384,7 @@ int buildin_resetskill (struct script_state *st)
  *
  *------------------------------------------
  */
-int buildin_changebase (struct script_state *st)
+BUILDIN_FUNC(changebase)
 {
     struct map_session_data *sd = NULL;
     int  vclass;
@@ -5220,10 +5415,12 @@ int buildin_changebase (struct script_state *st)
  * ���ʕϊ�
  *------------------------------------------
  */
-int buildin_changesex (struct script_state *st)
+BUILDIN_FUNC(changesex)
 {
     struct map_session_data *sd = NULL;
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
 
     if (sd->status.sex == 0)
     {
@@ -5248,7 +5445,7 @@ int buildin_changesex (struct script_state *st)
  * npc�`���b�g�쐬
  *------------------------------------------
  */
-int buildin_waitingroom (struct script_state *st)
+BUILDIN_FUNC(waitingroom)
 {
     char *name, *ev = "";
     int  limit, trigger = 0, pub = 1;
@@ -5261,6 +5458,9 @@ int buildin_waitingroom (struct script_state *st)
     {
         struct script_data *data = &(st->stack->stack_data[st->start + 5]);
         get_val (st, data);
+        if (!data)
+            return 0;
+
         if (data->type == C_INT)
         {
             // �VAthena�d�l(��Athena�d�l�ƌ݊�������)
@@ -5289,7 +5489,7 @@ int buildin_waitingroom (struct script_state *st)
  * npc�`���b�g�폜
  *------------------------------------------
  */
-int buildin_delwaitingroom (struct script_state *st)
+BUILDIN_FUNC(delwaitingroom)
 {
     struct npc_data *nd;
     if (st->end > st->start + 2)
@@ -5305,7 +5505,7 @@ int buildin_delwaitingroom (struct script_state *st)
  * npc�`���b�g�S���R���o��
  *------------------------------------------
  */
-int buildin_waitingroomkickall (struct script_state *st)
+BUILDIN_FUNC(waitingroomkickall)
 {
     struct npc_data *nd;
     struct chat_data *cd;
@@ -5327,7 +5527,7 @@ int buildin_waitingroomkickall (struct script_state *st)
  * npc�`���b�g�C�x���g�L����
  *------------------------------------------
  */
-int buildin_enablewaitingroomevent (struct script_state *st)
+BUILDIN_FUNC(enablewaitingroomevent)
 {
     struct npc_data *nd;
     struct chat_data *cd;
@@ -5349,7 +5549,7 @@ int buildin_enablewaitingroomevent (struct script_state *st)
  * npc�`���b�g�C�x���g������
  *------------------------------------------
  */
-int buildin_disablewaitingroomevent (struct script_state *st)
+BUILDIN_FUNC(disablewaitingroomevent)
 {
     struct npc_data *nd;
     struct chat_data *cd;
@@ -5371,7 +5571,7 @@ int buildin_disablewaitingroomevent (struct script_state *st)
  * npc�`���b�g���ԏ���
  *------------------------------------------
  */
-int buildin_getwaitingroomstate (struct script_state *st)
+BUILDIN_FUNC(getwaitingroomstate)
 {
     struct npc_data *nd;
     struct chat_data *cd;
@@ -5431,7 +5631,7 @@ int buildin_getwaitingroomstate (struct script_state *st)
  * �`���b�g�����o�[(�K���l��)���[�v
  *------------------------------------------
  */
-int buildin_warpwaitingpc (struct script_state *st)
+BUILDIN_FUNC(warpwaitingpc)
 {
     int  x, y, i, n;
     char *str;
@@ -5477,7 +5677,7 @@ int buildin_warpwaitingpc (struct script_state *st)
  * RID�̃A�^�b�`
  *------------------------------------------
  */
-int buildin_attachrid (struct script_state *st)
+BUILDIN_FUNC(attachrid)
 {
     st->rid = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     push_val (st->stack, C_INT, (map_id2sd (st->rid) != NULL));
@@ -5488,7 +5688,7 @@ int buildin_attachrid (struct script_state *st)
  * RID�̃f�^�b�`
  *------------------------------------------
  */
-int buildin_detachrid (struct script_state *st)
+BUILDIN_FUNC(detachrid)
 {
     st->rid = 0;
     return 0;
@@ -5498,7 +5698,7 @@ int buildin_detachrid (struct script_state *st)
  * ���݃`�F�b�N
  *------------------------------------------
  */
-int buildin_isloggedin (struct script_state *st)
+BUILDIN_FUNC(isloggedin)
 {
     push_val (st->stack, C_INT,
               map_id2sd (conv_num
@@ -5519,7 +5719,7 @@ enum
     MF_SNOW, MF_FOG, MF_SAKURA, MF_LEAVES, MF_RAIN
 };
 
-int buildin_setmapflagnosave (struct script_state *st)
+BUILDIN_FUNC(setmapflagnosave)
 {
     int  m, x, y;
     char *str, *str2;
@@ -5540,7 +5740,7 @@ int buildin_setmapflagnosave (struct script_state *st)
     return 0;
 }
 
-int buildin_setmapflag (struct script_state *st)
+BUILDIN_FUNC(setmapflag)
 {
     int  m, i;
     char *str;
@@ -5614,7 +5814,7 @@ int buildin_setmapflag (struct script_state *st)
     return 0;
 }
 
-int buildin_removemapflag (struct script_state *st)
+BUILDIN_FUNC(removemapflag)
 {
     int  m, i;
     char *str;
@@ -5688,7 +5888,7 @@ int buildin_removemapflag (struct script_state *st)
     return 0;
 }
 
-int buildin_pvpon (struct script_state *st)
+BUILDIN_FUNC(pvpon)
 {
     int  m;
     char *str;
@@ -5726,7 +5926,7 @@ int buildin_pvpon (struct script_state *st)
     return 0;
 }
 
-int buildin_pvpoff (struct script_state *st)
+BUILDIN_FUNC(pvpoff)
 {
     int  m;
     char *str;
@@ -5765,7 +5965,7 @@ int buildin_pvpoff (struct script_state *st)
     return 0;
 }
 
-int buildin_gvgon (struct script_state *st)
+BUILDIN_FUNC(gvgon)
 {
     int  m;
     char *str;
@@ -5781,7 +5981,7 @@ int buildin_gvgon (struct script_state *st)
     return 0;
 }
 
-int buildin_gvgoff (struct script_state *st)
+BUILDIN_FUNC(gvgoff)
 {
     int  m;
     char *str;
@@ -5802,7 +6002,7 @@ int buildin_gvgoff (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_emotion (struct script_state *st)
+BUILDIN_FUNC(emotion)
 {
     int  type;
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -5814,6 +6014,9 @@ int buildin_emotion (struct script_state *st)
 
 int buildin_maprespawnguildid_sub (struct block_list *bl, va_list ap)
 {
+    if (!ap || !bl)
+        return 0;
+
     int  g_id = va_arg (ap, int);
     int  flag = va_arg (ap, int);
     struct map_session_data *sd = NULL;
@@ -5843,7 +6046,7 @@ int buildin_maprespawnguildid_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_maprespawnguildid (struct script_state *st)
+BUILDIN_FUNC(maprespawnguildid)
 {
     char *mapname = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     int  g_id = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -5857,7 +6060,7 @@ int buildin_maprespawnguildid (struct script_state *st)
     return 0;
 }
 
-int buildin_agitstart (struct script_state *st __attribute__ ((unused)))
+BUILDIN_FUNCU(agitstart)
 {
     if (agit_flag == 1)
         return 1;               // Agit already Start.
@@ -5866,7 +6069,7 @@ int buildin_agitstart (struct script_state *st __attribute__ ((unused)))
     return 0;
 }
 
-int buildin_agitend (struct script_state *st __attribute__ ((unused)))
+BUILDIN_FUNCU(agitend)
 {
     if (agit_flag == 0)
         return 1;               // Agit already End.
@@ -5881,7 +6084,7 @@ int buildin_agitend (struct script_state *st __attribute__ ((unused)))
  * if(agitcheck(0) == 1) goto agit;
  *------------------------------------------
  */
-int buildin_agitcheck (struct script_state *st)
+BUILDIN_FUNC(agitcheck)
 {
     struct map_session_data *sd;
     int  cond;
@@ -5906,19 +6109,22 @@ int buildin_agitcheck (struct script_state *st)
     return 0;
 }
 
-int buildin_flagemblem (struct script_state *st)
+BUILDIN_FUNC(flagemblem)
 {
+    struct npc_data *nd;
     int  g_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
 
     if (g_id < 0)
         return 0;
-
 //  printf("Script.c: [FlagEmblem] GuildID=%d, Emblem=%d.\n", g->guild_id, g->emblem_id);
-    ((struct npc_data *) map_id2bl (st->oid))->u.scr.guild_id = g_id;
+
+    nd = (struct npc_data *) map_id2bl (st->oid);
+    if (nd)
+        nd->u.scr.guild_id = g_id;
     return 1;
 }
 
-int buildin_getcastlename (struct script_state *st)
+BUILDIN_FUNC(getcastlename)
 {
     char *mapname = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     struct guild_castle *gc;
@@ -5943,7 +6149,7 @@ int buildin_getcastlename (struct script_state *st)
     return 0;
 }
 
-int buildin_getcastledata (struct script_state *st)
+BUILDIN_FUNC(getcastledata)
 {
     char *mapname = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     int  index = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -6063,7 +6269,7 @@ int buildin_getcastledata (struct script_state *st)
     return 0;
 }
 
-int buildin_setcastledata (struct script_state *st)
+BUILDIN_FUNC(setcastledata)
 {
     char *mapname = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     int  index = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -6170,7 +6376,7 @@ int buildin_setcastledata (struct script_state *st)
  * �M���h�������v������
  * ---------------------------------------------------------------------
  */
-int buildin_requestguildinfo (struct script_state *st)
+BUILDIN_FUNC(requestguildinfo)
 {
     int  guild_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     char *event = NULL;
@@ -6187,14 +6393,24 @@ int buildin_requestguildinfo (struct script_state *st)
  * �J�[�h�̐��𓾂�
  * ---------------------------------------------------------------------
  */
-int buildin_getequipcardcnt (struct script_state *st)
+BUILDIN_FUNC(getequipcardcnt)
 {
     int  i, num;
     struct map_session_data *sd;
     int  c = 4;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 0;
+    }
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 0;
+    }
     i = pc_checkequip (sd, equip[num - 1]);
     if (sd->status.inventory[i].card[0] == 0x00ff)
     {                           // ���������̓J�[�h�Ȃ�
@@ -6220,7 +6436,7 @@ int buildin_getequipcardcnt (struct script_state *st)
  * �J�[�h�����O������
  * ----------------------------------------------------------------
  */
-int buildin_successremovecards (struct script_state *st)
+BUILDIN_FUNC(successremovecards)
 {
     int  i, num, cardflag = 0, flag;
     struct map_session_data *sd;
@@ -6228,10 +6444,14 @@ int buildin_successremovecards (struct script_state *st)
     int  c = 4;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+        return 1;
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
     i = pc_checkequip (sd, equip[num - 1]);
     if (sd->status.inventory[i].card[0] == 0x00ff)
-    {                           // ���������͏������Ȃ�
+    {
         return 0;
     }
     do
@@ -6249,7 +6469,7 @@ int buildin_successremovecards (struct script_state *st)
                 0, item_tmp.card[3] = 0;
 
             if ((flag = pc_additem (sd, &item_tmp, 1)))
-            {                   // ���ĂȂ��Ȃ��h���b�v
+            {
                 clif_additem (sd, 0, 0, flag);
                 map_addflooritem (&item_tmp, 1, sd->bl.m, sd->bl.x, sd->bl.y,
                                   NULL, NULL, NULL, 0);
@@ -6259,7 +6479,7 @@ int buildin_successremovecards (struct script_state *st)
     while (c--);
 
     if (cardflag == 1)
-    {                           // �J�[�h�����菜�����A�C�e������
+    {
         flag = 0;
         item_tmp.id = 0, item_tmp.nameid = sd->status.inventory[i].nameid;
         item_tmp.equip = 0, item_tmp.identify = 1, item_tmp.refine =
@@ -6285,7 +6505,7 @@ int buildin_successremovecards (struct script_state *st)
  * type=0: ���������A1:�J�[�h�����A2:������A3:��������
  * ----------------------------------------------------------------
  */
-int buildin_failedremovecards (struct script_state *st)
+BUILDIN_FUNC(failedremovecards)
 {
     int  i, num, cardflag = 0, flag, typefail;
     struct map_session_data *sd;
@@ -6293,11 +6513,16 @@ int buildin_failedremovecards (struct script_state *st)
     int  c = 4;
 
     num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
+    if (num < 1 || num > 10)
+        return 1;
     typefail = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     i = pc_checkequip (sd, equip[num - 1]);
     if (sd->status.inventory[i].card[0] == 0x00ff)
-    {                           // ���������͏������Ȃ�
+    {
         return 0;
     }
     do
@@ -6360,7 +6585,7 @@ int buildin_failedremovecards (struct script_state *st)
     return 0;
 }
 
-int buildin_mapwarp (struct script_state *st)   // Added by RoVeRT
+BUILDIN_FUNC(mapwarp)   // Added by RoVeRT
 {
     int  x, y, m;
     char *str;
@@ -6384,7 +6609,7 @@ int buildin_mapwarp (struct script_state *st)   // Added by RoVeRT
     return 0;
 }
 
-int buildin_cmdothernpc (struct script_state *st)   // Added by RoVeRT
+BUILDIN_FUNC(cmdothernpc)   // Added by RoVeRT
 {
     char *npc, *command;
 
@@ -6395,7 +6620,7 @@ int buildin_cmdothernpc (struct script_state *st)   // Added by RoVeRT
     return 0;
 }
 
-int buildin_inittimer (struct script_state *st) // Added by RoVeRT
+BUILDIN_FUNC(inittimer) // Added by RoVeRT
 {
 //  struct npc_data *nd=(struct npc_data*)map_id2bl(st->oid);
 
@@ -6405,7 +6630,7 @@ int buildin_inittimer (struct script_state *st) // Added by RoVeRT
     return 0;
 }
 
-int buildin_stoptimer (struct script_state *st) // Added by RoVeRT
+BUILDIN_FUNC(stoptimer) // Added by RoVeRT
 {
 //  struct npc_data *nd=(struct npc_data*)map_id2bl(st->oid);
 
@@ -6417,15 +6642,23 @@ int buildin_stoptimer (struct script_state *st) // Added by RoVeRT
 
 int buildin_mobcount_sub (struct block_list *bl, va_list ap)    // Added by RoVeRT
 {
+    if (!ap || !bl)
+        return 0;
+
     char *event = va_arg (ap, char *);
+    if (!event)
+        return 0;
+
     int *c = va_arg (ap, int *);
+    if (!c)
+        return 0;
 
     if (strcmp (event, ((struct mob_data *) bl)->npc_event) == 0)
         (*c)++;
     return 0;
 }
 
-int buildin_mobcount (struct script_state *st)  // Added by RoVeRT
+BUILDIN_FUNC(mobcount)  // Added by RoVeRT
 {
     char *mapname, *event;
     int  m, c = 0;
@@ -6445,7 +6678,7 @@ int buildin_mobcount (struct script_state *st)  // Added by RoVeRT
     return 0;
 }
 
-int buildin_marriage (struct script_state *st)
+BUILDIN_FUNC(marriage)
 {
     char *partner = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     struct map_session_data *sd = script_rid2sd (st);
@@ -6460,7 +6693,7 @@ int buildin_marriage (struct script_state *st)
     return 0;
 }
 
-int buildin_wedding_effect (struct script_state *st)
+BUILDIN_FUNC(wedding_effect)
 {
     struct map_session_data *sd = script_rid2sd (st);
 
@@ -6470,9 +6703,11 @@ int buildin_wedding_effect (struct script_state *st)
     return 0;
 }
 
-int buildin_divorce (struct script_state *st)
+BUILDIN_FUNC(divorce)
 {
     struct map_session_data *sd = script_rid2sd (st);
+    if (!sd)
+        return 0;
 
     st->state = STOP;           // rely on pc_divorce to restart
 
@@ -6492,7 +6727,7 @@ int buildin_divorce (struct script_state *st)
  * Script for Displaying MOB Information [Valaris]
  *------------------------------------------------
  */
-int buildin_strmobinfo (struct script_state *st)
+BUILDIN_FUNC(strmobinfo)
 {
 
     int  num = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -6532,7 +6767,7 @@ int buildin_strmobinfo (struct script_state *st)
  * Summon guardians [Valaris]
  *------------------------------------------
  */
-int buildin_guardian (struct script_state *st)
+BUILDIN_FUNC(guardian)
 {
     int  class = 0, amount = 1, x = 0, y = 0, guardian = 0;
     char *str, *map, *event = "";
@@ -6557,10 +6792,15 @@ int buildin_guardian (struct script_state *st)
  * Script for Displaying Guardian Info [Valaris]
  *------------------------------------------------
  */
-int buildin_guardianinfo (struct script_state *st)
+BUILDIN_FUNC(guardianinfo)
 {
     int  guardian = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     struct map_session_data *sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, -1);
+        return 1;
+    }
     struct guild_castle *gc = guild_mapname2gc (map[sd->bl.m].name);
 
     if (guardian == 0 && gc->visibleG0 == 1)
@@ -6589,7 +6829,7 @@ int buildin_guardianinfo (struct script_state *st)
  * ID����Item��
  *------------------------------------------
  */
-int buildin_getitemname (struct script_state *st)
+BUILDIN_FUNC(getitemname)
 {
     struct item_data *i_data;
     char *item_name;
@@ -6619,7 +6859,7 @@ int buildin_getitemname (struct script_state *st)
     return 0;
 }
 
-int buildin_getspellinvocation (struct script_state *st)
+BUILDIN_FUNC(getspellinvocation)
 {
     char *name;
     char *invocation;
@@ -6634,7 +6874,7 @@ int buildin_getspellinvocation (struct script_state *st)
     return 0;
 }
 
-int buildin_getanchorinvocation (struct script_state *st)
+BUILDIN_FUNC(getanchorinvocation)
 {
     char *name;
     char *invocation;
@@ -6649,11 +6889,13 @@ int buildin_getanchorinvocation (struct script_state *st)
     return 0;
 }
 
-int buildin_getpartnerid (struct script_state *st)
+BUILDIN_FUNC(getpartnerid)
 {
     struct map_session_data *sd = script_rid2sd (st);
-
-    push_val (st->stack, C_INT, sd->status.partner_id);
+    if (sd)
+        push_val (st->stack, C_INT, sd->status.partner_id);
+    else
+        push_val (st->stack, C_INT, 0);
     return 0;
 }
 
@@ -6661,7 +6903,7 @@ int buildin_getpartnerid (struct script_state *st)
  * PC�̏����i�����ǂݎ���
  *------------------------------------------
  */
-int buildin_getinventorylist (struct script_state *st)
+BUILDIN_FUNC(getinventorylist)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i, j = 0;
@@ -6699,7 +6941,7 @@ int buildin_getinventorylist (struct script_state *st)
     return 0;
 }
 
-int buildin_getskilllist (struct script_state *st)
+BUILDIN_FUNC(getskilllist)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i, j = 0;
@@ -6722,7 +6964,7 @@ int buildin_getskilllist (struct script_state *st)
     return 0;
 }
 
-int buildin_get_activated_pool_skills (struct script_state *st)
+BUILDIN_FUNC(get_activated_pool_skills)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  pool_skills[MAX_SKILL_POOL];
@@ -6757,7 +6999,7 @@ int buildin_get_activated_pool_skills (struct script_state *st)
 //extern int skill_pool_skills[];
 //extern int skill_pool_skills_size;
 
-int buildin_get_pool_skills (struct script_state *st)
+BUILDIN_FUNC(get_pool_skills)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i, count = 0;
@@ -6787,7 +7029,7 @@ int buildin_get_pool_skills (struct script_state *st)
     return 0;
 }
 
-int buildin_activate_pool_skill (struct script_state *st)
+BUILDIN_FUNC(activate_pool_skill)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  skill_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -6798,7 +7040,7 @@ int buildin_activate_pool_skill (struct script_state *st)
     return 0;
 }
 
-int buildin_deactivate_pool_skill (struct script_state *st)
+BUILDIN_FUNC(deactivate_pool_skill)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  skill_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -6809,7 +7051,7 @@ int buildin_deactivate_pool_skill (struct script_state *st)
     return 0;
 }
 
-int buildin_check_pool_skill (struct script_state *st)
+BUILDIN_FUNC(check_pool_skill)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  skill_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
@@ -6819,7 +7061,7 @@ int buildin_check_pool_skill (struct script_state *st)
     return 0;
 }
 
-int buildin_clearitem (struct script_state *st)
+BUILDIN_FUNC(clearitem)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i;
@@ -6839,7 +7081,7 @@ int buildin_clearitem (struct script_state *st)
  * type�͒ʏ�0�Ȃ̂��ȁH
  *------------------------------------------
  */
-int buildin_classchange (struct script_state *st)
+BUILDIN_FUNC(classchange)
 {
     int  class, type;
     struct block_list *bl = map_id2bl (st->oid);
@@ -6863,7 +7105,7 @@ int buildin_classchange (struct script_state *st)
  *  the current NPC or invoking PC.
  *------------------------------------------
  */
-int buildin_misceffect (struct script_state *st)
+BUILDIN_FUNC(misceffect)
 {
     int  type;
     int  id = 0;
@@ -6875,6 +7117,8 @@ int buildin_misceffect (struct script_state *st)
     if (st->end > st->start + 3)
     {
         struct script_data *sdata = &(st->stack->stack_data[st->start + 3]);
+
+//+++ need check sdata for NULL?
 
         get_val (st, sdata);
 
@@ -6911,9 +7155,12 @@ int buildin_misceffect (struct script_state *st)
  * �T�E���h�G�t�F�N�g
  *------------------------------------------
  */
-int buildin_soundeffect (struct script_state *st)
+BUILDIN_FUNC(soundeffect)
 {
     struct map_session_data *sd = script_rid2sd (st);
+    if (!sd)
+        return 1;
+
     char *name;
     int  type = 0;
 
@@ -6924,9 +7171,7 @@ int buildin_soundeffect (struct script_state *st)
         if (st->oid)
             clif_soundeffect (sd, map_id2bl (st->oid), name, type);
         else
-        {
             clif_soundeffect (sd, &sd->bl, name, type);
-        }
     }
     return 0;
 }
@@ -6935,9 +7180,11 @@ int buildin_soundeffect (struct script_state *st)
  * NPC skill effects [Valaris]
  *------------------------------------------
  */
-int buildin_npcskilleffect (struct script_state *st)
+BUILDIN_FUNC(npcskilleffect)
 {
     struct npc_data *nd = (struct npc_data *) map_id2bl (st->oid);
+    if (!nd)
+        return 1;
 
     int  skillid = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     int  skilllv = conv_num (st, &(st->stack->stack_data[st->start + 3]));
@@ -6953,7 +7200,7 @@ int buildin_npcskilleffect (struct script_state *st)
  * Special effects [Valaris]
  *------------------------------------------
  */
-int buildin_specialeffect (struct script_state *st)
+BUILDIN_FUNC(specialeffect)
 {
     struct block_list *bl = map_id2bl (st->oid);
 
@@ -6968,7 +7215,7 @@ int buildin_specialeffect (struct script_state *st)
     return 0;
 }
 
-int buildin_specialeffect2 (struct script_state *st)
+BUILDIN_FUNC(specialeffect2)
 {
     struct map_session_data *sd = script_rid2sd (st);
 
@@ -6988,7 +7235,7 @@ int buildin_specialeffect2 (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_nude (struct script_state *st)
+BUILDIN_FUNC(nude)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i;
@@ -7009,7 +7256,7 @@ int buildin_nude (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_unequip_by_id (struct script_state *st)
+BUILDIN_FUNC(unequip_by_id)
 {
     struct map_session_data *sd = script_rid2sd (st);
     if (sd == NULL)
@@ -7032,7 +7279,7 @@ int buildin_unequip_by_id (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_gmcommand (struct script_state *st)
+BUILDIN_FUNC(gmcommand)
 {
     struct map_session_data *sd;
     char *cmd;
@@ -7050,7 +7297,7 @@ int buildin_gmcommand (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_movenpc (struct script_state *st __attribute__ ((unused)))
+BUILDIN_FUNCU(movenpc)
 {
 /*
     struct map_session_data *sd;
@@ -7073,7 +7320,7 @@ int buildin_movenpc (struct script_state *st __attribute__ ((unused)))
  * Move NPC to a new position on the same map.
  *------------------------------------------
  */
-int buildin_npcwarp (struct script_state *st)
+BUILDIN_FUNC(npcwarp)
 {
     int  x, y;
     char *npc;
@@ -7110,7 +7357,7 @@ int buildin_npcwarp (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_message (struct script_state *st)
+BUILDIN_FUNC(message)
 {
     char *msg, *player;
     struct map_session_data *pl_sd = NULL;
@@ -7131,7 +7378,7 @@ int buildin_message (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_npctalk (struct script_state *st)
+BUILDIN_FUNC(npctalk)
 {
     char *str;
     char message[255];
@@ -7157,12 +7404,18 @@ int buildin_npctalk (struct script_state *st)
  *------------------------------------------
  */
 
-int buildin_hasitems (struct script_state *st)
+BUILDIN_FUNC(hasitems)
 {
     int  i;
     struct map_session_data *sd;
 
     sd = script_rid2sd (st);
+
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
+        return 1;
+    }
 
     for (i = 0; i < MAX_INVENTORY; i++)
     {
@@ -7182,11 +7435,16 @@ int buildin_hasitems (struct script_state *st)
   * getlook char info. getlook(arg)
   *------------------------------------------
   */
-int buildin_getlook (struct script_state *st)
+BUILDIN_FUNC(getlook)
 {
     int  type, val;
     struct map_session_data *sd;
     sd = script_rid2sd (st);
+    if (!sd)
+    {
+        push_val (st->stack, C_INT, -1);
+        return 1;
+    }
 
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     val = -1;
@@ -7230,9 +7488,9 @@ int buildin_getlook (struct script_state *st)
   *     get char save point. argument: 0- map name, 1- x, 2- y
   *------------------------------------------
 */
-int buildin_getsavepoint (struct script_state *st)
+BUILDIN_FUNC(getsavepoint)
 {
-    int  x, y, type;
+    int  x = -1, y = -1, type;
     char *mapname;
     struct map_session_data *sd;
 
@@ -7240,13 +7498,20 @@ int buildin_getsavepoint (struct script_state *st)
 
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
 
-    x = sd->status.save_point.x;
-    y = sd->status.save_point.y;
+    if (sd)
+    {
+        x = sd->status.save_point.x;
+        y = sd->status.save_point.y;
+    }
     switch (type)
     {
         case 0:
             mapname = calloc (24, 1);
-            strncpy (mapname, sd->status.save_point.map, 23);
+            if (sd)
+                strncpy (mapname, sd->status.save_point.map, 23);
+            else
+                *mapname = 0;
+
             push_str (st->stack, C_STR, mapname);
             break;
         case 1:
@@ -7267,6 +7532,9 @@ int buildin_getsavepoint (struct script_state *st)
  */
 int buildin_areatimer_sub (struct block_list *bl, va_list ap)
 {
+    if (!ap)
+        return 1;
+
     int  tick;
     char *event;
     tick = va_arg (ap, int);
@@ -7275,7 +7543,7 @@ int buildin_areatimer_sub (struct block_list *bl, va_list ap)
     return 0;
 }
 
-int buildin_areatimer (struct script_state *st)
+BUILDIN_FUNC(areatimer)
 {
     int  tick, m;
     char *event;
@@ -7302,7 +7570,7 @@ int buildin_areatimer (struct script_state *st)
  * Check whether the PC is in the specified rectangle
  *------------------------------------------
  */
-int buildin_isin (struct script_state *st)
+BUILDIN_FUNC(isin)
 {
     int  x1, y1, x2, y2;
     char *str;
@@ -7315,7 +7583,10 @@ int buildin_isin (struct script_state *st)
     y2 = conv_num (st, &(st->stack->stack_data[st->start + 6]));
 
     if (!sd)
+    {
+        push_val (st->stack, C_INT, 0);
         return 1;
+    }
 
     push_val (st->stack, C_INT,
               (sd->bl.x >= x1 && sd->bl.x <= x2)
@@ -7326,7 +7597,7 @@ int buildin_isin (struct script_state *st)
 }
 
 // Trigger the shop on a (hopefully) nearby shop NPC
-int buildin_shop (struct script_state *st)
+BUILDIN_FUNC(shop)
 {
     struct map_session_data *sd = script_rid2sd (st);
     struct npc_data *nd;
@@ -7347,7 +7618,7 @@ int buildin_shop (struct script_state *st)
  * Check whether the PC is dead
  *------------------------------------------
  */
-int buildin_isdead (struct script_state *st)
+BUILDIN_FUNC(isdead)
 {
     struct map_session_data *sd = script_rid2sd (st);
 
@@ -7359,7 +7630,7 @@ int buildin_isdead (struct script_state *st)
  * Changes a NPC name, and sprite
  *----------------------------------------
  */
-int buildin_fakenpcname (struct script_state *st)
+BUILDIN_FUNC(fakenpcname)
 {
     char *name, *newname;
     int  newsprite;
@@ -7382,7 +7653,7 @@ int buildin_fakenpcname (struct script_state *st)
     return 0;
 }
 
-int buildin_setcollision (struct script_state *st)
+BUILDIN_FUNC(setcollision)
 {
     struct map_session_data *sd;
     sd = script_rid2sd (st);
