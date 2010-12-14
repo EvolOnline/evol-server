@@ -78,7 +78,7 @@ int inter_party_fromstr (char *str, struct party *p)
         if (sscanf
             (str + 1, "%d,%d\t%255[^\t]\t", &tmp_int[0], &tmp_int[1],
              tmp_str) != 3)
-            return 1;
+            return 0;
 
         m->account_id = tmp_int[0];
         m->leader = tmp_int[1];
