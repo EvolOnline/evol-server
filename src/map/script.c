@@ -395,6 +395,9 @@ int  buildin_movenpc (struct script_state *st); // [MouseJstr]
 int  buildin_npcwarp (struct script_state *st); // [remoitnane]
 int  buildin_message (struct script_state *st); // [MouseJstr]
 int  buildin_npctalk (struct script_state *st); // [Valaris]
+int  buildin_npcwalkto (struct script_state *st); // [Valaris]
+int  buildin_npcstop (struct script_state *st); // [Valaris]
+int  buildin_npcspeed (struct script_state *st); // [Valaris]
 int  buildin_hasitems (struct script_state *st);    // [Valaris]
 int  buildin_getlook (struct script_state *st); //Lorky [Lupus]
 int  buildin_getsavepoint (struct script_state *st);    //Lorky [Lupus]
@@ -807,6 +810,12 @@ struct
     buildin_message, "message", "s*"},  // [MouseJstr]
     {
     buildin_npctalk, "npctalk", "*"},   // [Valaris]
+    {
+    buildin_npcspeed, "npcspeed", "i"}, // [Valaris]
+    {
+    buildin_npcwalkto, "npcwalkto", "ii"}, // [Valaris]
+    {
+    buildin_npcstop, "npcstop", ""}, // [Valaris]
     {
     buildin_hasitems, "hasitems", "*"}, // [Valaris]
     {
@@ -7393,6 +7402,44 @@ BUILDIN_FUNC(npctalk)
         strcat (message, str);
         clif_message (&(nd->bl), message);
     }
+
+    return 0;
+}
+
+// change npc walkspeed [Valaris]
+BUILDIN_FUNC(npcspeed)
+{
+    struct npc_data *nd = (struct npc_data *)map_id2bl(st->oid);
+    int x = 0;
+
+    x = script_getnum(st, 2);
+    if(nd)
+        nd->speed = x;
+
+    return 0;
+}
+
+// make an npc walk to a position [Valaris]
+BUILDIN_FUNCU(npcwalkto)
+{
+//    struct npc_data *nd = (struct npc_data *)map_id2bl(st->oid);
+//    int x = 0, y = 0;
+
+//    x = script_getnum(st, 2);
+//    y = script_getnum(st, 3);
+//    if(nd)
+//        unit_walktoxy(&nd->bl, x, y,0);
+
+    return 0;
+}
+
+// stop an npc's movement [Valaris]
+BUILDIN_FUNCU(npcstop)
+{
+//    struct npc_data *nd = (struct npc_data *)map_id2bl(st->oid);
+
+//    if(nd)
+//        unit_stop_walking(&nd->bl, 1);
 
     return 0;
 }
