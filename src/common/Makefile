@@ -1,5 +1,5 @@
 include ../../make.defs
-txt sql all: core.o socket.o timer.o grfio.o db.o lock.o nullpo.o malloc.o mt_rand.o md5calc.o
+txt sql all: core.o socket.o timer.o grfio.o db.o lock.o nullpo.o malloc.o showmsg.o strlib.o mt_rand.o md5calc.o
 
 core.o: core.c core.h
 socket.o: socket.c socket.h mmo.h
@@ -9,6 +9,8 @@ db.o: db.c db.h
 lock.o: lock.h
 nullpo.o: nullpo.c nullpo.h
 malloc.o: malloc.c malloc.h
+showmsg.o: showmsg.c showmsg.h
+strlib.o: strlib.c strlib.h
 mt_rand.o: mt_rand.c mt_rand.h
 md5calc.o: md5calc.c md5calc.h
 

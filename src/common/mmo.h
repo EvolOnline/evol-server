@@ -65,6 +65,8 @@
 
 #define CHAR_CONF_NAME  "conf/char_athena.conf"
 
+#define MAP_NAME_LENGTH 24
+
 struct item
 {
     int  id;

@@ -7,7 +7,7 @@ txt: obj map-server
 obj:
 	mkdir obj
 
-COMMON_OBJ = ../common/core.o ../common/socket.o ../common/timer.o ../common/grfio.o ../common/db.o ../common/lock.o ../common/nullpo.o ../common/malloc.o ../common/mt_rand.o ../common/md5calc.o
+COMMON_OBJ = ../common/core.o ../common/socket.o ../common/timer.o ../common/grfio.o ../common/db.o ../common/lock.o ../common/nullpo.o ../common/malloc.o ../common/showmsg.o ../common/strlib.o ../common/mt_rand.o ../common/md5calc.o
 
 LIBS = -lz -lm
 

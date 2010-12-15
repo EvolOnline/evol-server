@@ -15,6 +15,15 @@ void *aMalloc_ (size_t, const char *, int, const char *);
 void *aCalloc_ (size_t, size_t, const char *, int, const char *);
 void *aRealloc_ (void *, size_t, const char *, int, const char *);
 char *aStrdup_ (const char *, const char *, int, const char *);
+void aFree_(void *p, const char *file, int line, const char *func);
+
+#define MALLOC(n,file,line,func)    malloc(n)
+#define MALLOCA(n,file,line,func)   malloc(n)
+#define CALLOC(m,n,file,line,func)  calloc((m),(n))
+#define CALLOCA(m,n,file,line,func) calloc((m),(n))
+#define REALLOC(p,n,file,line,func) realloc((p),(n))
+#define STRDUP(p,file,line,func)    strdup(p)
+#define FREE(p,file,line,func)      free(p)
 
 #define aMalloc(n) aMalloc_(n,ALC_MARK)
 #define aMallocA(n) aMalloc_(n,ALC_MARK)

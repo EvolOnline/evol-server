@@ -39,6 +39,9 @@
 #include "skill.h"
 #include "storage.h"
 
+#include "../common/showmsg.h"
+#include "../common/strlib.h"
+
 #ifdef MEMWATCH
 #include "memwatch.h"
 #endif
@@ -133,6 +136,10 @@ enum
 { LABEL_NEXTLINE = 1, LABEL_START };
 static unsigned char *script_buf;
 static int script_pos, script_size;
+
+#define not_server_variable(prefix) ( (prefix) != '$' && (prefix) != '.')
+#define not_array_variable(prefix) ( (prefix) != '$' && (prefix) != '@' && (prefix) != '.' )
+#define is_string_variable(name) ( (name)[strlen(name) - 1] == '$' )
 
 char *str_buf;
 int  str_pos, str_size;
@@ -401,6 +408,7 @@ int  buildin_npcspeed (struct script_state *st); // [Valaris]
 int  buildin_hasitems (struct script_state *st);    // [Valaris]
 int  buildin_getlook (struct script_state *st); //Lorky [Lupus]
 int  buildin_getsavepoint (struct script_state *st);    //Lorky [Lupus]
+int  buildin_getmapxy (struct script_state *st);    //Lorky [Lupus]
 int  buildin_getpartnerid (struct script_state *st);    // [Fate]
 int  buildin_areatimer (struct script_state *st);   // [Jaxad0127]
 int  buildin_isin (struct script_state *st);    // [Jaxad0127]
@@ -824,6 +832,8 @@ struct
     buildin_getlook, "getlook", "i"},
     {
     buildin_getsavepoint, "getsavepoint", "i"},
+    {
+    buildin_getmapxy, "getmapxy", "siii*"},
     {
     buildin_areatimer, "areatimer", "siiiiis"},
     {
@@ -7570,6 +7580,155 @@ BUILDIN_FUNC(getsavepoint)
         default:
             break;
     }
+    return 0;
+}
+
+/*==========================================
+  * Get position for  char/npc/pet/mob objects. Added by Lorky
+  *
+  *     int getMapXY(MapName$,MapX,MapY,type,[CharName$]);
+  *             where type:
+  *                     MapName$ - String variable for output map name
+  *                     MapX     - Integer variable for output coord X
+  *                     MapY     - Integer variable for output coord Y
+  *                     type     - type of object
+  *                                0 - Character coord
+  *                                1 - NPC coord
+  *                                2 - Pet coord
+  *                                3 - Mob coord (not released)
+  *                                4 - Homun coord
+  *                     CharName$ - Name object. If miss or "this" the current object
+  *
+  *             Return:
+  *                     0        - success
+  *                     -1       - some error, MapName$,MapX,MapY contains unknown value.
+  *------------------------------------------*/
+BUILDIN_FUNC(getmapxy)
+{
+    struct block_list *bl = NULL;
+    TBL_PC *sd = NULL;
+
+    int num;
+    char *name;
+    char prefix;
+
+    int x,y,type;
+    char mapname[MAP_NAME_LENGTH];
+    memset(mapname, 0, sizeof(mapname));
+
+    if (!data_isreference(script_getdata(st, 2)))
+    {
+        ShowWarning("script: buildin_getmapxy: not mapname variable\n");
+        script_pushint(st, -1);
+        return 1;
+    }
+    if (!data_isreference(script_getdata(st, 3)))
+    {
+        ShowWarning("script: buildin_getmapxy: not mapx variable\n");
+        script_pushint(st, -1);
+        return 1;
+    }
+    if (!data_isreference(script_getdata(st, 4)))
+    {
+        ShowWarning("script: buildin_getmapxy: not mapy variable\n");
+        script_pushint(st, -1);
+        return 1;
+    }
+
+    // Possible needly check function parameters on C_STR,C_INT,C_INT
+    type = script_getnum(st, 5);
+
+    switch (type)
+    {
+        case 0: //Get Character Position
+            if (script_hasdata(st, 6))
+                sd = map_nick2sd(script_getstr(st, 6));
+            else
+                sd=script_rid2sd(st);
+
+            if (sd)
+                bl = &sd->bl;
+            break;
+        case 1: //Get NPC Position
+            if (script_hasdata(st,6))
+            {
+                struct npc_data *nd;
+                nd = npc_name2id(script_getstr(st, 6));
+                if (nd)
+                    bl = &nd->bl;
+            }
+            else //In case the origin is not an npc?
+                bl = map_id2bl(st->oid);
+            break;
+        case 2: //Get Pet Position
+//            if(script_hasdata(st,6))
+//                sd=map_nick2sd(script_getstr(st,6));
+//            else
+//                sd=script_rid2sd(st);
+
+//            if (sd && sd->pd)
+//                bl = &sd->pd->bl;
+            break;
+        case 3: //Get Mob Position
+            break; //Not supported?
+        case 4: //Get Homun Position
+//            if(script_hasdata(st,6))
+//                sd=map_nick2sd(script_getstr(st,6));
+//            else
+//                sd=script_rid2sd(st);
+
+//            if (sd && sd->hd)
+//                bl = &sd->hd->bl;
+            break;
+    }
+    if (!bl)
+    { //No object found.
+        script_pushint(st,-1);
+        return 0;
+    }
+
+    x = bl->x;
+    y = bl->y;
+    memcpy(mapname, map[bl->m].name, MAP_NAME_LENGTH);
+
+    //Set MapName$
+    num = st->stack->stack_data[st->start+2].u.num;
+    name=(char *)(str_buf+str_data[num & 0x00ffffff].str);
+    prefix = *name;
+
+    if (not_server_variable(prefix))
+        sd = script_rid2sd(st);
+    else
+        sd = NULL;
+    set_reg(sd, num, name, (void*)mapname);
+//    set_reg(st, sd, num, name, (void*)mapname, script_getref(st, 2));
+
+    //Set MapX
+    num = st->stack->stack_data[st->start + 3].u.num;
+    name = (char *)(str_buf + str_data[num & 0x00ffffff].str);
+    prefix = *name;
+
+    if (not_server_variable(prefix))
+        sd = script_rid2sd(st);
+    else
+        sd = NULL;
+    set_reg(sd, num, name, (void*)x);
+//    set_reg(st, sd, num, name, (void*)x, script_getref(st, 3));
+
+    //Set MapY
+    num = st->stack->stack_data[st->start + 4].u.num;
+    name = (char *)(str_buf + str_data[num & 0x00ffffff].str);
+    prefix = *name;
+
+    if(not_server_variable(prefix))
+        sd = script_rid2sd(st);
+    else
+        sd = NULL;
+    set_reg(sd, num, name, (void*)y);
+//    set_reg(st, sd, num, name, (void*)y, script_getref(st, 4));
+
+    //Return Success value
+    script_pushint(st, 0);
     return 0;
 }
 
