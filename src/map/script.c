@@ -285,6 +285,7 @@ int  buildin_checkoption (struct script_state *st);
 int  buildin_setoption (struct script_state *st);
 int  buildin_guildgetexp (struct script_state *st);
 int  buildin_guildchangegm (struct script_state *st);
+int  buildin_logmes (struct script_state *st);
 int  buildin_setcart (struct script_state *st);
 int  buildin_checkcart (struct script_state *st);   // check cart [Valaris]
 int  buildin_setfalcon (struct script_state *st);
@@ -589,6 +590,8 @@ struct
     buildin_guildgetexp, "guildgetexp", "i"},
     {
     buildin_guildchangegm, "guildchangegm", "is"},
+    {
+    buildin_logmes, "logmes", "s"},
     {
     buildin_setcart, "setcart", ""},
     {
@@ -4320,6 +4323,26 @@ BUILDIN_FUNC(guildgetexp)
         guild_getexp (sd, exp);
 
     return 0;
+}
+
+/*==========================================
+ * Allows player to write NPC logs (i.e. Bank NPC, etc) [Lupus]
+ *------------------------------------------*/
+BUILDIN_FUNCU(logmes)
+{
+//  const char *str;
+//  TBL_PC* sd;
+
+//    if (log_config.npc <= 0)
+//        return 0;
+
+//  sd = script_rid2sd(st);
+//  if (sd == NULL)
+//      return 1;
+
+//  str = script_getstr(st, 2);
+//  log_npc(sd, str);
+//  return 0;
 }
 
 /*==========================================

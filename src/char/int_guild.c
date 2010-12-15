@@ -1094,6 +1094,9 @@ int mapif_guild_emblem (struct guild *g)
 
 int mapif_guild_master_changed(struct guild *g, int aid, int cid)
 {
+    if (!g)
+        return 0;
+
     unsigned char buf[14];
     WBUFW(buf, 0) = 0x3843;
     WBUFL(buf, 2) = g->guild_id;
