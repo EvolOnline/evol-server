@@ -285,7 +285,8 @@ int  buildin_checkoption (struct script_state *st);
 int  buildin_setoption (struct script_state *st);
 int  buildin_guildgetexp (struct script_state *st);
 int  buildin_guildchangegm (struct script_state *st);
-int  buildin_logmes (struct script_state *st);
+int  buildin_logmes (struct script_state *st);      // this command actls as MES but rints info into LOG file either SQL/TXT [Lupus]
+int  buildin_summon (struct script_state *st);      // summons a slave monster [Celest]
 int  buildin_setcart (struct script_state *st);
 int  buildin_checkcart (struct script_state *st);   // check cart [Valaris]
 int  buildin_setfalcon (struct script_state *st);
@@ -593,6 +594,8 @@ struct
     {
     buildin_logmes, "logmes", "s"},
     {
+    buildin_summon, "summon", "si"},
+    {
     buildin_setcart, "setcart", ""},
     {
     buildin_checkcart, "checkcart", "*"},   //fixed by Lupus (added '*')
@@ -872,6 +875,47 @@ enum
     C_XOR, C_OR, C_AND, C_ADD, C_SUB, C_MUL, C_DIV, C_MOD, C_NEG, C_LNOT,
     C_NOT, C_R_SHIFT, C_L_SHIFT
 };
+
+/*
+/// Reports on the console the src of a script error.
+static void script_reportsrc(struct script_state *st)
+{
+    struct block_list* bl;
+
+    if (st->oid == 0)
+        return; //Can't report source.
+
+    bl = map_id2bl(st->oid);
+    if (bl == NULL)
+        return;
+
+    switch (bl->type)
+    {
+    case BL_NPC:
+        if (bl->m >= 0)
+            ShowDebug("Source (NPC): %s at %s (%d,%d)\n", ((struct npc_data *)bl)->name, map[bl->m].name, bl->x, bl->y);
+        else
+            ShowDebug("Source (NPC): %s (invisible/not on a map)\n", ((struct npc_data *)bl)->name);
+        break;
+    default:
+        if (bl->m >= 0)
+            ShowDebug("Source (Non-NPC type %d): name %s at %s (%d,%d)\n", bl->type, status_get_name(bl), map[bl->m].name, bl-
+        else
+            ShowDebug("Source (Non-NPC type %d): name %s (invisible/not on a map)\n", bl->type, status_get_name(bl));
+        break;
+    }
+}
+*/
+
+/// Checks event parameter validity
+static void check_event(struct script_state *st __attribute__ ((unused)), const char *evt)
+{
+    if (evt != NULL && *evt != '\0' && !stristr(evt,"::On"))
+    {
+        ShowError("NPC event parameter deprecated! Please use 'NPCNAME::OnEVENT' instead of '%s'.\n", evt);
+//        script_reportsrc(st);
+    }
+}
 
 /*==========================================
  * �������̃n�b�V�����v�Z
@@ -4342,7 +4386,49 @@ BUILDIN_FUNCU(logmes)
 
 //  str = script_getstr(st, 2);
 //  log_npc(sd, str);
-//  return 0;
+    return 0;
+}
+
+BUILDIN_FUNC(summon)
+{
+    int _class, timeout = 0;
+    const char *str, *event = "";
+    TBL_PC *sd;
+    struct mob_data *md;
+    int tick = gettick();
+
+    sd = script_rid2sd(st);
+    if (!sd)
+        return 0;
+    str = script_getstr(st, 2);
+    _class = script_getnum(st, 3);
+    if (script_hasdata(st, 4))
+        timeout = script_getnum(st, 4);
+    if (script_hasdata(st, 5))
+    {
+        event = script_getstr(st, 5);
+        check_event(st, event);
+    }
+
+    clif_skill_poseffect(&sd->bl, AM_CALLHOMUN, 1, sd->bl.x, sd->bl.y, tick);
+
+    int mob_id = mob_once_spawn (sd, map[sd->bl.m].name, sd->bl.x, sd->bl.y, "--ja--",
+                                 _class, 1, event);
+
+    md = (struct mob_data *) map_id2bl (mob_id);
+
+//    md = mob_once_spawn_sub(&sd->bl, sd->bl.m, sd->bl.x, sd->bl.y, str, _class, event);
+    if (md)
+    {
+        md->mode = mob_db[md->class].mode | 0x04;
+        md->master_id = sd->bl.id;
+        md->state.special_mob_ai = 1;
+        md->deletetimer = add_timer(tick + (timeout > 0 ? timeout * 1000 : 60000), mob_timer_delete, md->bl.id, 0);
+//        mob_spawn (md); //Now it is ready for spawning.
+        clif_misceffect(&md->bl, 344);
+//        sc_start4(&md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 60000);
+    }
+    return 0;
 }
 
 /*==========================================

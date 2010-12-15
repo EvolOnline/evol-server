@@ -1349,7 +1349,7 @@ int mob_spawn (int id)
     if (!md->stats[MOB_SPEED])
         md->stats[MOB_SPEED] = mob_db[md->class].speed;
     md->def_ele = mob_db[md->class].element;
-    md->master_id = 0;
+//    md->master_id = 0;
     md->master_dist = 0;
 
     md->state.state = MS_IDLE;
@@ -3643,6 +3643,7 @@ int mob_summonslave (struct mob_data *md2, int *value, int amount, int flag)
         {
             int  x = 0, y = 0, c = 0, i = 0;
             md = (struct mob_data *) aCalloc (1, sizeof (struct mob_data));
+            md->master_id = 0;
             if (mob_db[class].mode & 0x02)
                 md->lootitem =
                     (struct item *) aCalloc (LOOTITEM_SIZE,
