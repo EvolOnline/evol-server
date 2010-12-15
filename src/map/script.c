@@ -283,6 +283,7 @@ int  buildin_getopt2 (struct script_state *st);
 int  buildin_setopt2 (struct script_state *st);
 int  buildin_checkoption (struct script_state *st);
 int  buildin_setoption (struct script_state *st);
+int  buildin_guildgetexp (struct script_state *st);
 int  buildin_setcart (struct script_state *st);
 int  buildin_checkcart (struct script_state *st);   // check cart [Valaris]
 int  buildin_setfalcon (struct script_state *st);
@@ -583,6 +584,8 @@ struct
     buildin_checkoption, "checkoption", "i"},
     {
     buildin_setoption, "setoption", "i"},
+    {
+    buildin_guildgetexp, "guildgetexp", "i"},
     {
     buildin_setcart, "setcart", ""},
     {
@@ -4292,6 +4295,27 @@ BUILDIN_FUNC(checkcart)
     {
         push_val (st->stack, C_INT, 0);
     }
+    return 0;
+}
+
+/*==========================================
+ * Gain guild exp [Celest]
+ *------------------------------------------*/
+BUILDIN_FUNC(guildgetexp)
+{
+    TBL_PC* sd;
+    int exp;
+
+    sd = script_rid2sd(st);
+    if (sd == NULL)
+        return 0;
+
+    exp = script_getnum(st, 2);
+    if (exp < 0)
+        return 0;
+    if(sd && sd->status.guild_id > 0)
+        guild_getexp (sd, exp);
+
     return 0;
 }
 
