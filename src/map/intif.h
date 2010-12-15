@@ -24,6 +24,7 @@ int  intif_request_partyinfo (int party_id);
 int  intif_party_addmember (int party_id, int account_id);
 int  intif_party_changeoption (int party_id, int account_id, int exp,
                                int item);
+int  intif_guild_change_gm(int guild_id, const char* name, int len);
 int  intif_party_leave (int party_id, int accound_id);
 int  intif_party_changemap (struct map_session_data *sd, int online);
 int  intif_break_party (int party_id);

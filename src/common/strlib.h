@@ -13,7 +13,7 @@ char* jstrescape (char* pt);
 char* jstrescapecpy (char* pt, const char* spt);
 int jmemescapecpy (char* pt, const char* spt, int size);
 
-int remove_control_chars(char* str);
+//int remove_control_chars(char* str);
 char* trim(char* str);
 char* normalize_name(char* str,const char* delims);
 const char *stristr(const char *haystack, const char *needle);
@@ -29,7 +29,7 @@ size_t strnlen (const char* string, size_t maxlen);
 #endif
 
 int e_mail_check(char* email);
-int config_switch(const char* str);
+//int config_switch(const char* str);
 
 /// always nul-terminates the string
 char* safestrncpy(char* dst, const char* src, size_t n);

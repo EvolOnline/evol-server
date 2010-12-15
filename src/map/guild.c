@@ -1585,6 +1585,69 @@ int guild_broken (int guild_id, int flag)
     return 0;
 }
 
+//Changes the Guild Master to the specified player. [Skotlex]
+int guild_gm_change(int guild_id, struct map_session_data *sd)
+{
+    struct guild *g;
+    nullpo_retr(0, sd);
+
+    if (sd->status.guild_id != guild_id)
+        return 0;
+
+    g = guild_search(guild_id);
+
+    nullpo_retr(0, g);
+
+    if (strcmp(g->master, sd->status.name) == 0) //Nothing to change
+        return 0;
+
+    //Notify servers that master has changed.
+    intif_guild_change_gm(guild_id, sd->status.name, strlen(sd->status.name));
+    return 1;
+}
+
+int guild_gm_changed(int guild_id, int account_id, int char_id __attribute__ ((unused)))
+{
+    struct guild *g;
+    struct guild_member gm;
+    int pos;
+
+    g = guild_search(guild_id);
+
+    if (!g)
+        return 0;
+
+    for(pos = 0; pos < g->max_member && !(
+        g->member[pos].account_id == account_id);
+        pos ++);
+
+    if (pos == 0 || pos == g->max_member)
+        return 0;
+
+    memcpy(&gm, &g->member[pos], sizeof (struct guild_member));
+    memcpy(&g->member[pos], &g->member[0], sizeof(struct guild_member));
+    memcpy(&g->member[0], &gm, sizeof(struct guild_member));
+
+    g->member[pos].position = g->member[0].position;
+    g->member[0].position = 0; //Position 0: guild Master.
+    strcpy(g->master, g->member[0].name);
+
+    if (g->member[pos].sd && g->member[pos].sd->fd)
+    {
+        clif_displaymessage(g->member[pos].sd->fd, "You no longer are the Guild Master.");
+//        g->member[pos].sd->state.gmaster_flag = 0;
+    }
+
+    if (g->member[0].sd && g->member[0].sd->fd)
+    {
+        clif_displaymessage(g->member[0].sd->fd, "You have become the Guild Master!");
+//        g->member[0].sd->state.gmaster_flag = g;
+        //Block his skills for 5 minutes to prevent abuse.
+//        guild_block_skill(g->member[0].sd, 300000);
+    }
+    return 1;
+}
+
 // ƒMƒ‹ƒh‰ğU
 int guild_break (struct map_session_data *sd, char *name)
 {

@@ -37,14 +37,23 @@
 #endif
 
 static const int packet_len_table[] = {
+// 0x3800
     -1, -1, 27, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3810
     -1, 7, 0, 0, 0, 0, 0, 0, -1, 11, 0, 0, 0, 0, 0, 0,
+// 0x3820
     35, -1, 11, 15, 34, 29, 7, -1, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3830
     10, -1, 15, 0, 79, 19, 7, -1, 0, -1, -1, -1, 14, 67, 186, -1,
-    9, 9, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3840
+    9, 9, -1, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3850
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3860
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3870
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// 0x3880
     11, -1, 7, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -246,6 +255,22 @@ int intif_party_addmember (int party_id, int account_id)
         WFIFOW (inter_fd, 50) = sd->status.base_level;
         WFIFOSET (inter_fd, 52);
     }
+    return 0;
+}
+
+int intif_guild_change_gm(int guild_id, const char* name, int len)
+{
+    if (len < 0 || !name)
+        return 0;
+
+//    if (CheckForCharServer())
+//        return 0;
+    //WFIFOHEAD(inter_fd, len + 8);
+    WFIFOW(inter_fd, 0) = 0x3033;
+    WFIFOW(inter_fd, 2) = len + 8;
+    WFIFOL(inter_fd, 4) = guild_id;
+    memcpy(WFIFOP(inter_fd,8), name, len);
+    WFIFOSET(inter_fd, len + 8);
     return 0;
 }
 
@@ -1106,6 +1131,11 @@ int intif_parse_GuildCastleAllDataLoad (int fd)
                                     (struct guild_castle *) RFIFOP (fd, 4));
 }
 
+int intif_parse_GuildMasterChanged(int fd)
+{
+    return guild_gm_changed(RFIFOL(fd,2), RFIFOL(fd,6), RFIFOL(fd,10));
+}
+
 //-----------------------------------------------------------------
 // inter server‚©‚ç‚Ì’ÊM
 // ƒGƒ‰[‚ª‚ ‚ê‚Î0(false)‚ğ•Ô‚·‚±‚Æ
@@ -1240,6 +1270,9 @@ int intif_parse (int fd)
             break;
         case 0x3842:
             intif_parse_GuildCastleAllDataLoad (fd);
+            break;
+        case 0x3843:
+            intif_parse_GuildMasterChanged(fd);
             break;
             //case 0x3880:  intif_parse_CreateP.et(fd); break;
             //case 0x3881:  intif_parse_RecvP.etData(fd); break;

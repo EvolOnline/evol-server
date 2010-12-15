@@ -284,6 +284,7 @@ int  buildin_setopt2 (struct script_state *st);
 int  buildin_checkoption (struct script_state *st);
 int  buildin_setoption (struct script_state *st);
 int  buildin_guildgetexp (struct script_state *st);
+int  buildin_guildchangegm (struct script_state *st);
 int  buildin_setcart (struct script_state *st);
 int  buildin_checkcart (struct script_state *st);   // check cart [Valaris]
 int  buildin_setfalcon (struct script_state *st);
@@ -586,6 +587,8 @@ struct
     buildin_setoption, "setoption", "i"},
     {
     buildin_guildgetexp, "guildgetexp", "i"},
+    {
+    buildin_guildchangegm, "guildchangegm", "is"},
     {
     buildin_setcart, "setcart", ""},
     {
@@ -4315,6 +4318,27 @@ BUILDIN_FUNC(guildgetexp)
         return 0;
     if(sd && sd->status.guild_id > 0)
         guild_getexp (sd, exp);
+
+    return 0;
+}
+
+/*==========================================
+ * Changes the guild master of a guild [Skotlex]
+ *------------------------------------------*/
+BUILDIN_FUNC(guildchangegm)
+{
+    TBL_PC *sd;
+    int guild_id;
+    const char *name;
+
+    guild_id = script_getnum(st, 2);
+    name = script_getstr(st, 3);
+    sd = map_nick2sd(name);
+
+    if (!sd)
+        script_pushint(st, 0);
+    else
+        script_pushint(st, guild_gm_change(guild_id, sd));
 
     return 0;
 }

@@ -110,6 +110,7 @@ int jmemescapecpy (char* pt, const char* spt, int size)
 }
 
 // Function to suppress control characters in a string.
+/*
 int remove_control_chars(char* str)
 {
 	int i;
@@ -124,6 +125,7 @@ int remove_control_chars(char* str)
 
 	return change;
 }
+*/
 
 // Removes characters identified by ISSPACE from the start and end of the string
 // NOTE: make sure the string is not const!!
@@ -294,6 +296,7 @@ int e_mail_check(char* email)
 // Return numerical value of a switch configuration
 // on/off, english, français, deutsch, español
 //--------------------------------------------------
+/*
 int config_switch(const char* str)
 {
 	if (strcmpi(str, "on") == 0 || strcmpi(str, "yes") == 0 || strcmpi(str, "oui") == 0 || strcmpi(str, "ja") == 0 || strcmpi(str, "si") == 0)
@@ -303,6 +306,7 @@ int config_switch(const char* str)
 
 	return (int)strtol(str, NULL, 0);
 }
+*/
 
 /// always nul-terminates the string
 char* safestrncpy(char* dst, const char* src, size_t n)

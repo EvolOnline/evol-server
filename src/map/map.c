@@ -1446,7 +1446,7 @@ struct map_session_data *map_get_prev_session (struct map_session_data *d)
  * return map_session_data pointer or NULL
  *------------------------------------------
  */
-struct map_session_data *map_nick2sd (char *nick)
+struct map_session_data *map_nick2sd (const char *nick)
 {
     if (nick == NULL)
         return NULL;

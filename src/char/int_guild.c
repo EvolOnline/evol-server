@@ -8,6 +8,9 @@
 #include "db.h"
 #include "lock.h"
 
+#include "../common/showmsg.h"
+#include "../common/strlib.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1089,6 +1092,18 @@ int mapif_guild_emblem (struct guild *g)
     return 0;
 }
 
+int mapif_guild_master_changed(struct guild *g, int aid, int cid)
+{
+    unsigned char buf[14];
+    WBUFW(buf, 0) = 0x3843;
+    WBUFL(buf, 2) = g->guild_id;
+    WBUFL(buf, 6) = aid;
+    WBUFL(buf, 10) = cid;
+    mapif_sendall(buf, 14);
+
+    return 0;
+}
+
 int mapif_guild_castle_dataload (int castle_id, int index, int value)
 {
     unsigned char buf[9];
@@ -1822,6 +1837,32 @@ int mapif_parse_GuildCheck (int fd __attribute__ ((unused)), int guild_id,
     return guild_check_conflict (guild_id, account_id, 0 /*char_id*/);
 }
 
+int mapif_parse_GuildMasterChange(int fd __attribute__ ((unused)), int guild_id, const char* name, int len)
+{
+    struct guild *g = g = numdb_search (guild_db, guild_id);;
+    struct guild_member gm;
+    int pos;
+
+    if(g == NULL || g->guild_id <= 0 || len > NAME_LENGTH)
+        return 0;
+
+    for (pos = 0; pos < g->max_member && strncmp(g->member[pos].name, name, len); pos++);
+
+    if (pos == g->max_member)
+        return 0; //Character not found??
+
+    memcpy(&gm, &g->member[pos], sizeof (struct guild_member));
+    memcpy(&g->member[pos], &g->member[0], sizeof(struct guild_member));
+    memcpy(&g->member[0], &gm, sizeof(struct guild_member));
+
+    g->member[pos].position = g->member[0].position;
+    g->member[0].position = 0; //Position 0: guild Master.
+    safestrncpy(g->master, name, NAME_LENGTH);
+
+    ShowInfo("int_guild: Guildmaster Changed to %s (Guild %d - %s)\n", name, guild_id, g->name);
+    return mapif_guild_master_changed(g, g->member[0].account_id, 0);
+}
+
 // map server からの通信
 // ・１パケットのみ解析すること
 // ・パケット長データはinter.cにセットしておくこと
@@ -1843,6 +1884,11 @@ int inter_guild_parse_frommap (int fd)
                                         (struct guild_member *) RFIFOP (fd,
                                                                         8));
             break;
+        case 0x3033:
+            mapif_parse_GuildMasterChange(fd, RFIFOL(fd,4),
+                                          (const char*)RFIFOP(fd, 8), RFIFOW(fd,2) - 8);
+            break;
+
         case 0x3034:
             mapif_parse_GuildLeave (fd, RFIFOL (fd, 2), RFIFOL (fd, 6),
                                     RFIFOL (fd, 10), RFIFOB (fd, 14),

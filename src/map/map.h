@@ -800,7 +800,7 @@ void map_deliddb (struct block_list *bl);
 int  map_foreachiddb (int (*)(void *, void *, va_list), ...);
 void map_addnickdb (struct map_session_data *);
 int  map_scriptcont (struct map_session_data *sd, int id);  /* Continues a script either on a spell or on an NPC */
-struct map_session_data *map_nick2sd (char *);
+struct map_session_data *map_nick2sd (const char *);
 int  compare_item (struct item *a, struct item *b);
 
 struct map_session_data *map_get_first_session ();
