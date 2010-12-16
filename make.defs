@@ -7,14 +7,15 @@ endif
 #STATIC=-static
 #MAPPROFILE=-pg -fno-inline
 
-CC = gcc ${M32} ${STATIC}
 LEX=flex
 BISON=bison
 
 PLATFORM = $(shell uname)
 ifeq ($(findstring FreeBSD,$(PLATFORM)), FreeBSD)
+CC = gcc44 ${M32} ${STATIC}
 MAKE = gmake
 else
+CC = gcc-4.4 ${M32} ${STATIC}
 MAKE = make
 endif
 

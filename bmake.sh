@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 export LANG=C
-make >./make1.txt 2>./make2.txt
+OS=`uname -s`
+if [ "$OS" = "FreeBSD" ]
+then
+    MAKE=gmake
+else
+    MAKE=make
+fi
+
+$MAKE >./make1.txt 2>./make2.txt
