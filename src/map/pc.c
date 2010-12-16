@@ -2517,114 +2517,264 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
         case SP_DEX:
         case SP_LUK:
             if (sd->state.lr_flag != 2)
+            {
                 sd->parame[type - SP_STR] += val;
+                if (sd->parame[type - SP_STR] < 0)
+                    sd->parame[type - SP_STR] = 0;
+            }
             break;
         case SP_ATK1:
             if (!sd->state.lr_flag)
+            {
                 sd->watk += val;
+                if (sd->watk < 0)
+                    sd->watk = 0;
+            }
             else if (sd->state.lr_flag == 1)
+            {
                 sd->watk_ += val;
+                if (sd->watk_ < 0)
+                    sd->watk_ = 0;
+            }
             break;
         case SP_ATK2:
             if (!sd->state.lr_flag)
+            {
                 sd->watk2 += val;
+                if (sd->watk2 < 0)
+                    sd->watk2 = 0;
+            }
             else if (sd->state.lr_flag == 1)
+            {
                 sd->watk_2 += val;
+                if (sd->watk_2 < 0)
+                    sd->watk_2 = 0;
+            }
             break;
         case SP_BASE_ATK:
             if (sd->state.lr_flag != 2)
+            {
                 sd->base_atk += val;
+                if (sd->base_atk < 0)
+                    sd->base_atk = 0;
+            }
             break;
         case SP_MATK1:
             if (sd->state.lr_flag != 2)
+            {
                 sd->matk1 += val;
+                if (sd->matk1 < 0)
+                    sd->matk1 = 0;
+            }
             break;
         case SP_MATK2:
             if (sd->state.lr_flag != 2)
+            {
                 sd->matk2 += val;
+                if (sd->matk2 < 0)
+                    sd->matk2 = 0;
+            }
             break;
         case SP_MATK:
             if (sd->state.lr_flag != 2)
             {
                 sd->matk1 += val;
                 sd->matk2 += val;
+                if (sd->matk1 < 0)
+                    sd->matk1 = 0;
+                if (sd->matk2 < 0)
+                    sd->matk2 = 0;
             }
             break;
         case SP_DEF1:
             if (sd->state.lr_flag != 2)
+            {
                 sd->def += val;
+                if (sd->def < 1)
+                    sd->def = 1;
+            }
             break;
         case SP_MDEF1:
             if (sd->state.lr_flag != 2)
+            {
                 sd->mdef += val;
+                if (sd->mdef < 0)
+                    sd->mdef = 0;
+            }
             break;
         case SP_MDEF2:
             if (sd->state.lr_flag != 2)
+            {
                 sd->mdef += val;
+                if (sd->mdef < 0)
+                    sd->mdef = 0;
+            }
             break;
         case SP_HIT:
             if (sd->state.lr_flag != 2)
+            {
                 sd->hit += val;
+                if (sd->hit < 0)
+                    sd->hit = 0;
+            }
             else
+            {
                 sd->arrow_hit += val;
+                if (sd->arrow_hit < 0)
+                    sd->arrow_hit = 0;
+            }
             break;
         case SP_FLEE1:
             if (sd->state.lr_flag != 2)
+            {
                 sd->flee += val;
+                if (sd->flee < 0)
+                    sd->flee = 0;
+            }
             break;
         case SP_FLEE2:
             if (sd->state.lr_flag != 2)
+            {
                 sd->flee2 += val * 10;
+                if (sd->flee2 < 0)
+                    sd->flee2 = 0;
+            }
             break;
         case SP_CRITICAL:
             if (sd->state.lr_flag != 2)
+            {
                 sd->critical += val * 10;
+                if (sd->critical < 0)
+                    sd->critical = 0;
+            }
             else
+            {
                 sd->arrow_cri += val * 10;
+                if (sd->arrow_cri < 0)
+                    sd->arrow_cri = 0;
+            }
             break;
         case SP_ATKELE:
             if (!sd->state.lr_flag)
+            {
                 sd->atk_ele = val;
+                if (sd->atk_ele < 0)
+                    sd->atk_ele = 0;
+            }
             else if (sd->state.lr_flag == 1)
+            {
                 sd->atk_ele_ = val;
+                if (sd->atk_ele_ < 0)
+                    sd->atk_ele_ = 0;
+            }
             else if (sd->state.lr_flag == 2)
+            {
                 sd->arrow_ele = val;
+                if (sd->arrow_ele < 0)
+                    sd->arrow_ele = 0;
+            }
             break;
         case SP_DEFELE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->def_ele = val;
+                if (sd->def_ele < 0)
+                    sd->def_ele = 0;
+            }
             break;
         case SP_MAXHP:
             if (sd->state.lr_flag != 2)
+            {
                 sd->status.max_hp += val;
+                if (sd->status.max_hp < 1)
+                    sd->status.max_hp = 1;
+            }
             break;
         case SP_MAXSP:
             if (sd->state.lr_flag != 2)
+            {
                 sd->status.max_sp += val;
+                if (sd->status.max_sp < 1)
+                    sd->status.max_sp = 1;
+            }
             break;
         case SP_CASTRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->castrate += val;
+                if (sd->castrate < 1)
+                    sd->castrate = 1;
+            }
             break;
         case SP_MAXHPRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->hprate += val;
+                if (sd->hprate < 1)
+                    sd->hprate = 1;
+            }
             break;
         case SP_MAXSPRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->sprate += val;
+                if (sd->sprate < 1)
+                    sd->sprate = 1;
+            }
             break;
         case SP_SPRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->dsprate += val;
+                if (sd->dsprate < 1)
+                    sd->dsprate = 1;
+            }
             break;
         case SP_ATTACKRANGE:
             if (!sd->state.lr_flag)
+            {
                 sd->attackrange += val;
+                if (sd->attackrange < 1)
+                    sd->attackrange = 1;
+            }
             else if (sd->state.lr_flag == 1)
+            {
                 sd->attackrange_ += val;
+                if (sd->attackrange_ < 1)
+                    sd->attackrange_ = 1;
+            }
             else if (sd->state.lr_flag == 2)
+            {
                 sd->arrow_range += val;
+                if (sd->arrow_range < 1)
+                    sd->arrow_range = 1;
+            }
+            break;
+        case SP_ADDATTACKRANGE:
+            if (!sd->state.lr_flag)
+            {
+                if (sd->attackrange == 0)
+                    sd->attackrange = 1;
+                sd->attackrange += val;
+                if (sd->attackrange < 1)
+                    sd->attackrange = 1;
+            }
+            else if (sd->state.lr_flag == 1)
+            {
+                if (sd->attackrange_ == 0)
+                    sd->attackrange_ = 1;
+                sd->attackrange_ += val;
+                if (sd->attackrange_ < 1)
+                    sd->attackrange_ = 1;
+            }
+            else if (sd->state.lr_flag == 2)
+            {
+                if (sd->arrow_range == 0)
+                    sd->arrow_range = 1;
+                sd->arrow_range = +val;
+                if (sd->arrow_range < 1)
+                    sd->arrow_range = 1;
+            }
             break;
         case SP_ADD_SPEED:
             if (sd->state.lr_flag != 2)
@@ -2633,60 +2783,119 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
         case SP_SPEED_RATE:
             if (sd->state.lr_flag != 2)
             {
-                if (sd->speed_rate > 100 - val)
-                    sd->speed_rate = 100 - val;
+                if (val < 100)
+                {
+                    if (sd->speed_rate > 100 - val)
+                        sd->speed_rate = 100 - val;
+                }
+                else
+                {
+                    sd->speed_rate = 1;
+                }
             }
             break;
         case SP_SPEED_ADDRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->speed_add_rate = sd->speed_add_rate * (100 - val) / 100;
+//                if (sd->speed_add_rate < 0)
+//                    sd->speed_add_rate = 0;
+            }
             break;
         case SP_ASPD:
             if (sd->state.lr_flag != 2)
-                sd->aspd -= val * 10;
+            {
+                if (sd->aspd >= val * 10)
+                    sd->aspd -= val * 10;
+                else
+                    sd->aspd = 1;
+            }
             break;
         case SP_ASPD_RATE:
             if (sd->state.lr_flag != 2)
             {
-                if (sd->aspd_rate > 100 - val)
-                    sd->aspd_rate = 100 - val;
+                if (val < 100)
+                {
+                    if (sd->aspd_rate > 100 - val)
+                        sd->aspd_rate = 100 - val;
+                }
+                else
+                {
+                    sd->aspd_rate = 1;
+                }
             }
             break;
         case SP_ASPD_ADDRATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->aspd_add_rate = sd->aspd_add_rate * (100 - val) / 100;
+//                if (sd->aspd_add_rate < 0)
+//                    sd->aspd_add_rate = 1;
+            }
             break;
         case SP_HP_RECOV_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->hprecov_rate += val;
+                if (sd->hprecov_rate < 0)
+                    sd->hprecov_rate = 0;
+            }
             break;
         case SP_SP_RECOV_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->sprecov_rate += val;
+                if (sd->sprecov_rate < 0)
+                    sd->sprecov_rate = 0;
+            }
             break;
         case SP_CRITICAL_DEF:
             if (sd->state.lr_flag != 2)
+            {
                 sd->critical_def += val;
+                if (sd->critical_def < 0)
+                    sd->critical_def = 0;
+            }
             break;
         case SP_NEAR_ATK_DEF:
             if (sd->state.lr_flag != 2)
+            {
                 sd->near_attack_def_rate += val;
+                if (sd->near_attack_def_rate < 0)
+                    sd->near_attack_def_rate = 0;
+            }
             break;
         case SP_LONG_ATK_DEF:
             if (sd->state.lr_flag != 2)
+            {
                 sd->long_attack_def_rate += val;
+                if (sd->long_attack_def_rate < 0)
+                    sd->long_attack_def_rate = 0;
+            }
             break;
         case SP_DOUBLE_RATE:
             if (sd->state.lr_flag == 0 && sd->double_rate < val)
+            {
                 sd->double_rate = val;
+                if (sd->double_rate < 0)
+                    sd->double_rate = 0;
+            }
             break;
         case SP_DOUBLE_ADD_RATE:
             if (sd->state.lr_flag == 0)
+            {
                 sd->double_add_rate += val;
+//                if (sd->double_add_rate < 0)
+//                    sd->double_add_rate = 0;
+            }
             break;
         case SP_MATK_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->matk_rate += val;
+                if (sd->matk_rate < 0)
+                    sd->matk_rate = 0;
+            }
             break;
         case SP_IGNORE_DEF_ELE:
             if (!sd->state.lr_flag)
@@ -2702,15 +2911,27 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             break;
         case SP_ATK_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->atk_rate += val;
+                if (sd->atk_rate < 0)
+                    sd->atk_rate = 0;
+            }
             break;
         case SP_MAGIC_ATK_DEF:
             if (sd->state.lr_flag != 2)
+            {
                 sd->magic_def_rate += val;
+                if (sd->magic_def_rate < 0)
+                    sd->magic_def_rate = 0;
+            }
             break;
         case SP_MISC_ATK_DEF:
             if (sd->state.lr_flag != 2)
+            {
                 sd->misc_def_rate += val;
+                if (sd->misc_def_rate < 0)
+                    sd->misc_def_rate = 0;
+            }
             break;
         case SP_IGNORE_MDEF_ELE:
             if (sd->state.lr_flag != 2)
@@ -2722,23 +2943,43 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             break;
         case SP_PERFECT_HIT_RATE:
             if (sd->state.lr_flag != 2 && sd->perfect_hit < val)
+            {
                 sd->perfect_hit = val;
+                if (sd->perfect_hit < 0)
+                    sd->perfect_hit = 0;
+            }
             break;
         case SP_PERFECT_HIT_ADD_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->perfect_hit_add += val;
+//                if (sd->perfect_hit_add < 0)
+//                    sd->perfect_hit_add = 0;
+            }
             break;
         case SP_CRITICAL_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->critical_rate += val;
+                if (sd->critical_rate < 0)
+                    sd->critical_rate = 0;
+            }
             break;
         case SP_GET_ZENY_NUM:
             if (sd->state.lr_flag != 2 && sd->get_zeny_num < val)
+            {
                 sd->get_zeny_num = val;
+                if (sd->get_zeny_num < 0)
+                    sd->get_zeny_num = 0;
+            }
             break;
         case SP_ADD_GET_ZENY_NUM:
             if (sd->state.lr_flag != 2)
+            {
                 sd->get_zeny_add_num += val;
+//                if (sd->get_zeny_add_num < 0)
+//                    sd->get_zeny_add_num = 0;
+            }
             break;
         case SP_DEF_RATIO_ATK_ELE:
             if (!sd->state.lr_flag)
@@ -2754,31 +2995,59 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             break;
         case SP_HIT_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->hit_rate += val;
+                if (sd->hit_rate < 0)
+                    sd->hit_rate = 0;
+            }
             break;
         case SP_FLEE_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->flee_rate += val;
+                if (sd->flee_rate < 0)
+                    sd->flee_rate = 0;
+            }
             break;
         case SP_FLEE2_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->flee2_rate += val;
+                if (sd->flee2_rate < 0)
+                    sd->flee2_rate = 0;
+            }
             break;
         case SP_DEF_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->def_rate += val;
+                if (sd->def_rate < 0)
+                    sd->def_rate = 0;
+            }
             break;
         case SP_DEF2_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->def2_rate += val;
+                if (sd->def2_rate < 0)
+                    sd->def2_rate = 0;
+            }
             break;
         case SP_MDEF_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->mdef_rate += val;
+                if (sd->mdef_rate < 0)
+                    sd->mdef_rate = 0;
+            }
             break;
         case SP_MDEF2_RATE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->mdef2_rate += val;
+                if (sd->mdef2_rate < 0)
+                    sd->mdef2_rate = 0;
+            }
             break;
         case SP_RESTART_FULL_RECORVER:
             if (sd->state.lr_flag != 2)
@@ -2814,33 +3083,65 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             break;
         case SP_SPLASH_RANGE:
             if (sd->state.lr_flag != 2 && sd->splash_range < val)
+            {
                 sd->splash_range = val;
+                if (sd->splash_range < 0)
+                    sd->splash_range = 0;
+            }
             break;
         case SP_SPLASH_ADD_RANGE:
             if (sd->state.lr_flag != 2)
+            {
                 sd->splash_add_range += val;
+//                if (sd->splash_add_range < 0)
+//                    sd->splash_add_range = 0;
+            }
             break;
         case SP_SHORT_WEAPON_DAMAGE_RETURN:
             if (sd->state.lr_flag != 2)
+            {
                 sd->short_weapon_damage_return += val;
+                if (sd->short_weapon_damage_return < 0)
+                    sd->short_weapon_damage_return = 0;
+            }
             break;
         case SP_LONG_WEAPON_DAMAGE_RETURN:
             if (sd->state.lr_flag != 2)
+            {
                 sd->long_weapon_damage_return += val;
+                if (sd->long_weapon_damage_return < 0)
+                    sd->long_weapon_damage_return = 0;
+            }
             break;
         case SP_MAGIC_DAMAGE_RETURN:   //AppleGirl Was Here
             if (sd->state.lr_flag != 2)
+            {
                 sd->magic_damage_return += val;
+                if (sd->magic_damage_return < 0)
+                    sd->magic_damage_return = 0;
+            }
             break;
         case SP_ALL_STATS:     // [Valaris]
             if (sd->state.lr_flag != 2)
             {
                 sd->parame[SP_STR - SP_STR] += val;
+                if (sd->parame[SP_STR - SP_STR] < 1)
+                    sd->parame[SP_STR - SP_STR] = 1;
                 sd->parame[SP_AGI - SP_STR] += val;
+                if (sd->parame[SP_AGI - SP_STR] < 1)
+                    sd->parame[SP_AGI - SP_STR] = 1;
                 sd->parame[SP_VIT - SP_STR] += val;
+                if (sd->parame[SP_VIT - SP_STR] < 1)
+                    sd->parame[SP_VIT - SP_STR] = 1;
                 sd->parame[SP_INT - SP_STR] += val;
+                if (sd->parame[SP_INT - SP_STR] < 1)
+                    sd->parame[SP_INT - SP_STR] = 1;
                 sd->parame[SP_DEX - SP_STR] += val;
+                if (sd->parame[SP_DEX - SP_STR] < 1)
+                    sd->parame[SP_DEX - SP_STR] = 1;
                 sd->parame[SP_LUK - SP_STR] += val;
+                if (sd->parame[SP_LUK - SP_STR] < 1)
+                    sd->parame[SP_LUK - SP_STR] = 1;
                 clif_updatestatus (sd, 13);
                 clif_updatestatus (sd, 14);
                 clif_updatestatus (sd, 15);
@@ -2853,7 +3154,11 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             if (sd->state.lr_flag != 2)
             {
                 sd->parame[SP_AGI - SP_STR] += val;
+                if (sd->parame[SP_AGI - SP_STR] < 1)
+                    sd->parame[SP_AGI - SP_STR] = 1;
                 sd->parame[SP_VIT - SP_STR] += val;
+                if (sd->parame[SP_VIT - SP_STR] < 1)
+                    sd->parame[SP_VIT - SP_STR] = 1;
                 clif_updatestatus (sd, 14);
                 clif_updatestatus (sd, 15);
             }
@@ -2862,8 +3167,14 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             if (sd->state.lr_flag != 2)
             {
                 sd->parame[SP_AGI - SP_STR] += val;
+                if (sd->parame[SP_AGI - SP_STR] < 1)
+                    sd->parame[SP_AGI - SP_STR] = 1;
                 sd->parame[SP_DEX - SP_STR] += val;
+                if (sd->parame[SP_DEX - SP_STR] < 1)
+                    sd->parame[SP_DEX - SP_STR] = 1;
                 sd->parame[SP_STR - SP_STR] += val;
+                if (sd->parame[SP_STR - SP_STR] < 1)
+                    sd->parame[SP_STR - SP_STR] = 1;
                 clif_updatestatus (sd, 14);
                 clif_updatestatus (sd, 17);
                 clif_updatestatus (sd, 13);
@@ -2893,6 +3204,8 @@ int pc_bonus (struct map_session_data *sd, int type, int val)
             if (sd->state.lr_flag != 2)
             {
                 sd->unbreakable += val;
+                if (sd->unbreakable < 0)
+                    sd->unbreakable = 0;
             }
             break;
         case SP_DEAF:
