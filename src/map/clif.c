@@ -1121,6 +1121,9 @@ static int clif_mob0078 (struct mob_data *md, unsigned char *buf)
         }
     }                           // End addition
 
+    WBUFL (buf, 32) = md->hp;
+    WBUFL (buf, 36) = mob_db[md->class].max_hp;
+
     WBUFPOS (buf, 46, md->bl.x, md->bl.y);
     WBUFB (buf, 48) |= md->dir & 0x0f;
     WBUFB (buf, 49) = 5;
@@ -1186,6 +1189,10 @@ static int clif_mob007b (struct mob_data *md, unsigned char *buf)
             }
         }
     }                           // End addition
+
+
+    WBUFL (buf, 36) = md->hp;
+    WBUFL (buf, 40) = mob_db[md->class].max_hp;
 
     WBUFPOS2 (buf, 50, md->bl.x, md->bl.y, md->to_x, md->to_y);
     WBUFB (buf, 56) = 5;
