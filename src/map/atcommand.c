@@ -2781,9 +2781,9 @@ atcommand_chardye (const int fd __attribute__ ((unused)), struct map_session_dat
  *------------------------------------------
  */
 int atcommand_hair_style (const int fd __attribute__ ((unused)),
-                          struct map_session_data *sd __attribute__ ((unused)),
+                          struct map_session_data *sd,
                           const char *command __attribute__ ((unused)),
-                          const char *message __attribute__ ((unused)))
+                          const char *message)
 {
     int  hair_style = 0;
     char output[200];
