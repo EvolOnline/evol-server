@@ -505,6 +505,7 @@ struct mob_data
     int  timer;
     short to_x, to_y;
     int  hp;
+    int  max_hp;
     int  target_id, attacked_id;
     short target_lv;
     struct walkpath_data walkpath;

@@ -1395,6 +1395,7 @@ int mob_spawn (int id)
         mob_makedummymobdb (md->class);
         md->hp = battle_get_max_hp (&md->bl);
     }
+    md->max_hp = md->hp;
 
     clif_spawnmob (md);
 
