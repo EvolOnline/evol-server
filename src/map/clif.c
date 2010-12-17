@@ -2684,8 +2684,7 @@ int clif_changelook_towards (struct block_list *bl, int type, int val,
             int  equip_point = equip_points[type];
 
             WBUFB (buf, 6) = type;
-            if (sd->equip_index[equip_point] >= 0 && sd->equip_index[2] < MAX_INVENTORY
-                && sd->inventory_data[sd->equip_index[2]])
+            if (sd->equip_index[equip_point] >= 0)
             {
                 if (sd->
                     inventory_data[sd->equip_index[equip_point]]->view_id > 0)
