@@ -7815,6 +7815,9 @@ pc_signal_advanced_equipment_change (struct map_session_data *sd, int n)
 {
     nullpo_retr (0, sd);
 
+    if (n < 0 || n >= MAX_INVENTORY)
+        return 0;
+
     if (sd->status.inventory[n].equip & 0x0040)
         clif_changelook (&sd->bl, LOOK_SHOES, 0);
     if (sd->status.inventory[n].equip & 0x0004)
