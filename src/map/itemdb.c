@@ -399,7 +399,7 @@ static int itemdb_readdb (void)
             id->slot = atoi (str[11]);
             id->sex = atoi (str[12]);
 
-            if (id->type != 0 && id->type != 3 && !strlen(str[13]))
+            if (id->type != 0 && id->type != 2 && id->type != 3 && !strlen(str[13]))
                 printf("item Loc error. Id %d\n", nameid);
 
             id->equip = atoi (str[13]);
