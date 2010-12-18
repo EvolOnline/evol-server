@@ -4113,8 +4113,11 @@ int pc_useitem (struct map_session_data *sd, int n)
 
         run_script (sd->inventory_data[n]->use_script, 0, sd->bl.id, 0);
 
-        clif_useitemack (sd, n, amount - 1, 1);
-        pc_delitem (sd, n, 1, 1);
+        if (itemdb_type (sd->status.inventory[n].nameid) != 2)
+        {
+            clif_useitemack (sd, n, amount - 1, 1);
+            pc_delitem (sd, n, 1, 1);
+        }
     }
 
     return 0;
