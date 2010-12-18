@@ -771,7 +771,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
 
     xs = nd->u.scr.xs;
     ys = nd->u.scr.ys;
-    if (xs >= 0 && ys >= 0)
+    if (mob_kill < 2 && xs >= 0 && ys >= 0)
     {
         if (nd->bl.m != sd->bl.m)
             return 1;
