@@ -217,6 +217,7 @@ int  buildin_getarg (struct script_state *st);
 int  buildin_next (struct script_state *st);
 int  buildin_close (struct script_state *st);
 int  buildin_close2 (struct script_state *st);
+int  buildin_close3 (struct script_state *st);
 int  buildin_menu (struct script_state *st);
 int  buildin_rand (struct script_state *st);
 int  buildin_pow (struct script_state *st);
@@ -422,6 +423,8 @@ int  buildin_fakenpcname (struct script_state *st); //[Kage]
 int  buildin_unequip_by_id (struct script_state *st);   // [Freeyorp]
 int  buildin_setcollision (struct script_state *st); // [4144]
 int  buildin_spell (struct script_state *st); // [4144]
+int  buildin_npcclick (struct script_state *st); // [4144]
+int  buildin_npcattach (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -444,6 +447,8 @@ struct
     buildin_close, "close", ""},
     {
     buildin_close2, "close2", ""},
+    {
+    buildin_close2, "close3", ""},
     {
     buildin_menu, "menu", "*"},
     {
@@ -863,6 +868,10 @@ struct
     buildin_setcollision, "setcollision", "siiiii"}, // [4144]
     {
     buildin_spell, "spell", "ss"}, // [4144]
+    {
+    buildin_npcclick, "npcclick", "s"}, // [4144]
+    {
+    buildin_npcattach, "npcattach", "s"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -2282,6 +2291,12 @@ BUILDIN_FUNC(close2)
 {
     st->state = STOP;
     clif_scriptclose (script_rid2sd (st), st->oid);
+    return 0;
+}
+
+BUILDIN_FUNC(close3)
+{
+    st->state = STOP;
     return 0;
 }
 
@@ -4876,7 +4891,7 @@ BUILDIN_FUNC(doevent)
 {
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
-    npc_event (map_id2sd (st->rid), event, 0);
+    npc_event (map_id2sd (st->rid), event, 2);
     return 0;
 }
 
@@ -8071,6 +8086,42 @@ BUILDIN_FUNC(spell)
 
     magic_message (sd, spell, strlen(spell), 0);
     free (spell);
+    return 0;
+}
+
+BUILDIN_FUNC(npcclick)
+{
+    struct map_session_data *sd;
+    sd = script_rid2sd (st);
+    struct npc_data *npc = npc_name2id(script_getstr(st, 2));
+
+    if (!npc || !sd)
+    {
+        script_pushint(st, 0);
+        return 1;
+    }
+    npc_click (sd, npc->bl.id, 1);
+
+    script_pushint(st, npc->bl.id);
+    return 0;
+}
+
+BUILDIN_FUNC(npcattach)
+{
+    struct map_session_data *sd;
+    sd = script_rid2sd (st);
+    struct npc_data *nd = npc_name2id(script_getstr(st, 2));
+
+    if (!nd || !sd)
+    {
+        script_pushint(st, 0);
+        return 1;
+    }
+    sd->npc_id = nd->bl.id;
+    sd->npc_pos = run_script (nd->u.scr.script, 0, sd->bl.id, nd->bl.id);
+    sd->npc_isservice = 1;
+
+    script_pushint(st, nd->bl.id);
     return 0;
 }
 

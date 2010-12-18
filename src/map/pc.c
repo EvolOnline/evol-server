@@ -5395,7 +5395,7 @@ int pc_attack (struct map_session_data *sd, int target_id, int type)
 
     if (bl->type == BL_NPC)
     {                           // monster npcs [Valaris]
-        npc_click (sd, RFIFOL (sd->fd, 2));
+        npc_click (sd, RFIFOL (sd->fd, 2), 0);
         return 0;
     }
 

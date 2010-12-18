@@ -7971,7 +7971,7 @@ void clif_parse_NpcClicked (int fd, struct map_session_data *sd)
     }
     if (sd->npc_id != 0)
         return;
-    npc_click (sd, RFIFOL (fd, 2));
+    npc_click (sd, RFIFOL (fd, 2), 0);
 }
 
 /*==========================================

@@ -749,7 +749,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
 
     if (ev == NULL || (nd = ev->nd) == NULL)
     {
-        if (mob_kill && (ev == NULL || (nd = ev->nd) == NULL))
+        if (mob_kill == 1 && (ev == NULL || (nd = ev->nd) == NULL))
         {
             strcpy (mobevent, eventname);
             strcat (mobevent, "::OnMyMobDead");
@@ -771,7 +771,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
 
     xs = nd->u.scr.xs;
     ys = nd->u.scr.ys;
-    if (mob_kill < 2 && xs >= 0 && ys >= 0)
+    if (mob_kill != 2 && xs >= 0 && ys >= 0)
     {
         if (nd->bl.m != sd->bl.m)
             return 1;
@@ -814,6 +814,11 @@ int npc_event (struct map_session_data *sd, const char *eventname,
     sd->npc_id = nd->bl.id;
     sd->npc_pos =
         run_script (nd->u.scr.script, ev->pos, sd->bl.id, nd->bl.id);
+    if (mob_kill == 2)
+        sd->npc_isservice = 1;
+    else
+        sd->npc_isservice = 0;
+
     return 0;
 }
 
@@ -925,7 +930,7 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
                 return 1;
             sd->areanpc_id = map[m].npc[i]->bl.id;
             if (npc_event (sd, strcat (name, "::OnTouch"), 0) > 0)
-                npc_click (sd, map[m].npc[i]->bl.id);
+                npc_click (sd, map[m].npc[i]->bl.id, 0);
             free (name);
             break;
         }
@@ -953,7 +958,10 @@ int npc_checknear (struct map_session_data *sd, int id)
         return 1;
     }
 
-    if (nd->class < 0)          // �C�x���g�n�͏���OK
+    if (nd->class < 0)
+        return 0;
+
+    if (sd->npc_isservice)
         return 0;
 
     // �G���A����
@@ -971,7 +979,7 @@ int npc_checknear (struct map_session_data *sd, int id)
  * �N���b�N����NPC����
  *------------------------------------------
  */
-int npc_click (struct map_session_data *sd, int id)
+int npc_click (struct map_session_data *sd, int id, int dontCheck)
 {
     struct npc_data *nd;
 
@@ -984,18 +992,25 @@ int npc_click (struct map_session_data *sd, int id)
         return 1;
     }
 
-    if (npc_checknear (sd, id)) {
+    sd->npc_isservice = dontCheck;
+    if (npc_checknear (sd, id))
+    {
         clif_scriptclose (sd, id);
+        sd->npc_isservice = 0;
         return 1;
     }
 
     nd = (struct npc_data *) map_id2bl (id);
     nullpo_retr (1, nd);
 
-    if (nd->flag & 1)           // �����������Ă���
+    if (nd->flag & 1)
+    {
+        sd->npc_isservice = 0;
         return 1;
+    }
 
     sd->npc_id = id;
+
     switch (nd->bl.subtype)
     {
         case SHOP:
@@ -1072,6 +1087,7 @@ int npc_buysellsel (struct map_session_data *sd, int id, int type)
         if (battle_config.error_log)
             printf ("no such shop npc : %d\n", id);
         sd->npc_id = 0;
+        sd->npc_isservice = 0;
         return 1;
     }
     if (nd->flag & 1)           // �����������Ă���
