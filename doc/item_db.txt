@@ -1,0 +1,96 @@
+ID: Item id
+
+Name: Name in english for displaying as output for @ and script commands.
+
+Label: Name with spaces
+
+Type: 
+    0   Usable item (after using removed).
+    2   Usable item.
+    3   ?
+    4   Weapon
+    5   Armor/Garment/Boots/Headgear
+    6   Card
+    7   Not used
+    8   Not used
+    10  Ammo (Arrows/Bullets/etc)
+
+Price: Default buying price. When not specified, becomes double the sell price.
+
+Sell: Default selling price. When not specified, becomes half the buy price.
+
+Weight: Item's weight. Each 10 is 1 weight.
+
+ATK: Weapon's attack
+
+DEF: Armor's defense
+
+Range: Weapon's attack range
+
+Mbonus: Magic bonus
+
+Slots: Amount of slots the item possesses.
+
+Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
+
+Loc: Equipment's placement. Values are:
+
+    2^8 256 = Upper Headgear
+    2^9 512 = Middle Headgear
+    2^0 001 = Lower Headgear
+    2^4 016 = Armor
+    2^1 002 = Weapon
+    2^5 032 = Shield
+    2^2 004 = Garment
+    2^6 064 = Footgear
+    2^3 008 = Accessory 1
+    2^7 128 = Accessory 2
+
+wLV: Weapon level.
+
+eLV: Base level required to be able to equip.
+
+View: (May be not all this implemented)
+      For normal items, defines a replacement view-sprite for the item (eg:
+      Making apples look like apple juice). The special case are weapons
+      and ammo where this value indicates the weapon-class of the item.
+
+    For weapons, the types are:
+        0: bare fist
+        1: Daggers
+        2: One-handed swords
+        3: Two-handed swords
+        4: One-handed spears
+        5: Two-handed spears
+        6: One-handed axes
+        7: Two-handed axes
+        8: Maces
+        9: Unused
+        10: Staves
+        11: Bows
+        12: Knuckles
+        13: Musical Instruments
+        14: Whips
+        15: Books
+        16: Katars
+        17: Revolvers
+        18: Rifles
+        19: Shotguns
+        20: Gatling guns
+        21: Grenade launchers
+        22: Fuuma Shurikens
+
+    For ammo, the types are:
+        1: Arrows
+        2: Throwable daggers
+        3: Bullets
+        4: Shells
+        5: Grenades
+        6: Shuriken
+        7: Kunai
+
+UseScript: Script to execute when the item is used.
+
+EquipScript: Script to execute when the item is equipped.
+
+UnEquipScript: Script to execute when the item is unequipped.
