@@ -4066,7 +4066,7 @@ int pc_isUseitem (struct map_session_data *sd, int n)
 
     if (item == NULL)
         return 0;
-    if (itemdb_type (nameid) != 0)
+    if (itemdb_type (nameid) != 0 && itemdb_type (nameid) != 2)
         return 0;
 /*
     if ((nameid == 605) && map[sd->bl.m].flag.gvg)
