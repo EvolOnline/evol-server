@@ -1043,6 +1043,23 @@ static int op_resurrect (env_t * env __attribute__ ((unused)), int args_nr __att
     return 0;
 }
 
+static int op_runscript (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * args)
+{
+    if (!args)
+        return 1;
+
+    character_t *sd = ARGCHAR (0);
+
+    if (!sd)
+        return 1;
+
+    char *script = parse_script(ARGSTR (1), 1);
+    run_script (script, 0, sd->bl.id, 0);
+    free (script);
+
+    return 0;
+}
+
 static op_t operations[] = {
     {"sfx", ".ii", op_sfx},
     {"instaheal", "eii", op_instaheal},
@@ -1069,6 +1086,7 @@ static op_t operations[] = {
     {"drop_item_for", "l.iiei", op_drop_item_for},
     {"gain_experience", "eiii", op_gain_exp},
     {"resurrect", "eiii", op_resurrect},
+    {"runscript", "es", op_runscript},
     {NULL, NULL, NULL}
 };
 

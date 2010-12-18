@@ -22,7 +22,7 @@ struct invocation;              /* Spell invocation */
  * \return 1 or -1 if the input message was magic and was handled by this function, 0 otherwise.  -1 is returned when the
  *         message should not be repeated.
  */
-int  magic_message (character_t * caster, char *spell, size_t spell_len);
+int  magic_message (character_t * caster, char *spell, size_t spell_len, int isChat);
 
 /**
  * Removes the shroud from a character

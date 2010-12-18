@@ -421,6 +421,7 @@ int  buildin_isdead (struct script_state *st);  // [Jaxad0127]
 int  buildin_fakenpcname (struct script_state *st); //[Kage]
 int  buildin_unequip_by_id (struct script_state *st);   // [Freeyorp]
 int  buildin_setcollision (struct script_state *st); // [4144]
+int  buildin_spell (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -860,6 +861,8 @@ struct
     buildin_unequip_by_id, "unequipbyid", "i"}, // [Freeyorp]
     {
     buildin_setcollision, "setcollision", "siiiii"}, // [4144]
+    {
+    buildin_spell, "spell", "ss"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8018,8 +8021,6 @@ BUILDIN_FUNC(fakenpcname)
 
 BUILDIN_FUNC(setcollision)
 {
-    struct map_session_data *sd;
-    sd = script_rid2sd (st);
     const char *map;
     int x1, y1, x2, y2, m, type;
 
@@ -8035,6 +8036,41 @@ BUILDIN_FUNC(setcollision)
     type = script_getnum(st, 7);
 
     map_setcells(m, x1, y1, x2, y2, type);
+    return 0;
+}
+
+BUILDIN_FUNC(spell)
+{
+    struct map_session_data *sd;
+    char *message;
+    char *spell;
+    char *nick;
+
+    if (!script_hasdata(st, 2))
+        return 0;
+
+    if (script_hasdata(st, 3))
+    {
+        nick = script_getstr(st, 2);
+        sd = map_nick2sd(nick);
+        message = script_getstr(st, 3);
+    }
+    else
+    {
+        nick = sd->status.name;
+        sd = script_rid2sd (st);
+        message = script_getstr(st, 2);
+    }
+    if (!sd)
+        return 0;
+
+    spell = aCalloc (strlen(nick) + strlen(message) + 10, 1);
+    strcpy (spell, nick);
+    strcat (spell, " : ");
+    strcat (spell, message);
+
+    magic_message (sd, spell, strlen(spell), 0);
+    free (spell);
     return 0;
 }
 

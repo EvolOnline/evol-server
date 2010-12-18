@@ -7409,7 +7409,7 @@ void clif_parse_GlobalMessage (int fd, struct map_session_data *sd)
         return;
     }
 
-    if (!magic_message (sd, buf, msg_len))
+    if (!magic_message (sd, buf, msg_len, 1))
     {
         /* Don't send chat that results in an automatic ban. */
         if (tmw_CheckChatSpam (sd, message))

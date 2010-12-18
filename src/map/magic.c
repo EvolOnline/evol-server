@@ -64,7 +64,7 @@ static char *magic_tokenise (char *src, char **parameter)
 }
 
 int magic_message (character_t * caster, char *spell_,
-                   size_t spell_len  __attribute__ ((unused)))
+                   size_t spell_len  __attribute__ ((unused)), int isChat)
 {
     if (!caster || !spell_)
         return 0;
@@ -73,7 +73,12 @@ int magic_message (character_t * caster, char *spell_,
         return 0;
 
     int  power = caster->matk1;
-    char *invocation_base = spell_ + 8;
+    char *invocation_base;
+    if (isChat)
+        invocation_base = spell_ + 8;
+    else
+        invocation_base = spell_;
+
     char *source_invocation =
         1 + invocation_base + strlen (caster->status.name);
     spell_t *spell;
