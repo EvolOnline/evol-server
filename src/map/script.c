@@ -426,6 +426,7 @@ int  buildin_spell (struct script_state *st); // [4144]
 int  buildin_npcclick (struct script_state *st); // [4144]
 int  buildin_npcattach (struct script_state *st); // [4144]
 int  buildin_dispbottom (struct script_state *st); //added from jA [Lupus]
+int  buildin_recovery (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -875,6 +876,8 @@ struct
     buildin_npcattach, "npcattach", "s"}, // [4144]
     {
     buildin_dispbottom, "dispbottom", "s"}, //added from jA [Lupus]
+    {
+    buildin_recovery, "recovery", "*"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8143,6 +8146,35 @@ BUILDIN_FUNC(dispbottom)
         return 0;
 
     clif_displaymessage(sd->fd, message);
+    return 0;
+}
+
+BUILDIN_FUNC(recovery)
+{
+    TBL_PC *sd;
+
+    if (!script_hasdata(st, 2))
+        sd = script_rid2sd(st);
+    else
+        sd = map_nick2sd (script_getstr(st, 2));
+    if (!sd)
+        return 0;
+
+    if (pc_isdead(sd))
+    {
+        sd->status.hp = sd->status.max_hp;
+        sd->status.sp = sd->status.max_sp;
+        pc_setstand (sd);
+        if (battle_config.pc_invincible_time > 0)
+            pc_setinvincibletimer (sd, battle_config.pc_invincible_time);
+        clif_updatestatus (sd, SP_HP);
+        clif_updatestatus (sd, SP_SP);
+        clif_resurrection (&sd->bl, 1);
+    }
+    else
+    {
+        pc_heal (sd, sd->status.max_hp - sd->status.hp, sd->status.max_sp - sd->status.sp);
+    }
     return 0;
 }
 
