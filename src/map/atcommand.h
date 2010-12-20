@@ -189,6 +189,7 @@ enum AtCommandType
     AtCommand_Checkmobstatus, // [var]
     AtCommand_SetMapFlag, // [var]
     AtCommand_WarpMob, // [var]
+    AtCommand_RunScript, // [4144]
     // end
     AtCommand_Unknown,
     AtCommand_MAX
