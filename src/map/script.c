@@ -4895,6 +4895,10 @@ BUILDIN_FUNC(killmonsterall)
  */
 BUILDIN_FUNC(doevent)
 {
+    struct map_session_data *sd = script_rid2sd (st);
+    if (!sd || sd->npc_id != 0)
+        return 0;
+
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     npc_event (map_id2sd (st->rid), event, 2);
@@ -4907,6 +4911,10 @@ BUILDIN_FUNC(doevent)
  */
 BUILDIN_FUNC(donpcevent)
 {
+    struct map_session_data *sd = script_rid2sd (st);
+    if (!sd || sd->npc_id != 0)
+        return 0;
+
     char *event;
     event = conv_str (st, &(st->stack->stack_data[st->start + 2]));
     npc_event_do (event);
@@ -8101,7 +8109,7 @@ BUILDIN_FUNC(npcclick)
     sd = script_rid2sd (st);
     struct npc_data *npc = npc_name2id(script_getstr(st, 2));
 
-    if (!npc || !sd)
+    if (!npc || !sd || sd->npc_id != 0)
     {
         script_pushint(st, 0);
         return 1;
@@ -8118,7 +8126,7 @@ BUILDIN_FUNC(npcattach)
     sd = script_rid2sd (st);
     struct npc_data *nd = npc_name2id(script_getstr(st, 2));
 
-    if (!nd || !sd)
+    if (!nd || !sd || sd->npc_id != 0)
     {
         script_pushint(st, 0);
         return 1;
