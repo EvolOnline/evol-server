@@ -425,6 +425,7 @@ int  buildin_setcollision (struct script_state *st); // [4144]
 int  buildin_spell (struct script_state *st); // [4144]
 int  buildin_npcclick (struct script_state *st); // [4144]
 int  buildin_npcattach (struct script_state *st); // [4144]
+int  buildin_dispbottom (struct script_state *st); //added from jA [Lupus]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -872,6 +873,8 @@ struct
     buildin_npcclick, "npcclick", "s"}, // [4144]
     {
     buildin_npcattach, "npcattach", "s"}, // [4144]
+    {
+    buildin_dispbottom, "dispbottom", "s"}, //added from jA [Lupus]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8122,6 +8125,24 @@ BUILDIN_FUNC(npcattach)
     sd->npc_isservice = 1;
 
     script_pushint(st, nd->bl.id);
+    return 0;
+}
+
+/*==========================================
+ * Displays a message for the player only (like system messages like "you got an apple" )
+ *------------------------------------------*/
+BUILDIN_FUNC(dispbottom)
+{
+    TBL_PC *sd = script_rid2sd(st);
+    const char *message;
+    if (!sd)
+        return 0;
+
+    message = script_getstr(st, 2);
+    if (!message)
+        return 0;
+
+    clif_displaymessage(sd->fd, message);
     return 0;
 }
 

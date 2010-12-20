@@ -4741,7 +4741,7 @@ int clif_status_change (struct block_list *bl, int type, int flag)
  * Send message (modified by [Yor])
  *------------------------------------------
  */
-int clif_displaymessage (const int fd, char *mes)
+int clif_displaymessage (const int fd, const char *mes)
 {
     nullpo_retr (0, mes);
 
@@ -6778,7 +6778,7 @@ void clif_sitting (int fd __attribute__ ((unused)), struct map_session_data *sd)
  *
  *------------------------------------------
  */
-int clif_disp_onlyself (struct map_session_data *sd, char *mes, int len)
+int clif_disp_onlyself (struct map_session_data *sd, const char *mes, int len)
 {
     nullpo_retr (0, sd);
     nullpo_retr (0, mes);
