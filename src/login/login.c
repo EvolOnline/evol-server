@@ -698,14 +698,14 @@ int mmo_auth_init (void)
             pass[39] = '\0';
             remove_control_chars (pass);
             // If a password is not encrypted, we encrypt it now.
-	    // A password beginning with ! and - in the memo field is our magic
-	    if (pass[0] != '!' && memo[0] == '-') {
-		strcpy(auth_dat[auth_num].pass, MD5_saltcrypt(pass, make_salt()));
-		auth_dat[auth_num].memo[0] = '!';
-		printf("encrypting pass: %s %s\n", pass, auth_dat[auth_num].pass);
-	    }
-	    else
-		strcpy(auth_dat[auth_num].pass, pass);
+            // A password beginning with ! and - in the memo field is our magic
+            if (pass[0] != '!' && memo[0] == '-') {
+                strcpy(auth_dat[auth_num].pass, MD5_saltcrypt(pass, make_salt()));
+                auth_dat[auth_num].memo[0] = '!';
+                printf("encrypting pass: %s %s\n", pass, auth_dat[auth_num].pass);
+            }
+            else
+                strcpy(auth_dat[auth_num].pass, pass);
 
             lastlogin[23] = '\0';
             remove_control_chars (lastlogin);

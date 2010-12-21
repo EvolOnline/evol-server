@@ -27,6 +27,7 @@
 
 #include <zlib.h>
 
+#include "strlib.h"
 #include "utils.h"
 #include "grfio.h"
 #include "mmo.h"
@@ -51,7 +52,7 @@ char *grfio_setdatafile (const char *str)
     if (!str)
         return 0;
 
-    strcpy (data_file, str);
+    safestrncpy (data_file, str, 1024);
     return data_file;
 }
 
@@ -60,7 +61,7 @@ char *grfio_setadatafile (const char *str)
     if (!str)
         return 0;
 
-    strcpy (adata_file, str);
+    safestrncpy (adata_file, str, 1024);
     return adata_file;
 }
 
@@ -69,7 +70,7 @@ char *grfio_setsdatafile (const char *str)
     if (!str)
         return 0;
 
-    strcpy (sdata_file, str);
+    safestrncpy (sdata_file, str, 1024);
     return sdata_file;
 }
 

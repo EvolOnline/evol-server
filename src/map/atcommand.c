@@ -14,6 +14,7 @@
 #include "timer.h"
 #include "nullpo.h"
 
+#include "strlib.h"
 #include "atcommand.h"
 #include "battle.h"
 #include "clif.h"
@@ -868,7 +869,7 @@ static int atkillmonster_sub (struct block_list *bl, va_list ap)
 int msg_config_read (const char *cfgName)
 {
     int  msg_number;
-    char line[1024], w1[1024], w2[1024];
+    char line[1023], w1[1024], w2[1024];
     FILE *fp;
 
     if (!cfgName)
@@ -1197,7 +1198,7 @@ int atcommand_where (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
 
     if (sscanf (message, "%99[^\n]", character) < 1)
-        strcpy (character, sd->status.name);
+        safestrncpy (character, sd->status.name, 100);
 
     if ((pl_sd = map_nick2sd (character)) != NULL &&
         !((battle_config.hide_GM_session

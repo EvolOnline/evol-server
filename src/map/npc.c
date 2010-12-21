@@ -536,6 +536,11 @@ int npc_do_ontimer_sub (void *key, void *data, va_list ap)
         temp[10] = 0;
         tick = atoi (temp);
 
+        if (strlen(ev->nd->name) + strlen(p) > 49)
+        {
+            printf ("npc_do_ontimer_sub overflow: %s, %s\n", ev->nd->name, p);
+            return 0;
+        }
         strcpy (event, ev->nd->name);
         strcat (event, p);
 
@@ -751,14 +756,22 @@ int npc_event (struct map_session_data *sd, const char *eventname,
     {
         if (mob_kill == 1 && (ev == NULL || (nd = ev->nd) == NULL))
         {
-            strcpy (mobevent, eventname);
-            strcat (mobevent, "::OnMyMobDead");
-            ev = strdb_search (ev_db, mobevent);
-            if (ev == NULL || (nd = ev->nd) == NULL)
+            if (strlen(eventname) + strlen("::OnMyMobDead") < 100)
             {
-                if (strncasecmp (eventname, "GM_MONSTER", 10) != 0)
-                    printf ("npc_event: event not found [%s]\n", mobevent);
-                return 0;
+                strcpy (mobevent, eventname);
+                strcat (mobevent, "::OnMyMobDead");
+                ev = strdb_search (ev_db, mobevent);
+                if (ev == NULL || (nd = ev->nd) == NULL)
+                {
+                    if (strncasecmp (eventname, "GM_MONSTER", 10) != 0)
+                        printf ("npc_event: event not found [%s]\n", mobevent);
+                    return 0;
+                }
+            }
+            else
+            {
+                printf ("npc_event overflow: %s\n", eventname);
+                return 1;
             }
         }
         else
@@ -1671,6 +1684,12 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
         srcbuf = (char *) aCalloc (srcsize, sizeof (char));
         if (strchr (first_line, '{'))
         {
+            if (strlen(first_line) > srcsize - 1)
+            {
+                printf ("script size to big\n");
+                free (srcbuf);
+                return 1;
+            }
             strcpy (srcbuf, strchr (first_line, '{'));
             startline = *lines;
         }
@@ -1954,9 +1973,16 @@ static int npc_parse_function (char *w1, char *w2, char *w3, char *w4,
 
     // �X�N���v�g�̉���
     srcbuf = (char *) aCalloc (srcsize, sizeof (char));
-    if (strchr (first_line, '{'))
+    char *ptr = strchr (first_line, '{');
+    if (ptr)
     {
-        strcpy (srcbuf, strchr (first_line, '{'));
+        if (strlen(ptr) >= srcsize)
+        {
+            printf ("npc_parse_function size to big\n");
+            free (srcbuf);
+            return 1;
+        }
+        strcpy (srcbuf, ptr);
         startline = *lines;
     }
     else

@@ -9,6 +9,7 @@
 #include <netdb.h>
 #endif
 
+#include "strlib.h"
 #include "core.h"
 #include "timer.h"
 #include "db.h"
@@ -1830,7 +1831,7 @@ static void map_readwater (char *watertxt)
         int  wh, count;
         if (line[0] == '/' && line[1] == '/')
             continue;
-        if ((count = sscanf (line, "%2000s%d", w1, &wh)) < 1)
+        if ((count = sscanf (line, "%23s%d", w1, &wh)) < 1)
         {
             continue;
         }
@@ -2248,15 +2249,15 @@ int map_config_read (char *cfgName)
             }
             else if (strcmpi (w1, "motd_txt") == 0)
             {
-                strcpy (motd_txt, w2);
+                safestrncpy (motd_txt, w2, 256);
             }
             else if (strcmpi (w1, "help_txt") == 0)
             {
-                strcpy (help_txt, w2);
+                safestrncpy (help_txt, w2, 256);
             }
             else if (strcmpi (w1, "mapreg_txt") == 0)
             {
-                strcpy (mapreg_txt, w2);
+                safestrncpy (mapreg_txt, w2, 256);
             }
             else if (strcmpi (w1, "gm_log") == 0)
             {

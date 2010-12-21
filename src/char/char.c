@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <sys/wait.h>
 
+#include "strlib.h"
 #include "core.h"
 #include "socket.h"
 #include "timer.h"
@@ -1097,7 +1098,7 @@ int make_new_char (int fd, unsigned char *dat)
     char_dat[i].char_id = char_id_count++;
     char_dat[i].account_id = sd->account_id;
     char_dat[i].char_num = dat[30];
-    strcpy (char_dat[i].name, dat);
+    safestrncpy (char_dat[i].name, dat, 24);
     char_dat[i].class = 0;
     char_dat[i].base_level = 1;
     char_dat[i].job_level = 1;

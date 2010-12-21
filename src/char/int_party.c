@@ -6,6 +6,7 @@
 #include "socket.h"
 #include "db.h"
 #include "lock.h"
+#include "strlib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,12 +56,12 @@ int inter_party_fromstr (char *str, struct party *p)
 
 //  printf("sscanf party main info\n");
     if (sscanf
-        (str, "%d\t%255[^\t]\t%d,%d\t", &tmp_int[0], tmp_str, &tmp_int[1],
+        (str, "%d\t%23[^\t]\t%d,%d\t", &tmp_int[0], tmp_str, &tmp_int[1],
          &tmp_int[2]) != 4)
         return 1;
 
     p->party_id = tmp_int[0];
-    strcpy (p->name, tmp_str);
+    safestrncpy (p->name, tmp_str, 24);
     p->exp = tmp_int[1];
     p->item = tmp_int[2];
 //  printf("%d [%s] %d %d\n", tmp_int[0], tmp_str[0], tmp_int[1], tmp_int[2]);

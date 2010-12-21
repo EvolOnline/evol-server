@@ -8,8 +8,8 @@
 #include "db.h"
 #include "lock.h"
 
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
+#include "showmsg.h"
+#include "strlib.h"
 
 #include <string.h>
 #include <stdio.h>
