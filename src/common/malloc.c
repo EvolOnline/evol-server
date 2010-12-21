@@ -49,7 +49,12 @@ void *aRealloc_ (void *p, size_t size, const char *file, int line,
         SHOW_MEMORY_ERROR (file, line, func, "realloc", "out of memory");
         exit (EXIT_FAILURE);
     }
-
+#if 0
+    if (ret != p)
+    {
+        SHOW_MEMORY_ERROR (file, line, func, "realloc", "memory block moved");
+    }
+#endif
     return ret;
 }
 

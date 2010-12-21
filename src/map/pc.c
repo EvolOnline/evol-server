@@ -7425,6 +7425,7 @@ int pc_setregstr (struct map_session_data *sd, int reg, char *str)
             return 0;
         }
     sd->regstr_num++;
+    str = aStrdup (str);
     sd->regstr =
         realloc (sd->regstr, sizeof (sd->regstr[0]) * sd->regstr_num);
     if (sd->regstr == NULL)
@@ -7438,6 +7439,7 @@ int pc_setregstr (struct map_session_data *sd, int reg, char *str)
     sd->regstr[i].index = reg;
     strcpy (sd->regstr[i].data, str);
 
+    aFree (str);
     return 0;
 }
 
