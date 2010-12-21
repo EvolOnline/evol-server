@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <sys/wait.h>
 
+#include "strlib.h"
 #include "core.h"
 #include "socket.h"
 #include "timer.h"
@@ -689,11 +690,11 @@ int mmo_auth_init (void)
 
             auth_dat[auth_num].account_id = account_id;
 
-            strncpy (auth_dat[auth_num].userid, userid, 24);
+            safestrncpy (auth_dat[auth_num].userid, userid, 24);
 
             memo[254] = '\0';
             remove_control_chars (memo);
-            strncpy (auth_dat[auth_num].memo, memo, 255);
+            safestrncpy (auth_dat[auth_num].memo, memo, 255);
 
             pass[39] = '\0';
             remove_control_chars (pass);
@@ -709,7 +710,7 @@ int mmo_auth_init (void)
 
             lastlogin[23] = '\0';
             remove_control_chars (lastlogin);
-            strncpy (auth_dat[auth_num].lastlogin, lastlogin, 24);
+            safestrncpy (auth_dat[auth_num].lastlogin, lastlogin, 24);
 
             auth_dat[auth_num].sex = (sex == 'S'
                                       || sex == 's') ? 2 : (sex == 'M'
@@ -738,18 +739,18 @@ int mmo_auth_init (void)
             else
             {
                 remove_control_chars (email);
-                strncpy (auth_dat[auth_num].email, email, 40);
+                safestrncpy (auth_dat[auth_num].email, email, 40);
             }
 
             error_message[19] = '\0';
             remove_control_chars (error_message);
             if (error_message[0] == '\0' || state != 7)
             {                   // 7, because state is packet 0x006a value + 1
-                strncpy (auth_dat[auth_num].error_message, "-", 20);
+                safestrncpy (auth_dat[auth_num].error_message, "-", 20);
             }
             else
             {
-                strncpy (auth_dat[auth_num].error_message, error_message, 20);
+                safestrncpy (auth_dat[auth_num].error_message, error_message, 20);
             }
 
             if (i == 13)
@@ -874,11 +875,11 @@ int mmo_auth_init (void)
 
             auth_dat[auth_num].account_id = account_id;
 
-            strncpy (auth_dat[auth_num].userid, userid, 24);
+            safestrncpy (auth_dat[auth_num].userid, userid, 24);
 
             lastlogin[23] = '\0';
             remove_control_chars (lastlogin);
-            strncpy (auth_dat[auth_num].lastlogin, lastlogin, 24);
+            safestrncpy (auth_dat[auth_num].lastlogin, lastlogin, 24);
 
             auth_dat[auth_num].sex = (sex == 'S'
                                       || sex == 's') ? 2 : (sex == 'M'
@@ -912,7 +913,7 @@ int mmo_auth_init (void)
             auth_dat[auth_num].ban_until_time = 0;
             auth_dat[auth_num].connect_until_time = 0;
             strncpy (auth_dat[auth_num].last_ip, "-", 16);
-            strncpy (auth_dat[auth_num].memo, "!", 255);
+            safestrncpy (auth_dat[auth_num].memo, "!", 255);
 
             for (j = 0; j < ACCOUNT_REG2_NUM; j++)
             {
@@ -931,7 +932,7 @@ int mmo_auth_init (void)
                 }
                 str[31] = '\0';
                 remove_control_chars (str);
-                strncpy (auth_dat[auth_num].account_reg2[j].str, str, 32);
+                safestrncpy (auth_dat[auth_num].account_reg2[j].str, str, 32);
                 auth_dat[auth_num].account_reg2[j].value = v;
             }
             auth_dat[auth_num].account_reg2_num = j;
@@ -1235,8 +1236,7 @@ int mmo_auth_new (struct mmo_account *account, char sex, char *email)
 
     auth_dat[i].account_id = account_id_count++;
 
-    strncpy (auth_dat[i].userid, account->userid, 24);
-    auth_dat[i].userid[23] = '\0';
+    safestrncpy (auth_dat[i].userid, account->userid, 24);
 
     strcpy(auth_dat[i].pass, MD5_saltcrypt(account->passwd, make_salt()));
     auth_dat[i].pass[39] = '\0';
@@ -1252,9 +1252,9 @@ int mmo_auth_new (struct mmo_account *account, char sex, char *email)
     if (e_mail_check (email) == 0)
         strncpy (auth_dat[i].email, "a@a.com", 40);
     else
-        strncpy (auth_dat[i].email, email, 40);
+        safestrncpy (auth_dat[i].email, email, 40);
 
-    strncpy (auth_dat[i].error_message, "-", 20);
+    safestrncpy (auth_dat[i].error_message, "-", 20);
 
     auth_dat[i].ban_until_time = 0;
 
@@ -3078,7 +3078,7 @@ int parse_admin (int fd)
                 {
                     if (auth_dat[i].account_id == RFIFOL (fd, 2))
                     {
-                        strncpy (WFIFOP (fd, 6), auth_dat[i].userid, 24);
+                        safestrncpy (WFIFOP (fd, 6), auth_dat[i].userid, 24);
                         login_log
                             ("'ladmin': Request (by id) of an account name (account: %s, id: %d, ip: %s)"
                              RETCODE, auth_dat[i].userid, RFIFOL (fd, 2), ip);
@@ -3090,7 +3090,7 @@ int parse_admin (int fd)
                     login_log
                         ("'ladmin': Name request (by id) of an unknown account (id: %d, ip: %s)"
                          RETCODE, RFIFOL (fd, 2), ip);
-                    strncpy (WFIFOP (fd, 6), "", 24);
+                    safestrncpy (WFIFOP (fd, 6), "", 24);
                 }
                 WFIFOSET (fd, 30);
                 RFIFOSKIP (fd, 6);
@@ -3545,7 +3545,7 @@ int parse_admin (int fd)
                     login_log
                         ("'ladmin': Attempt to obtain information (by the id) of an unknown account (id: %d, ip: %s)"
                          RETCODE, RFIFOL (fd, 2), ip);
-                    strncpy (WFIFOP (fd, 7), "", 24);
+                    safestrncpy (WFIFOP (fd, 7), "", 24);
                     WFIFOW (fd, 148) = 0;
                     WFIFOSET (fd, 150);
                 }
@@ -4331,8 +4331,7 @@ int login_lan_config_read (const char *lancfgName)
             }
             else
             {
-                strncpy (lan_char_ip, w2, sizeof (lan_char_ip));
-                lan_char_ip[sizeof (lan_char_ip) - 1] = '\0';
+                safestrncpy (lan_char_ip, w2, sizeof (lan_char_ip));
             }
             printf ("LAN IP of char-server: %s.\n", lan_char_ip);
         }
@@ -4446,8 +4445,7 @@ int login_config_read (const char *cfgName)
             }
             else if (strcmpi (w1, "admin_pass") == 0)
             {
-                strncpy (admin_pass, w2, sizeof (admin_pass));
-                admin_pass[sizeof (admin_pass) - 1] = '\0';
+                safestrncpy (admin_pass, w2, sizeof (admin_pass));
             }
             else if (strcmpi (w1, "db_count") == 0)
             {
@@ -4502,8 +4500,7 @@ int login_config_read (const char *cfgName)
             }
             else if (strcmpi (w1, "gm_pass") == 0)
             {
-                strncpy (gm_pass, w2, sizeof (gm_pass));
-                gm_pass[sizeof (gm_pass) - 1] = '\0';
+                safestrncpy (gm_pass, w2, sizeof (gm_pass));
             }
             else if (strcmpi (w1, "level_new_gm") == 0)
             {
@@ -4519,14 +4516,12 @@ int login_config_read (const char *cfgName)
             }
             else if (strcmpi (w1, "account_filename") == 0)
             {
-                strncpy (account_filename, w2, sizeof (account_filename));
-                account_filename[sizeof (account_filename) - 1] = '\0';
+                safestrncpy (account_filename, w2, sizeof (account_filename));
             }
             else if (strcmpi (w1, "gm_account_filename") == 0)
             {
-                strncpy (GM_account_filename, w2,
+                safestrncpy (GM_account_filename, w2,
                          sizeof (GM_account_filename));
-                GM_account_filename[sizeof (GM_account_filename) - 1] = '\0';
             }
             else if (strcmpi (w1, "gm_account_filename_check_timer") == 0)
             {
@@ -4534,16 +4529,12 @@ int login_config_read (const char *cfgName)
             }
             else if (strcmpi (w1, "login_log_filename") == 0)
             {
-                strncpy (login_log_filename, w2, sizeof (login_log_filename));
-                login_log_filename[sizeof (login_log_filename) - 1] = '\0';
+                safestrncpy (login_log_filename, w2, sizeof (login_log_filename));
             }
             else if (strcmpi (w1, "login_log_unknown_packets_filename") == 0)
             {
-                strncpy (login_log_unknown_packets_filename, w2,
+                safestrncpy (login_log_unknown_packets_filename, w2,
                          sizeof (login_log_unknown_packets_filename));
-                login_log_unknown_packets_filename[sizeof
-                                                   (login_log_unknown_packets_filename)
-                                                   - 1] = '\0';
             }
             else if (strcmpi (w1, "save_unknown_packets") == 0)
             {
@@ -4719,13 +4710,11 @@ int login_config_read (const char *cfgName)
             }
             else if (strcmpi (w1, "update_host") == 0)
             {
-                strncpy (update_host, w2, sizeof (update_host));
-                update_host[sizeof (update_host) - 1] = '\0';
+                safestrncpy (update_host, w2, sizeof (update_host));
             }
             else if (strcmpi (w1, "main_server") == 0)
             {
-                strncpy (main_server, w2, sizeof (main_server));
-                main_server[sizeof (main_server) - 1] = '\0';
+                safestrncpy (main_server, w2, sizeof (main_server));
             }
         }
     }

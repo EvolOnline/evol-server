@@ -3019,8 +3019,7 @@ int search_mapserver (char *map)
     int  temp_map_len;
 
 //  printf("Searching the map-server for map '%s'... ", map);
-    strncpy (temp_map, map, sizeof (temp_map));
-    temp_map[sizeof (temp_map) - 1] = '\0';
+    safestrncpy (temp_map, map, sizeof (temp_map));
     if (strchr (temp_map, '.') != NULL)
         temp_map[strchr (temp_map, '.') - temp_map + 1] = '\0'; // suppress the '.gat', but conserve the '.' to be sure of the name of the map
 
@@ -3857,8 +3856,7 @@ int lan_config_read (const char *lancfgName)
             }
             else
             {
-                strncpy (lan_map_ip, w2, sizeof (lan_map_ip));
-                lan_map_ip[sizeof (lan_map_ip) - 1] = 0;
+                safestrncpy (lan_map_ip, w2, sizeof (lan_map_ip));
             }
             printf ("LAN IP of map-server: %s.\n", lan_map_ip);
         }
@@ -3965,8 +3963,7 @@ int char_config_read (const char *cfgName)
         {
             if (strlen (w2) >= 4)
             {
-                strncpy (wisp_server_name, w2, sizeof (wisp_server_name));
-                wisp_server_name[sizeof (wisp_server_name) - 1] = '\0';
+                safestrncpy (wisp_server_name, w2, sizeof (wisp_server_name));
             }
         }
         else if (strcmpi (w1, "login_ip") == 0)

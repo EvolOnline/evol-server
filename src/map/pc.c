@@ -12,6 +12,7 @@
 #include "malloc.h"
 #include "nullpo.h"
 
+#include "strlib.h"
 #include "atcommand.h"
 #include "battle.h"
 #include "chat.h"
@@ -7727,8 +7728,7 @@ int pc_addeventtimer (struct map_session_data *sd, int tick, const char *name)
     if (i < MAX_EVENTTIMER)
     {
         char *evname = (char *) aCalloc (24, sizeof (char));
-        strncpy (evname, name, 24);
-        evname[23] = '\0';
+        safestrncpy (evname, name, 24);
         sd->eventtimer[i] = add_timer (gettick () + tick,
                                        pc_eventtimer, sd->bl.id,
                                        (int) evname);
@@ -8905,8 +8905,7 @@ int pc_setsavepoint (struct map_session_data *sd, char *mapname, int x, int y)
     nullpo_retr (0, sd);
     nullpo_retr (0, mapname);
 
-    strncpy (sd->status.save_point.map, mapname, 23);
-    sd->status.save_point.map[23] = '\0';
+    safestrncpy (sd->status.save_point.map, mapname, 24);
     sd->status.save_point.x = x;
     sd->status.save_point.y = y;
 

@@ -313,7 +313,7 @@ char* safestrncpy(char* dst, const char* src, size_t n)
 {
 	char* ret;
 	ret = strncpy(dst, src, n);
-	if( ret != NULL )
+	if( ret != NULL && n > 0)
 		ret[n - 1] = '\0';
 	return ret;
 }

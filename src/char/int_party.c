@@ -83,7 +83,7 @@ int inter_party_fromstr (char *str, struct party *p)
 
         m->account_id = tmp_int[0];
         m->leader = tmp_int[1];
-        strncpy (m->name, tmp_str, sizeof (m->name));
+        safestrncpy (m->name, tmp_str, sizeof (m->name));
 //      printf(" %d %d [%s]\n", tmp_int[0], tmp_int[1], tmp_str);
 
         for (j = 0; j < 2 && str != NULL; j++)

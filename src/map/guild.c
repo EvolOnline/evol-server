@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "strlib.h"
 #include "guild.h"
 #include "storage.h"
 #include "db.h"
@@ -352,8 +353,7 @@ int guild_create (struct map_session_data *sd, char *name)
     nullpo_retr (0, sd);
     nullpo_retr (0, name);
 
-    strncpy (pname, name, 24);
-    pname[23] = '\0';
+    safestrncpy (pname, name, 24);
     tmw_TrimStr (pname);
 
     /* The guild name is empty/invalid. */

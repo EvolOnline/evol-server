@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include "strlib.h"
 #include "socket.h"
 #include "timer.h"
 #include "map.h"
@@ -57,8 +58,8 @@ void chrif_setuserid (char *id)
         return;
     }
 
-    strncpy (userid, id, sizeof(userid)-1);
-    userid[sizeof(userid)-1] = '\0';
+    safestrncpy (userid, id, sizeof(userid));
+//    userid[sizeof(userid)-1] = '\0';
 }
 
 /*==========================================

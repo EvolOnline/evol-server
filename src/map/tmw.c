@@ -12,6 +12,7 @@
 #include "version.h"
 #include "nullpo.h"
 
+#include "strlib.h"
 #include "atcommand.h"
 #include "battle.h"
 #include "chat.h"
@@ -73,7 +74,7 @@ int tmw_CheckChatSpam (struct map_session_data *sd, char *message)
     if (tmw_CheckChatLameness (sd, message))
         sd->chat_lines_in += battle_config.chat_lame_penalty;
 
-    strncpy ((char *) sd->chat_lastmsg, message, battle_config.chat_maxline);
+    safestrncpy ((char *) sd->chat_lastmsg, message, battle_config.chat_maxline);
 
     if (sd->chat_lines_in >= battle_config.chat_spam_flood
         || sd->chat_total_repeats >= battle_config.chat_spam_flood)

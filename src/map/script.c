@@ -3565,7 +3565,7 @@ char *buildin_getguildmaster_sub (int guild_id)
     {
         char *buf;
         buf = (char *) aCalloc (24, sizeof (char));
-        strncpy (buf, g->master, 23);
+        safestrncpy (buf, g->master, 24);
         return buf;
     }
 
@@ -3627,7 +3627,7 @@ BUILDIN_FUNC(strcharinfo)
     {
         char *buf;
         buf = (char *) aCalloc (24, sizeof (char));
-        strncpy (buf, sd->status.name, 23);
+        safestrncpy (buf, sd->status.name, 24);
         push_str (st->stack, C_STR, buf);
     }
     if (num == 1)
@@ -6345,7 +6345,7 @@ BUILDIN_FUNC(getcastlename)
             if (strcmp (mapname, gc->map_name) == 0)
             {
                 buf = (char *) aCalloc (24, sizeof (char));
-                strncpy (buf, gc->castle_name, 23);
+                safestrncpy (buf, gc->castle_name, 24);
                 break;
             }
         }
@@ -7058,9 +7058,9 @@ BUILDIN_FUNC(getitemname)
 
     item_name = (char *) aCalloc (24, sizeof (char));
     if (i_data)
-        strncpy (item_name, i_data->jname, 23);
+        safestrncpy (item_name, i_data->jname, 24);
     else
-        strncpy (item_name, "Unknown Item", 23);
+        safestrncpy (item_name, "Unknown Item", 24);
 
     push_str (st->stack, C_STR, item_name);
 
@@ -7754,7 +7754,7 @@ BUILDIN_FUNC(getsavepoint)
         case 0:
             mapname = calloc (24, 1);
             if (sd)
-                strncpy (mapname, sd->status.save_point.map, 23);
+                safestrncpy (mapname, sd->status.save_point.map, 24);
             else
                 *mapname = 0;
 
@@ -8037,8 +8037,8 @@ BUILDIN_FUNC(fakenpcname)
     nd = npc_name2id (name);
     if (!nd)
         return 1;
-    strncpy (nd->name, newname, sizeof(nd->name)-1);
-    nd->name[sizeof(nd->name)-1] = '\0';
+    safestrncpy (nd->name, newname, sizeof(nd->name));
+//    nd->name[sizeof(nd->name)-1] = '\0';
     nd->class = newsprite;
 
     // Refresh this npc

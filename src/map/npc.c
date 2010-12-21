@@ -10,6 +10,7 @@
 #include "nullpo.h"
 #include "timer.h"
 
+#include "strlib.h"
 #include "battle.h"
 #include "clif.h"
 #include "db.h"
@@ -813,8 +814,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
         {
 //          if (battle_config.etc_log)
 //              printf("npc_event: enqueue\n");
-            strncpy (sd->eventqueue[i], eventname, 50);
-            sd->eventqueue[i][49] = '\0';
+            safestrncpy (sd->eventqueue[i], eventname, 50);
         }
         return 1;
     }
@@ -2024,7 +2024,7 @@ static int npc_parse_function (char *w1, char *w2, char *w3, char *w4,
 
     p = (char *) aCalloc (50, sizeof (char));
 
-    strncpy (p, w3, 49);
+    safestrncpy (p, w3, 49);
     strdb_insert (script_get_userfunc_db (), p, script);
 
 //  label_db=script_get_label_db();
@@ -2341,8 +2341,8 @@ struct npc_data *npc_spawn_text (int m, int x, int y,
     retval->bl.type = BL_NPC;
     retval->bl.subtype = MESSAGE;
 
-    strncpy (retval->name, name, 23);
-    strncpy (retval->exname, name, 23);
+    safestrncpy (retval->name, name, 24);
+    safestrncpy (retval->exname, name, 24);
     retval->name[15] = 0;
     retval->exname[15] = 0;
     retval->u.message = message ? strdup (message) : NULL;

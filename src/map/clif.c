@@ -25,6 +25,7 @@
 #include "nullpo.h"
 #include "md5calc.h"
 
+#include "strlib.h"
 #include "atcommand.h"
 #include "battle.h"
 #include "chat.h"
@@ -7774,8 +7775,11 @@ void clif_parse_GMmessage (int fd, struct map_session_data *sd)
     if ((battle_config.atc_gmonly == 0 || pc_isGM (sd)) &&
         (pc_isGM (sd) >= get_atcommand_level (AtCommand_Broadcast)))
     {
-        strncpy (m, RFIFOP (fd, 4), RFIFOW (fd, 2) - 4);
-        m[RFIFOW (fd, 2) - 4] = 0;
+        int sz = RFIFOW (fd, 2) - 4;
+        if (sz > 512)
+            sz = 512;
+        safestrncpy (m, RFIFOP (fd, 4), sz);
+//        m[sz] = 0;
         log_atcommand (sd, "/announce %s", m);
 
         memset (output, '\0', sizeof (output));
@@ -8479,8 +8483,14 @@ void clif_parse_NpcStringInput (int fd, struct map_session_data *sd)
     }
 
     if (len > 0)
-        strncpy (sd->npc_str, RFIFOP (fd, 8), len);
-    sd->npc_str[len] = '\0';
+    {
+        safestrncpy (sd->npc_str, RFIFOP (fd, 8), len);
+//        sd->npc_str[len] = '\0';
+    }
+    else
+    {
+        sd->npc_str[0] = '\0';
+    }
 
     map_scriptcont (sd, RFIFOL (fd, 4));
 }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "strlib.h"
 #include "party.h"
 #include "db.h"
 #include "timer.h"
@@ -91,8 +92,7 @@ int party_create (struct map_session_data *sd, char *name)
     char pname[24];
     nullpo_retr (0, sd);
 
-    strncpy (pname, name, 24);
-    pname[23] = '\0';
+    safestrncpy (pname, name, 24);
     tmw_TrimStr (pname);
 
     /* The party name is empty/invalid. */
