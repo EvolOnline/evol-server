@@ -4896,7 +4896,7 @@ BUILDIN_FUNC(killmonsterall)
 BUILDIN_FUNC(doevent)
 {
     struct map_session_data *sd = script_rid2sd (st);
-    if (!sd || sd->npc_id != 0)
+    if (!sd)
         return 0;
 
     char *event;
@@ -4912,7 +4912,7 @@ BUILDIN_FUNC(doevent)
 BUILDIN_FUNC(donpcevent)
 {
     struct map_session_data *sd = script_rid2sd (st);
-    if (!sd || sd->npc_id != 0)
+    if (!sd)
         return 0;
 
     char *event;
