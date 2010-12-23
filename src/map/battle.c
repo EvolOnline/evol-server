@@ -6148,7 +6148,7 @@ int battle_config_read (const char *cfgName)
 
         if (line[0] == '/' && line[1] == '/')
             continue;
-        if (sscanf (line, "%[^:]:%s", w1, w2) != 2)
+        if (sscanf (line, "%1000[^:]:%1000s", w1, w2) != 2)
             continue;
         for (i = 0; i < sizeof (data) / (sizeof (data[0])); i++)
             if (strcmpi (w1, data[i].str) == 0)

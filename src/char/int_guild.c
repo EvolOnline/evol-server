@@ -127,7 +127,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
     // 基本データ
     memset (g, 0, sizeof (struct guild));
     if (sscanf
-        (str, "%d\t%[^\t]\t%[^\t]\t%d,%d,%d,%d,%d\t%[^\t]\t%[^\t]\t",
+        (str, "%d\t%23[^\t]\t%23[^\t]\t%d,%d,%d,%d,%d\t%59[^\t]\t%119[^\t]\t",
          &tmp_int[0], tmp_str[0], tmp_str[1], &tmp_int[1], &tmp_int[2],
          &tmp_int[3], &tmp_int[4], &tmp_int[5], tmp_str[2], tmp_str[3]) < 8)
         return 1;
@@ -153,7 +153,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
     for (i = 0; i < g->max_member; i++)
     {
         struct guild_member *m = &g->member[i];
-        if (sscanf (str + 1, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\t%[^\t]\t",
+        if (sscanf (str + 1, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\t%23[^\t]\t",
                     &tmp_int[0], &tmp_int[1], &tmp_int[2], &tmp_int[3],
                     &tmp_int[4], &tmp_int[5], &tmp_int[6], &tmp_int[7],
                     &tmp_int[8], &tmp_int[9], tmp_str[0]) < 11)
@@ -181,7 +181,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
     {
         struct guild_position *p = &g->position[i];
         if (sscanf
-            (str + 1, "%d,%d\t%[^\t]\t", &tmp_int[0], &tmp_int[1],
+            (str + 1, "%d,%d\t%23[^\t]\t", &tmp_int[0], &tmp_int[1],
              tmp_str[0]) < 3)
             return 1;
         p->mode = tmp_int[0];
@@ -196,6 +196,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
 //  printf("GuildPositionInfo OK\n");
     // エンブレム
     tmp_int[1] = 0;
+    //++ here need limit strings size too
     if (sscanf (str + 1, "%d,%d,%[^\t]\t", &tmp_int[0], &tmp_int[1], tmp_str2)
         < 3 && sscanf (str + 1, "%d,%[^\t]\t", &tmp_int[0], tmp_str2) < 2)
         return 1;
@@ -229,7 +230,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
     {
         struct guild_alliance *a = &g->alliance[i];
         if (sscanf
-            (str + 1, "%d,%d\t%[^\t]\t", &tmp_int[0], &tmp_int[1],
+            (str + 1, "%d,%d\t%23[^\t]\t", &tmp_int[0], &tmp_int[1],
              tmp_str[0]) < 3)
             return 1;
         a->guild_id = tmp_int[0];
@@ -247,7 +248,7 @@ int inter_guild_fromstr (char *str, struct guild *g)
     for (i = 0; i < c; i++)
     {
         struct guild_explusion *e = &g->explusion[i];
-        if (sscanf (str + 1, "%d,%d,%d,%d\t%[^\t]\t%[^\t]\t%[^\t]\t",
+        if (sscanf (str + 1, "%d,%d,%d,%d\t%23[^\t]\t%23[^\t]\t%39[^\t]\t",
                     &tmp_int[0], &tmp_int[1], &tmp_int[2], &tmp_int[3],
                     tmp_str[0], tmp_str[1], tmp_str[2]) < 6)
             return 1;

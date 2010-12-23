@@ -885,7 +885,7 @@ int msg_config_read (const char *cfgName)
     {
         if (line[0] == '/' && line[1] == '/')
             continue;
-        if (sscanf (line, "%[^:]: %[^\r\n]", w1, w2) == 2)
+        if (sscanf (line, "%1000[^:]: %1000[^\r\n]", w1, w2) == 2)
         {
             if (strcmpi (w1, "import") == 0)
             {
@@ -994,7 +994,7 @@ int atcommand_setup (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &level, character) < 2)
+        || sscanf (message, "%d %23[^\n]", &level, character) < 2)
     {
         clif_displaymessage (fd, "Usage: @setup <level> <char name>");
         return -1;
@@ -1045,7 +1045,7 @@ int atcommand_charwarp (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%99s %d %d %99[^\n]", map_name, &x, &y,
+        || sscanf (message, "%23s %d %d %99[^\n]", map_name, &x, &y,
                    character) < 4)
     {
         clif_displaymessage (fd,
@@ -1130,7 +1130,7 @@ int atcommand_warp (const int fd, struct map_session_data *sd,
     memset (map_name, '\0', sizeof (map_name));
 
     if (!message || !*message
-        || sscanf (message, "%99s %d %d", map_name, &x, &y) < 1)
+        || sscanf (message, "%23s %d %d", map_name, &x, &y) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a map (usage: @warp <mapname> <x> <y>).");
@@ -1197,7 +1197,7 @@ int atcommand_where (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (sscanf (message, "%99[^\n]", character) < 1)
+    if (sscanf (message, "%23[^\n]", character) < 1)
         safestrncpy (character, sd->status.name, 100);
 
     if ((pl_sd = map_nick2sd (character)) != NULL &&
@@ -1235,7 +1235,7 @@ int atcommand_goto (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @jumpto/@warpto/@goto <char name>).");
@@ -1507,7 +1507,7 @@ int atcommand_whomap (const int fd, struct map_session_data *sd,
         map_id = sd->bl.m;
     else
     {
-        sscanf (message, "%99s", map_name);
+        sscanf (message, "%23s", map_name);
         if (strstr (map_name, ".gat") == NULL && strstr (map_name, ".afm") == NULL && strlen (map_name) < 13)   // 16 - 4 (.gat)
             strcat (map_name, ".gat");
         if ((map_id = map_mapname2mapid (map_name)) < 0)
@@ -1588,7 +1588,7 @@ int atcommand_whomapgroup (const int fd, struct map_session_data *sd,
         map_id = sd->bl.m;
     else
     {
-        sscanf (message, "%99s", map_name);
+        sscanf (message, "%23s", map_name);
         if (strstr (map_name, ".gat") == NULL && strstr (map_name, ".afm") == NULL && strlen (map_name) < 13)   // 16 - 4 (.gat)
             strcat (map_name, ".gat");
         if ((map_id = map_mapname2mapid (map_name)) < 0)
@@ -2051,7 +2051,7 @@ int atcommand_kill (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @kill <char name>).");
@@ -2962,7 +2962,7 @@ int atcommand_go (const int fd, struct map_session_data *sd,
     town = atoi (message);
 
     // if no value, display all value
-    if (!message || !*message || sscanf (message, "%99s", map_name) < 1
+    if (!message || !*message || sscanf (message, "%23s", map_name) < 1
         || town < -3 || town >= (int) (sizeof (data) / sizeof (data[0])))
     {
         clif_displaymessage (fd, msg_table[38]);    // Invalid location number or name.
@@ -3262,7 +3262,7 @@ void atcommand_killmonster_sub (const int fd, struct map_session_data *sd,
 
     memset (map_name, '\0', sizeof (map_name));
 
-    if (!message || !*message || sscanf (message, "%99s", map_name) < 1)
+    if (!message || !*message || sscanf (message, "%23s", map_name) < 1)
         map_id = sd->bl.m;
     else
     {
@@ -3921,7 +3921,7 @@ int atcommand_recall (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @recall <char name>).");
@@ -3980,7 +3980,7 @@ int atcommand_revive (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @revive <char name>).");
@@ -4026,7 +4026,7 @@ int atcommand_character_stats (const int fd, struct map_session_data *sd,
     memset (job_jobname, '\0', sizeof (job_jobname));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charstats <char name>).");
@@ -4170,7 +4170,7 @@ int atcommand_character_option (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %d %d %99[^\n]", &opt1, &opt2, &opt3,
+        || sscanf (message, "%d %d %d %23[^\n]", &opt1, &opt2, &opt3,
                    character) < 4 || opt1 < 0 || opt2 < 0 || opt3 < 0)
     {
         clif_displaymessage (fd,
@@ -4257,7 +4257,7 @@ int atcommand_char_change_sex (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charchangesex <name>).");
@@ -4299,7 +4299,7 @@ int atcommand_char_block (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @block <name>).");
@@ -4356,7 +4356,7 @@ int atcommand_char_ban (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%99s %99[^\n]", modif, character) < 2)
+        || sscanf (message, "%99s %23[^\n]", modif, character) < 2)
     {
         clif_displaymessage (fd,
                              "Please, enter ban time and a player name (usage: @charban/@ban/@banish/@charbanish <time> <name>).");
@@ -4456,7 +4456,7 @@ int atcommand_char_unblock (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charunblock <player_name>).");
@@ -4498,7 +4498,7 @@ int atcommand_char_unban (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charunban <player_name>).");
@@ -4545,7 +4545,7 @@ int atcommand_character_save (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%99s %d %d %99[^\n]", map_name, &x, &y,
+        || sscanf (message, "%23s %d %d %99[^\n]", map_name, &x, &y,
                    character) < 4 || x < 0 || y < 0)
     {
         clif_displaymessage (fd,
@@ -4813,7 +4813,7 @@ int atcommand_character_baselevel (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &level, character) < 2
+        || sscanf (message, "%d %23[^\n]", &level, character) < 2
         || level == 0)
     {
         clif_displaymessage (fd,
@@ -4913,7 +4913,7 @@ int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &level, character) < 2
+        || sscanf (message, "%d %23[^\n]", &level, character) < 2
         || level == 0)
     {
         clif_displaymessage (fd,
@@ -5004,7 +5004,7 @@ int atcommand_kick (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @kick <charname>).");
@@ -5144,7 +5144,7 @@ int atcommand_charquestskill (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &skill_id, character) < 2
+        || sscanf (message, "%d %23[^\n]", &skill_id, character) < 2
         || skill_id < 0)
     {
         clif_displaymessage (fd,
@@ -5258,7 +5258,7 @@ int atcommand_charlostskill (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &skill_id, character) < 2
+        || sscanf (message, "%d %23[^\n]", &skill_id, character) < 2
         || skill_id < 0)
     {
         clif_displaymessage (fd,
@@ -5320,7 +5320,7 @@ int atcommand_party (const int fd, struct map_session_data *sd,
 
     memset (party, '\0', sizeof (party));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", party) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", party) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a party name (usage: @party <party_name>).");
@@ -5347,7 +5347,7 @@ int atcommand_guild (const int fd, struct map_session_data *sd,
 
     memset (guild, '\0', sizeof (guild));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", guild) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", guild) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a guild name (usage: @guild <guild_name>).");
@@ -5501,7 +5501,7 @@ int atcommand_charskreset (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charskreset <charname>).");
@@ -5548,7 +5548,7 @@ int atcommand_charstreset (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charstreset <charname>).");
@@ -5595,7 +5595,7 @@ int atcommand_charreset (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charreset <charname>).");
@@ -5645,7 +5645,7 @@ int atcommand_char_wipe (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charwipe <charname>).");
@@ -5740,7 +5740,7 @@ int atcommand_charmodel (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
 
     if (!message || !*message
-        || sscanf (message, "%d %d %d %99[^\n]", &hair_style, &hair_color,
+        || sscanf (message, "%d %d %d %23[^\n]", &hair_style, &hair_color,
                    &cloth_color, character) < 4 || hair_style < 0
         || hair_color < 0 || cloth_color < 0)
     {
@@ -5806,7 +5806,7 @@ int atcommand_charskpoint (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &point, character) < 2
+        || sscanf (message, "%d %23[^\n]", &point, character) < 2
         || point == 0)
     {
         clif_displaymessage (fd,
@@ -5863,7 +5863,7 @@ int atcommand_charstpoint (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &point, character) < 2
+        || sscanf (message, "%d %23[^\n]", &point, character) < 2
         || point == 0)
     {
         clif_displaymessage (fd,
@@ -5920,7 +5920,7 @@ int atcommand_charzeny (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &zeny, character) < 2 || zeny == 0)
+        || sscanf (message, "%d %23[^\n]", &zeny, character) < 2 || zeny == 0)
     {
         clif_displaymessage (fd,
                              "Please, enter a number and a player name (usage: @charzeny <zeny> <name>).");
@@ -6031,7 +6031,7 @@ int atcommand_guildrecall (const int fd, struct map_session_data *sd,
     memset (guild_name, '\0', sizeof (guild_name));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", guild_name) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", guild_name) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a guild name/id (usage: @guildrecall <guild_name/id>).");
@@ -6103,7 +6103,7 @@ int atcommand_partyrecall (const int fd, struct map_session_data *sd,
     memset (party_name, '\0', sizeof (party_name));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", party_name) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", party_name) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a party name/id (usage: @partyrecall <party_name/id>).");
@@ -6273,7 +6273,7 @@ int atcommand_mapinfo (const int fd, struct map_session_data *sd,
     memset (map_name, '\0', sizeof (map_name));
     memset (direction, '\0', sizeof (direction));
 
-    sscanf (message, "%d %99[^\n]", &list, map_name);
+    sscanf (message, "%d %23[^\n]", &list, map_name);
 
     if (list < 0 || list > 3)
     {
@@ -6516,7 +6516,7 @@ int atcommand_char_mount_peco (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charmountpeco <char_name>).");
@@ -6593,7 +6593,7 @@ int atcommand_guildspy (const int fd, struct map_session_data *sd,
     memset (guild_name, '\0', sizeof (guild_name));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", guild_name) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", guild_name) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a guild name/id (usage: @guildspy <guild_name/id>).");
@@ -6642,7 +6642,7 @@ int atcommand_partyspy (const int fd, struct map_session_data *sd,
     memset (party_name, '\0', sizeof (party_name));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", party_name) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", party_name) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a party name/id (usage: @partyspy <party_name/id>).");
@@ -6688,7 +6688,7 @@ int atcommand_enablenpc (const int fd, struct map_session_data *sd,
 
     memset (NPCname, '\0', sizeof (NPCname));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", NPCname) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", NPCname) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a NPC name (usage: @npcon <NPC_name>).");
@@ -6723,7 +6723,7 @@ int atcommand_disablenpc (const int fd, struct map_session_data *sd,
 
     memset (NPCname, '\0', sizeof (NPCname));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", NPCname) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", NPCname) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a NPC name (usage: @npcoff <NPC_name>).");
@@ -6912,7 +6912,7 @@ int atcommand_chardelitem (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
 
     if (!message || !*message
-        || sscanf (message, "%99s %d %99[^\n]", item_name, &number,
+        || sscanf (message, "%99s %d %23[^\n]", item_name, &number,
                    character) < 3 || number < 1)
     {
         clif_displaymessage (fd,
@@ -6995,7 +6995,7 @@ int atcommand_jail (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @jail <char_name>).");
@@ -7061,7 +7061,7 @@ int atcommand_unjail (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @unjail/@discharge <char_name>).");
@@ -7294,7 +7294,7 @@ int atcommand_charignorelist (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charignorelist <char name>).");
@@ -7369,7 +7369,7 @@ int atcommand_inall (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @inall <char name>).");
@@ -7431,7 +7431,7 @@ int atcommand_exall (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
     memset (output, '\0', sizeof (output));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @exall <char name>).");
@@ -7495,7 +7495,7 @@ int atcommand_chardisguise (const int fd, struct map_session_data *sd,
     memset (mob_name, '\0', sizeof (mob_name));
 
     if (!message || !*message
-        || sscanf (message, "%99s %99[^\n]", mob_name, character) < 2)
+        || sscanf (message, "%23s %23[^\n]", mob_name, character) < 2)
     {
         clif_displaymessage (fd,
                              "Please, enter a Monster/NPC name/id and a player name (usage: @chardisguise <monster_name_or_monster_ID> <char name>).");
@@ -7561,7 +7561,7 @@ int atcommand_charundisguise (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charundisguise <char name>).");
@@ -7715,7 +7715,7 @@ atcommand_character_item_list (const int fd, struct map_session_data *sd,
     memset (equipstr, '\0', sizeof (equipstr));
     memset (outputtmp, '\0', sizeof (outputtmp));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charitemlist <char name>).");
@@ -7870,7 +7870,7 @@ atcommand_character_storage_list (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
     memset (outputtmp, '\0', sizeof (outputtmp));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charitemlist <char name>).");
@@ -7998,7 +7998,7 @@ atcommand_character_cart_list (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
     memset (outputtmp, '\0', sizeof (outputtmp));
 
-    if (!message || !*message || sscanf (message, "%99[^\n]", character) < 1)
+    if (!message || !*message || sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd,
                              "Please, enter a player name (usage: @charitemlist <char name>).");
@@ -8227,7 +8227,7 @@ atcommand_npcmove (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof character);
 
-    if (sscanf (message, "%d %d %99[^\n]", &x, &y, character) < 3)
+    if (sscanf (message, "%d %d %23[^\n]", &x, &y, character) < 3)
         return -1;
 
     nd = npc_name2id (character);
@@ -8262,7 +8262,7 @@ atcommand_addwarp (const int fd, struct map_session_data *sd,
     if (!message || !*message)
         return -1;
 
-    if (sscanf (message, "%99s %d %d[^\n]", map, &x, &y) < 3)
+    if (sscanf (message, "%23s %d %d[^\n]", map, &x, &y) < 3)
         return -1;
 
     sprintf (w1, "%s,%d,%d", sd->mapname, sd->bl.x, sd->bl.y);
@@ -8711,7 +8711,7 @@ int atcommand_summon (const int fd, struct map_session_data *sd,
 
     if (!message || !*message)
         return -1;
-    if (sscanf (message, "%99s", name) < 1)
+    if (sscanf (message, "%23s", name) < 1)
         return -1;
 
     if ((mob_id = atoi (name)) == 0)
@@ -8794,7 +8794,7 @@ atcommand_adjgmlvl (const int fd, struct map_session_data *sd,
         return -1;
 
     if (!message || !*message
-        || sscanf (message, "%d %99s", &newlev, user) != 2)
+        || sscanf (message, "%d %23s", &newlev, user) != 2)
     {
         clif_displaymessage (fd, "usage: @adjgmlvl <lvl> <user>.");
         return -1;
@@ -8885,7 +8885,7 @@ atcommand_magic_info (const int fd, struct map_session_data *sd,
 
     memset (character, '\0', sizeof (character));
 
-    if (!message || !*message || sscanf (message, "%99s", character) < 1)
+    if (!message || !*message || sscanf (message, "%23s", character) < 1)
     {
         clif_displaymessage (fd, "Usage: @magicinfo <char_name>");
         return -1;
@@ -8939,7 +8939,7 @@ atcommand_set_magic (const int fd, struct map_session_data *sd,
     memset (character, '\0', sizeof (character));
 
     if (!message || !*message
-        || sscanf (message, "%19s %i %99s", magic_type, &value,
+        || sscanf (message, "%19s %i %23s", magic_type, &value,
                    character) < 1)
     {
         clif_displaymessage (fd,
@@ -9126,7 +9126,7 @@ int atcommand_skillpool_info (const int fd, struct map_session_data *sd,
     if (!fd || !sd || !command)
         return -1;
 
-    if (!message || !*message || sscanf (message, "%99s", character) < 1)
+    if (!message || !*message || sscanf (message, "%23s", character) < 1)
     {
         clif_displaymessage (fd, "Usage: @sp-info <char_name>");
         return -1;
@@ -9184,7 +9184,7 @@ int atcommand_skillpool_focus (const int fd, struct map_session_data *sd,
         return -1;
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &skill, character) < 1)
+        || sscanf (message, "%d %23[^\n]", &skill, character) < 1)
     {
         clif_displaymessage (fd, "Usage: @sp-focus <skill-nr> <char_name>");
         return -1;
@@ -9214,7 +9214,7 @@ int atcommand_skillpool_unfocus (const int fd, struct map_session_data *sd,
         return -1;
 
     if (!message || !*message
-        || sscanf (message, "%d %99[^\n]", &skill, character) < 1)
+        || sscanf (message, "%d %23[^\n]", &skill, character) < 1)
     {
         clif_displaymessage (fd, "Usage: @sp-unfocus <skill-nr> <char_name>");
         return -1;
@@ -9244,7 +9244,7 @@ int atcommand_skill_learn (const int fd, struct map_session_data *sd,
         return -1;
 
     if (!message || !*message
-        || sscanf (message, "%d %d %99[^\n]", &skill, &level, character) < 1)
+        || sscanf (message, "%d %d %23[^\n]", &skill, &level, character) < 1)
     {
         clif_displaymessage (fd,
                              "Usage: @skill-learn <skill-nr> <level> <char_name>");
@@ -9412,7 +9412,7 @@ int atcommand_setmapflag (const int fd, struct map_session_data *sd,
     memset (output, '\0', sizeof (output));
 
     if (!message || !*message
-        || (nread = sscanf (message, "%80s %10s %80s", mapflagname, strmode, mapname)) < 1)
+        || (nread = sscanf (message, "%80s %10s %23s", mapflagname, strmode, mapname)) < 1)
     {
         clif_displaymessage (fd, "Usage: @setmapflag mapflag|list|status [mode] [map]");
         clif_displaymessage (fd, "mode: can be 0, off, false or 1, on, true. Set to 0 if not specified ");
@@ -9484,7 +9484,7 @@ int atcommand_ipcheck (const int fd, struct map_session_data *sd,
     struct map_session_data *pl_sd;
     struct sockaddr_in sai;
     char output[200];
-    char character[25];
+    char character[24];
     int i;
     socklen_t sa_len = sizeof (struct sockaddr);
     unsigned long ip;
@@ -9494,7 +9494,7 @@ int atcommand_ipcheck (const int fd, struct map_session_data *sd,
 
     memset(character, '\0', sizeof(character));
 
-    if (sscanf (message, "%24[^\n]", character) < 1)
+    if (sscanf (message, "%23[^\n]", character) < 1)
     {
         clif_displaymessage (fd, "Usage: @ipcheck <char name>");
         return -1;

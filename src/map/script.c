@@ -9205,7 +9205,7 @@ static int script_load_mapreg ()
             continue;
         if (buf1[strlen (buf1) - 1] == '$')
         {
-            if (sscanf (line + n, "%[^\n\r]", buf2) != 1)
+            if (sscanf (line + n, "%255[^\n\r]", buf2) != 1)
             {
                 printf ("%s: %s broken data !\n", mapreg_txt, buf1);
                 continue;
