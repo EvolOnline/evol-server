@@ -429,6 +429,7 @@ int  buildin_dispbottom (struct script_state *st); //added from jA [Lupus]
 int  buildin_recovery (struct script_state *st); // [4144]
 int  buildin_getmapmobs (struct script_state *st); //end jA addition
 int  buildin_getstrlen (struct script_state *st); //strlen [Valaris]
+int  buildin_charisalpha (struct script_state *st); //isalpha [Valaris]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -884,6 +885,8 @@ struct
     buildin_getmapmobs, "getmapmobs", "s"}, //end jA addition
     {
     buildin_getstrlen, "getstrlen", "s"}, //strlen [Valaris]
+    {
+    buildin_charisalpha, "charisalpha", "si"}, //isalpha [Valaris]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8236,6 +8239,24 @@ BUILDIN_FUNC(getstrlen)
     int len = (str) ? (int)strlen(str) : 0;
 
     script_pushint(st, len);
+    return 0;
+}
+
+//=======================================================
+// isalpha [Valaris]
+//-------------------------------------------------------
+BUILDIN_FUNC(charisalpha)
+{
+    const char *str = script_getstr(st, 2);
+    int pos = script_getnum(st, 3);
+
+    if (!str || pos < 0 || (unsigned int)pos >= strlen(str) || !ISALPHA(str[pos]))
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    script_pushint(st, 1);
     return 0;
 }
 
