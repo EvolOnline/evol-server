@@ -445,6 +445,7 @@ int  buildin_callshop (struct script_state *st); // [Skotlex]
 int  buildin_npcshopitem (struct script_state *st); // [Lance]
 int  buildin_npcshopadditem (struct script_state *st);
 int  buildin_npcshopdelitem (struct script_state *st);
+int  buildin_equip (struct script_state *st);
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -928,6 +929,8 @@ struct
     buildin_npcshopadditem, "npcshopadditem", "sii*"},
     {
     buildin_npcshopdelitem, "npcshopdelitem", "si*"},
+    {
+    buildin_equip, "equip", "i"},
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8537,6 +8540,9 @@ BUILDIN_FUNC(callshop)
 BUILDIN_FUNC(npcshopitem)
 {
     const char* npcname = script_getstr(st, 2);
+    if (!npcname)
+        return 1;
+
     struct npc_data* nd = npc_name2id(npcname);
     int n, i;
     int amount;
@@ -8568,6 +8574,9 @@ BUILDIN_FUNC(npcshopitem)
 BUILDIN_FUNC(npcshopadditem)
 {
     const char* npcname = script_getstr(st, 2);
+    if (!npcname)
+        return 1;
+
     struct npc_data* nd = npc_name2id(npcname);
     int n, i;
     int amount;
@@ -8599,6 +8608,9 @@ BUILDIN_FUNC(npcshopadditem)
 BUILDIN_FUNC(npcshopdelitem)
 {
     const char* npcname = script_getstr(st, 2);
+    if (!npcname)
+        return 1;
+
     struct npc_data* nd = npc_name2id(npcname);
     int n, i;
     int amount;
@@ -8611,6 +8623,12 @@ BUILDIN_FUNC(npcshopdelitem)
     }
 
     amount = script_lastdata(st) - 2;
+    if (amount <= 0)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
     size = nd->u.shop.count;
 
     // remove specified items from the shop item list
@@ -8628,6 +8646,29 @@ BUILDIN_FUNC(npcshopdelitem)
     nd->u.shop.count = size;
 
     script_pushint(st, 1);
+    return 0;
+}
+
+BUILDIN_FUNC(equip)
+{
+    int nameid = 0, i;
+    TBL_PC *sd;
+    struct item_data *item_data;
+
+    sd = script_rid2sd(st);
+    if (!sd)
+        return 0;
+
+    nameid = script_getnum(st, 2);
+    if((item_data = itemdb_exists(nameid)) == NULL)
+    {
+        ShowError("wrong item ID : equipitem(%i)\n", nameid);
+        return 1;
+    }
+    ARR_FIND (0, MAX_INVENTORY, i, sd->status.inventory[i].nameid == nameid);
+    if (i < MAX_INVENTORY)
+        pc_equipitem(sd, i, item_data->equip);
+
     return 0;
 }
 
