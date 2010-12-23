@@ -431,6 +431,8 @@ int  buildin_getmapmobs (struct script_state *st); //end jA addition
 int  buildin_getstrlen (struct script_state *st); //strlen [Valaris]
 int  buildin_charisalpha (struct script_state *st); //isalpha [Valaris]
 int  buildin_compare (struct script_state *st); // Lordalfa - To bring strstr to scripting Engine.
+int  buildin_getiteminfo (struct script_state *st); //[Lupus] returns Items Buy / sell Price, etc info
+int  buildin_setiteminfo (struct script_state *st); //[Lupus] set Items Buy / sell Price, etc info
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -888,6 +890,10 @@ struct
     buildin_getstrlen, "getstrlen", "s"}, //strlen [Valaris]
     {
     buildin_charisalpha, "charisalpha", "si"}, //isalpha [Valaris]
+    {
+    buildin_getiteminfo, "getiteminfo", "ii"}, //[Lupus] returns Items Buy / sell Price, etc info
+    {
+    buildin_setiteminfo, "setiteminfo", "iii"}, //[Lupus] set Items Buy / sell Price, etc info
     {
     buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
         // End Additions
@@ -8276,6 +8282,93 @@ BUILDIN_FUNC(compare)
         return 0;
     }
     script_pushint(st, (stristr(message, cmpstring) != NULL));
+    return 0;
+}
+
+/*==========================================
+ * Returns some values of an item [Lupus]
+ * Price, Weight, etc...
+    getiteminfo(itemID,n), where n
+        0 value_buy;
+        1 value_sell;
+        2 type;
+        3 sex;
+        4 equip;
+        5 weight;
+        6 atk;
+        7 def;
+        8 range;
+        9 magic_bonus
+       10 slot;
+       11 look;
+       12 elv;
+       13 wlv;
+       14 view id
+ *------------------------------------------*/
+BUILDIN_FUNC(getiteminfo)
+{
+    int item_id, n;
+    int *item_arr;
+    struct item_data *i_data;
+
+    item_id = script_getnum(st, 2);
+    n = script_getnum(st, 3);
+    i_data = itemdb_exists(item_id);
+
+    if (i_data && n >= 0 && n < 14)
+    {
+        item_arr = (int*)&i_data->value_buy;
+        script_pushint(st, item_arr[n]);
+    }
+    else
+    {
+        script_pushint(st, -1);
+    }
+    return 0;
+}
+
+/*==========================================
+ * Set some values of an item [Lupus]
+ * Price, Weight, etc...
+    getiteminfo(itemID,n), where n
+        0 value_buy;
+        1 value_sell;
+        2 type;
+        3 sex;
+        4 equip;
+        5 weight;
+        6 atk;
+        7 def;
+        8 range;
+        9 magic_bonus
+       10 slot;
+       11 look;
+       12 elv;
+       13 wlv;
+       14 view id
+  * Returns Value or -1 if the wrong field's been set
+ *------------------------------------------*/
+BUILDIN_FUNC(setiteminfo)
+{
+    int item_id, n, value;
+    int *item_arr;
+    struct item_data *i_data;
+
+    item_id = script_getnum(st, 2);
+    n = script_getnum(st, 3);
+    value = script_getnum(st, 4);
+    i_data = itemdb_exists(item_id);
+
+    if (i_data && n >= 0 && n < 14)
+    {
+        item_arr = (int*)&i_data->value_buy;
+        item_arr[n] = value;
+        script_pushint(st, value);
+    }
+    else
+    {
+        script_pushint(st, -1);
+    }
     return 0;
 }
 
