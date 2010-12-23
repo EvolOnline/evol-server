@@ -428,6 +428,7 @@ int  buildin_npcattach (struct script_state *st); // [4144]
 int  buildin_dispbottom (struct script_state *st); //added from jA [Lupus]
 int  buildin_recovery (struct script_state *st); // [4144]
 int  buildin_getmapmobs (struct script_state *st); //end jA addition
+int  buildin_getstrlen (struct script_state *st); //strlen [Valaris]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -881,6 +882,8 @@ struct
     buildin_recovery, "recovery", "*"}, // [4144]
     {
     buildin_getmapmobs, "getmapmobs", "s"}, //end jA addition
+    {
+    buildin_getstrlen, "getstrlen", "s"}, //strlen [Valaris]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8221,6 +8224,18 @@ BUILDIN_FUNC(getmapmobs)
 
     push_val (st->stack, C_INT, count);
 
+    return 0;
+}
+
+//=======================================================
+// strlen [Valaris]
+//-------------------------------------------------------
+BUILDIN_FUNC(getstrlen)
+{
+    const char *str = script_getstr(st, 2);
+    int len = (str) ? (int)strlen(str) : 0;
+
+    script_pushint(st, len);
     return 0;
 }
 
