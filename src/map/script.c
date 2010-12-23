@@ -433,6 +433,10 @@ int  buildin_charisalpha (struct script_state *st); //isalpha [Valaris]
 int  buildin_compare (struct script_state *st); // Lordalfa - To bring strstr to scripting Engine.
 int  buildin_getiteminfo (struct script_state *st); //[Lupus] returns Items Buy / sell Price, etc info
 int  buildin_setiteminfo (struct script_state *st); //[Lupus] set Items Buy / sell Price, etc info
+// [zBuffer] List of mathematics commands --->
+int  buildin_sqrt (struct script_state *st);
+int  buildin_distance (struct script_state *st);
+// <--- [zBuffer] List of mathematics commands
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -895,6 +899,12 @@ struct
     {
     buildin_setiteminfo, "setiteminfo", "iii"}, //[Lupus] set Items Buy / sell Price, etc info
     {
+    // [zBuffer] List of mathematics commands --->
+    buildin_sqrt, "sqrt", "i"},
+    {
+    buildin_distance, "distance", "iiii"},
+    {
+    // <--- [zBuffer] List of mathematics commands
     buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
         // End Additions
     {
@@ -8371,6 +8381,33 @@ BUILDIN_FUNC(setiteminfo)
     }
     return 0;
 }
+
+// [zBuffer] List of mathematics commands --->
+BUILDIN_FUNC(sqrt)
+{
+    double i, a;
+    i = script_getnum(st, 2);
+    a = sqrt(i);
+    script_pushint(st, (int)a);
+    return 0;
+}
+
+BUILDIN_FUNC(distance)
+{
+    int dx, dy;
+
+    dx = script_getnum(st, 2) - script_getnum(st, 4);
+    dy = script_getnum(st, 3) - script_getnum(st, 5);
+
+    if (dx < 0)
+        dx = -dx;
+    if (dy < 0)
+        dy = -dy;
+
+    script_pushint(st, dx < dy ? dy : dx);
+    return 0;
+}
+// <--- [zBuffer] List of mathematics commands
 
 //
 // ��s��main
