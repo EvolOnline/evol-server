@@ -441,6 +441,7 @@ int  buildin_distance (struct script_state *st);
 int  buildin_getd (struct script_state *st);
 int  buildin_setd (struct script_state *st);
 // <--- [zBuffer] List of dynamic var commands
+int  buildin_callshop (struct script_state *st); // [Skotlex]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -916,6 +917,8 @@ struct
     // <--- [zBuffer] List of dynamic var commands
     {
     buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
+    {
+    buildin_callshop, "callshop", "si"}, // [Skotlex]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8473,6 +8476,54 @@ BUILDIN_FUNC(getd)
     return 0;
 }
 // <--- [zBuffer] List of dynamic var commands
+
+BUILDIN_FUNC(callshop)
+{
+    TBL_PC *sd = NULL;
+    struct npc_data *nd;
+    const char *shopname;
+    int flag = 0;
+    sd = script_rid2sd(st);
+    if (!sd)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+    shopname = script_getstr(st, 2);
+    if (script_hasdata(st, 3))
+        flag = script_getnum(st, 3);
+    nd = npc_name2id(shopname);
+    if (!nd || nd->bl.type != BL_NPC || nd->bl.subtype != SHOP)
+    {
+        ShowError("buildin_callshop: Shop [%s] not found (or NPC is not shop type)\n", shopname);
+        script_pushint(st, 0);
+        return 1;
+    }
+
+    if (nd->bl.subtype == SHOP)
+    {
+        switch (flag)
+        {
+            case 1:
+                npc_buysellsel(sd, nd->bl.id, 0);
+                break; //Buy window
+            case 2:
+                npc_buysellsel(sd, nd->bl.id,1);
+                break; //Sell window
+            default:
+                clif_npcbuysell(sd, nd->bl.id);
+                break; //Show menu
+        }
+        sd->npc_shopid = nd->bl.id;
+        script_pushint(st, 1);
+    }
+    else
+    {
+        script_pushint(st, 0);
+    }
+
+    return 0;
+}
 
 //
 // ��s��main
