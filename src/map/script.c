@@ -437,6 +437,10 @@ int  buildin_setiteminfo (struct script_state *st); //[Lupus] set Items Buy / se
 int  buildin_sqrt (struct script_state *st);
 int  buildin_distance (struct script_state *st);
 // <--- [zBuffer] List of mathematics commands
+// [zBuffer] List of dynamic var commands --->
+int  buildin_getd (struct script_state *st);
+int  buildin_setd (struct script_state *st);
+// <--- [zBuffer] List of dynamic var commands
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -905,6 +909,12 @@ struct
     buildin_distance, "distance", "iiii"},
     {
     // <--- [zBuffer] List of mathematics commands
+    // [zBuffer] List of dynamic var commands --->
+    buildin_getd, "getd", "*"},
+    {
+    buildin_setd, "setd", "*"},
+    // <--- [zBuffer] List of dynamic var commands
+    {
     buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
         // End Additions
     {
@@ -8408,6 +8418,61 @@ BUILDIN_FUNC(distance)
     return 0;
 }
 // <--- [zBuffer] List of mathematics commands
+// [zBuffer] List of dynamic var commands --->
+//FIXME: some other functions are using this private function
+void setd_sub(TBL_PC *sd, char *varname, int elem, void *value)
+{
+    set_reg(sd, add_str(varname)+(elem<<24), varname, value);
+    return;
+}
+
+BUILDIN_FUNC(setd)
+{
+    TBL_PC *sd = NULL;
+    char varname[100];
+    const char *value, *buffer;
+    int elem;
+    buffer = script_getstr(st, 2);
+    value = script_getstr(st, 3);
+
+    if(sscanf(buffer, "%99[^[][%d]", varname, &elem) < 2)
+        elem = 0;
+
+    if (not_server_variable(*varname))
+    {
+        sd = script_rid2sd(st);
+        if (sd == NULL)
+        {
+            ShowError("script:setd: no player attached for player variable '%s'\n", buffer);
+            return 0;
+        }
+    }
+
+    if(varname[strlen(varname) - 1] != '$')
+        setd_sub(sd, varname, elem, (void *)atoi(value));
+    else
+        setd_sub(sd, varname, elem, (void *)value);
+
+    return 0;
+}
+
+BUILDIN_FUNC(getd)
+{
+    char varname[100];
+    const char *buffer;
+    int elem;
+
+    buffer = script_getstr(st, 2);
+
+    if(sscanf(buffer, "%99[^[][%d]", varname, &elem) < 2)
+        elem = 0;
+
+    // Push the 'pointer' so it's more flexible [Lance]
+    push_val(st->stack, C_NAME, (elem<<24) | add_str(varname));
+
+    return 0;
+}
+// <--- [zBuffer] List of dynamic var commands
 
 //
 // ��s��main
