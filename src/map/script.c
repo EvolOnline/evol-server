@@ -442,6 +442,9 @@ int  buildin_getd (struct script_state *st);
 int  buildin_setd (struct script_state *st);
 // <--- [zBuffer] List of dynamic var commands
 int  buildin_callshop (struct script_state *st); // [Skotlex]
+int  buildin_npcshopitem (struct script_state *st); // [Lance]
+int  buildin_npcshopadditem (struct script_state *st);
+int  buildin_npcshopdelitem (struct script_state *st);
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -919,6 +922,12 @@ struct
     buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
     {
     buildin_callshop, "callshop", "si"}, // [Skotlex]
+    {
+    buildin_npcshopitem, "npcshopitem", "sii*"}, // [Lance]
+    {
+    buildin_npcshopadditem, "npcshopadditem", "sii*"},
+    {
+    buildin_npcshopdelitem, "npcshopdelitem", "si*"},
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8522,6 +8531,103 @@ BUILDIN_FUNC(callshop)
         script_pushint(st, 0);
     }
 
+    return 0;
+}
+
+BUILDIN_FUNC(npcshopitem)
+{
+    const char* npcname = script_getstr(st, 2);
+    struct npc_data* nd = npc_name2id(npcname);
+    int n, i;
+    int amount;
+
+    if (!nd || nd->bl.subtype != SHOP || !nd->u.shop.shop_item)
+    {   //Not found.
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    // get the count of new entries
+    amount = (script_lastdata(st) - 2) / 2;
+
+    // generate new shop item list
+    RECREATE(nd->u.shop.shop_item, struct npc_item_list, amount + 1);
+    for (n = 0, i = 3; n < amount; n ++, i += 2)
+    {
+        nd->u.shop.shop_item[n].nameid = script_getnum(st, i);
+        nd->u.shop.shop_item[n].value = script_getnum(st, i + 1);
+    }
+    nd->u.shop.shop_item[n].nameid = 0;
+    nd->u.shop.shop_item[n].value = 0;
+    nd->u.shop.count = n;
+
+    script_pushint(st, 1);
+    return 0;
+}
+
+BUILDIN_FUNC(npcshopadditem)
+{
+    const char* npcname = script_getstr(st, 2);
+    struct npc_data* nd = npc_name2id(npcname);
+    int n, i;
+    int amount;
+
+    if (!nd || nd->bl.subtype != SHOP || !nd->u.shop.shop_item)
+    {   //Not found.
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    // get the count of new entries
+    amount = (script_lastdata(st) - 2) / 2;
+
+    // append new items to existing shop item list
+    RECREATE(nd->u.shop.shop_item, struct npc_item_list, nd->u.shop.count + amount + 1);
+    for (n = nd->u.shop.count, i = 3; n < nd->u.shop.count + amount; n++, i += 2)
+    {
+        nd->u.shop.shop_item[n].nameid = script_getnum(st, i);
+        nd->u.shop.shop_item[n].value = script_getnum(st, i + 1);
+    }
+    nd->u.shop.shop_item[n].nameid = 0;
+    nd->u.shop.shop_item[n].value = 0;
+    nd->u.shop.count = n;
+
+    script_pushint(st, 1);
+    return 0;
+}
+
+BUILDIN_FUNC(npcshopdelitem)
+{
+    const char* npcname = script_getstr(st, 2);
+    struct npc_data* nd = npc_name2id(npcname);
+    int n, i;
+    int amount;
+    int size;
+
+    if (!nd || nd->bl.subtype != SHOP || !nd->u.shop.shop_item)
+    {   //Not found.
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    amount = script_lastdata(st) - 2;
+    size = nd->u.shop.count;
+
+    // remove specified items from the shop item list
+    for (i = 3; i < 3 + amount; i ++)
+    {
+        ARR_FIND (0, size, n, nd->u.shop.shop_item[n].nameid == script_getnum(st,i));
+        if (n < size)
+        {
+            memmove(&nd->u.shop.shop_item[n], &nd->u.shop.shop_item[n + 1], sizeof(nd->u.shop.shop_item[0])*(size - n));
+            size--;
+        }
+    }
+
+    RECREATE(nd->u.shop.shop_item, struct npc_item_list, size);
+    nd->u.shop.count = size;
+
+    script_pushint(st, 1);
     return 0;
 }
 

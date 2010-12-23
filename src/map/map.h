@@ -443,7 +443,11 @@ struct npc_data
             struct npc_label_list *label_list;
             int  src_id;
         } scr;
-        struct npc_item_list shop_item[1];
+        struct
+        {
+            struct npc_item_list *shop_item;
+            int count;
+        } shop;
         struct
         {
             short xs, ys;

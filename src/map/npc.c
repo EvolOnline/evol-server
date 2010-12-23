@@ -1142,19 +1142,19 @@ int npc_buylist (struct map_session_data *sd, int n,
 
     for (i = 0, w = 0, z = 0; i < n; i++)
     {
-        for (j = 0; nd->u.shop_item[j].nameid; j++)
+        for (j = 0; j < nd->u.shop.count && nd->u.shop.shop_item[j].nameid; j++)
         {
-            if (nd->u.shop_item[j].nameid == item_list[i * 2 + 1])
+            if (nd->u.shop.shop_item[j].nameid == item_list[i * 2 + 1])
                 break;
         }
-        if (nd->u.shop_item[j].nameid == 0)
+        if (j >= nd->u.shop.count || nd->u.shop.shop_item[j].nameid == 0)
             return 3;
 
-        if (itemdb_value_notdc (nd->u.shop_item[j].nameid))
-            z += (double) nd->u.shop_item[j].value * item_list[i * 2];
+        if (itemdb_value_notdc (nd->u.shop.shop_item[j].nameid))
+            z += (double) nd->u.shop.shop_item[j].value * item_list[i * 2];
         else
             z += (double) pc_modifybuyvalue (sd,
-                                             nd->u.shop_item[j].value) *
+                                             nd->u.shop.shop_item[j].value) *
                 item_list[i * 2];
 //        itemamount += item_list[i * 2];
 
@@ -1414,6 +1414,7 @@ int npc_parse_warp (char *w1, char *w2, char *w3, char *w4)
     nd = (struct npc_data *) aCalloc (1, sizeof (struct npc_data));
     nd->bl.id = npc_get_new_npc_id ();
     nd->n = map_addnpc (m, nd);
+    nd->u.shop.shop_item = 0;
 
     nd->bl.prev = nd->bl.next = NULL;
     nd->bl.m = m;
@@ -1489,9 +1490,11 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
     }
     m = map_mapname2mapid (mapname);
 
-    nd = (struct npc_data *) aCalloc (1, sizeof (struct npc_data) +
-                                      sizeof (nd->u.shop_item[0]) * (max +
-                                                                     1));
+    nd = (struct npc_data *) aCalloc (1, sizeof (struct npc_data));
+
+    nd->u.shop.shop_item = (struct npc_item_list *) aCalloc (1,
+            sizeof (nd->u.shop.shop_item[0]) * (max + 1));
+
     p = strchr (w4, ',');
 
     while (p && pos < max)
@@ -1511,7 +1514,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
             {
                 if (itemdb_exists(f))
                 {
-                    nd->u.shop_item[pos].nameid = f;
+                    nd->u.shop.shop_item[pos].nameid = f;
                     if (value < 0)
                     {
                         if (id == NULL)
@@ -1519,7 +1522,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
                         if (id)
                             value = id->value_buy * abs (value);
                     }
-                    nd->u.shop_item[pos].value = value;
+                    nd->u.shop.shop_item[pos].value = value;
                     pos++;
                 }
             }
@@ -1539,7 +1542,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
 
         if (nameid > 0)
         {
-            nd->u.shop_item[pos].nameid = nameid;
+            nd->u.shop.shop_item[pos].nameid = nameid;
             if (value < 0)
             {
                 if (id == NULL)
@@ -1547,7 +1550,7 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
                 if (id)
                     value = id->value_buy * abs (value);
             }
-            nd->u.shop_item[pos].value = value;
+            nd->u.shop.shop_item[pos].value = value;
             pos++;
         }
         p = strchr (p, ',');
@@ -1557,7 +1560,8 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
         free (nd);
         return 1;
     }
-    nd->u.shop_item[pos++].nameid = 0;
+    nd->u.shop.shop_item[pos++].nameid = 0;
+//    nd->u.shop.count = pos;
 
     nd->bl.prev = nd->bl.next = NULL;
     nd->bl.m = m;
@@ -1575,15 +1579,17 @@ static int npc_parse_shop (char *w1, char *w2, char *w3, char *w4)
     nd->opt2 = 0;
     nd->opt3 = 0;
 
-    nd = (struct npc_data *) aRealloc (nd,
-                                       sizeof (struct npc_data) +
-                                       sizeof (nd->u.shop_item[0]) * pos);
+    nd->u.shop.shop_item = (struct npc_item_list *) aRealloc (nd->u.shop.shop_item,
+                            sizeof (nd->u.shop.shop_item[0]) * pos);
 
     //printf("shop npc %s %d read done\n",mapname,nd->bl.id);
     npc_shop++;
     nd->bl.type = BL_NPC;
     nd->bl.subtype = SHOP;
     nd->n = map_addnpc (m, nd);
+    nd->u.shop.count = pos - 1;
+    if (nd->u.shop.count < 0)
+        nd->u.shop.count = 0;
     map_addblock (&nd->bl);
     clif_spawnnpc (nd);
     strdb_insert (npcname_db, nd->name, nd);
@@ -1755,6 +1761,7 @@ static int npc_parse_script (char *w1, char *w2, char *w3, char *w4,
     }                           // end of �X�N���v�g����
 
     nd = (struct npc_data *) aCalloc (1, sizeof (struct npc_data));
+    nd->u.shop.shop_item = 0;
 
     if (m == -1)
     {
@@ -2340,6 +2347,7 @@ struct npc_data *npc_spawn_text (int m, int x, int y,
     retval->bl.m = m;
     retval->bl.type = BL_NPC;
     retval->bl.subtype = MESSAGE;
+    retval->u.shop.shop_item = 0;
 
     safestrncpy (retval->name, name, 24);
     safestrncpy (retval->exname, name, 24);
@@ -2388,6 +2396,7 @@ static void npc_free_internal (struct npc_data *nd)
         free (nd->u.message);
         nd->u.message = 0;
     }
+    free (nd->u.shop.shop_item);
     free (nd);
 }
 

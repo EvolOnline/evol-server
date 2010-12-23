@@ -1671,16 +1671,17 @@ int clif_buylist (struct map_session_data *sd, struct npc_data *nd)
 
     nullpo_retr (0, sd);
     nullpo_retr (0, nd);
+    nullpo_retr (0, nd->u.shop.shop_item);
 
     fd = sd->fd;
     WFIFOW (fd, 0) = 0xc6;
-    for (i = 0; nd->u.shop_item[i].nameid > 0; i++)
+    for (i = 0; i < nd->u.shop.count && nd->u.shop.shop_item[i].nameid > 0; i++)
     {
-        id = itemdb_search (nd->u.shop_item[i].nameid);
+        id = itemdb_search (nd->u.shop.shop_item[i].nameid);
         if (!id)
             continue;
 
-        val = nd->u.shop_item[i].value;
+        val = nd->u.shop.shop_item[i].value;
         WFIFOL (fd, 4 + i * 11) = val;
         if (!id->flag.value_notdc)
             val = pc_modifybuyvalue (sd, val);
@@ -1689,7 +1690,7 @@ int clif_buylist (struct map_session_data *sd, struct npc_data *nd)
         if (id->view_id > 0)
             WFIFOW (fd, 13 + i * 11) = id->view_id;
         else
-            WFIFOW (fd, 13 + i * 11) = nd->u.shop_item[i].nameid;
+            WFIFOW (fd, 13 + i * 11) = nd->u.shop.shop_item[i].nameid;
     }
     WFIFOW (fd, 2) = i * 11 + 4;
     WFIFOSET (fd, WFIFOW (fd, 2));

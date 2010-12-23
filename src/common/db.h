@@ -46,4 +46,18 @@ void *db_erase (struct dbt *table, void *key);
 void db_foreach (struct dbt *, int (*)(void *, void *, va_list), ...);
 void db_final (struct dbt *, int (*)(void *, void *, va_list), ...);
 
+/// Finds an entry in an array.
+/// ex: ARR_FIND(0, size, i, list[i] == target);
+///
+/// @param __start   Starting index (ex: 0)
+/// @param __end     End index (ex: size of the array)
+/// @param __var     Index variable
+/// @param __cmp     Expression that returns true when the target entry is found
+#define ARR_FIND(__start, __end, __var, __cmp) \
+    do{ \
+        for( (__var) = (__start); (__var) < (__end); ++(__var) ) \
+            if( __cmp ) \
+                break; \
+    }while(0)
+
 #endif
