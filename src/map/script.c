@@ -427,6 +427,7 @@ int  buildin_npcclick (struct script_state *st); // [4144]
 int  buildin_npcattach (struct script_state *st); // [4144]
 int  buildin_dispbottom (struct script_state *st); //added from jA [Lupus]
 int  buildin_recovery (struct script_state *st); // [4144]
+int  buildin_getmapmobs (struct script_state *st); //end jA addition
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -878,6 +879,8 @@ struct
     buildin_dispbottom, "dispbottom", "s"}, //added from jA [Lupus]
     {
     buildin_recovery, "recovery", "*"}, // [4144]
+    {
+    buildin_getmapmobs, "getmapmobs", "s"}, //end jA addition
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8183,6 +8186,41 @@ BUILDIN_FUNC(recovery)
     {
         pc_heal (sd, sd->status.max_hp - sd->status.hp, sd->status.max_sp - sd->status.sp);
     }
+    return 0;
+}
+
+BUILDIN_FUNC(getmapmobs)
+{
+    char *mapname;
+    int  m, bx, by;
+    mapname = script_getstr(st, 2);
+    int count = 0, c, i;
+    struct block_list *bl;
+
+    if ((m = map_mapname2mapid (mapname)) < 0)
+    {
+        push_val (st->stack, C_INT, -1);
+        return 0;
+    }
+
+    for (by = 0; by <= (map[m].ys - 1) / BLOCK_SIZE; by ++)
+    {
+        const int by1 = by * map[m].bxs;
+        for (bx = 0; bx <= (map[m].xs - 1) / BLOCK_SIZE; bx ++)
+        {
+            const int b2 = bx + by1;
+            bl = map[m].block_mob[b2];
+            c = map[m].block_mob_count[b2];
+            for (i = 0; i < c && bl; i++, bl = bl->next)
+            {
+                if (bl)
+                    count++;
+            }
+        }
+    }
+
+    push_val (st->stack, C_INT, count);
+
     return 0;
 }
 
