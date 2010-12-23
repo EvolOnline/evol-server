@@ -430,6 +430,7 @@ int  buildin_recovery (struct script_state *st); // [4144]
 int  buildin_getmapmobs (struct script_state *st); //end jA addition
 int  buildin_getstrlen (struct script_state *st); //strlen [Valaris]
 int  buildin_charisalpha (struct script_state *st); //isalpha [Valaris]
+int  buildin_compare (struct script_state *st); // Lordalfa - To bring strstr to scripting Engine.
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -887,6 +888,8 @@ struct
     buildin_getstrlen, "getstrlen", "s"}, //strlen [Valaris]
     {
     buildin_charisalpha, "charisalpha", "si"}, //isalpha [Valaris]
+    {
+    buildin_compare, "compare", "ss"}, // Lordalfa - To bring strstr to scripting Engine.
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8257,6 +8260,22 @@ BUILDIN_FUNC(charisalpha)
     }
 
     script_pushint(st, 1);
+    return 0;
+}
+
+// case-insensitive substring search [lordalfa]
+BUILDIN_FUNC(compare)
+{
+    const char *message;
+    const char *cmpstring;
+    message = script_getstr(st, 2);
+    cmpstring = script_getstr(st, 3);
+    if (!message || !cmpstring)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+    script_pushint(st, (stristr(message, cmpstring) != NULL));
     return 0;
 }
 
