@@ -448,6 +448,7 @@ int  buildin_npcshopdelitem (struct script_state *st);
 int  buildin_equip (struct script_state *st);
 int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus script. Lupus
 int  buildin_setnpcclass (struct script_state *st); // [4144]
+int  buildin_getnpcclass (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -937,6 +938,8 @@ struct
     buildin_setitemscript, "setitemscript", "is*"}, //Set NEW item bonus script. Lupus
     {
     buildin_setnpcclass, "setnpcclass", "*"}, // [4144]
+    {
+    buildin_getnpcclass, "getnpcclass", "*"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8754,6 +8757,34 @@ BUILDIN_FUNC(setnpcclass)
     nd->class = newsprite;
     npc_enable (nd->name, 0);
     npc_enable (nd->name, 1);
+
+    return 0;
+}
+
+BUILDIN_FUNC(getnpcclass)
+{
+    struct npc_data *nd = 0;
+
+    if (script_hasdata(st, 2))
+    {
+        nd = npc_name2id (script_getstr(st, 2));
+    }
+    if (!nd && !st->oid)
+    {
+        script_pushint(st, -1);
+        return 0;
+    }
+
+    if (!nd)
+        nd = (struct npc_data *) map_id2bl (st->oid);
+
+    if (!nd)
+    {
+        script_pushint(st, -1);
+        return 0;
+    }
+
+    script_pushint(st, (int)nd->class);
 
     return 0;
 }
