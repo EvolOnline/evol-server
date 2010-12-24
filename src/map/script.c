@@ -446,6 +446,7 @@ int  buildin_npcshopitem (struct script_state *st); // [Lance]
 int  buildin_npcshopadditem (struct script_state *st);
 int  buildin_npcshopdelitem (struct script_state *st);
 int  buildin_equip (struct script_state *st);
+int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus script. Lupus
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -931,6 +932,8 @@ struct
     buildin_npcshopdelitem, "npcshopdelitem", "si*"},
     {
     buildin_equip, "equip", "i"},
+    {
+    buildin_setitemscript, "setitemscript", "is*"}, //Set NEW item bonus script. Lupus
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8669,6 +8672,58 @@ BUILDIN_FUNC(equip)
     if (i < MAX_INVENTORY)
         pc_equipitem(sd, i, item_data->equip);
 
+    return 0;
+}
+
+/*==========================================
+ * Returns some values of an item [Lupus]
+ * Price, Weight, etc...
+    setitemscript(itemID,"{new item bonus script}",[n]);
+   Where n:
+    0 - script
+    1 - Equip script
+    2 - Unequip script
+ *------------------------------------------*/
+BUILDIN_FUNC(setitemscript)
+{
+    int item_id, n = 0;
+    char *script;
+    struct item_data *i_data;
+    char **dstscript;
+
+    item_id = script_getnum(st, 2);
+    script = script_getstr(st, 3);
+    if (script_hasdata(st, 4))
+        n = script_getnum(st, 4);
+    i_data = itemdb_exists(item_id);
+
+    if (!i_data || script == NULL || script[0] != '{')
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+    switch (n)
+    {
+    case 2:
+        dstscript = &i_data->unequip_script;
+        break;
+    case 1:
+        dstscript = &i_data->equip_script;
+        break;
+    default:
+        dstscript = &i_data->use_script;
+        break;
+    }
+    if (!dstscript)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    free (*dstscript);
+
+    *dstscript = parse_script(script, 0);
+    script_pushint(st, 1);
     return 0;
 }
 
