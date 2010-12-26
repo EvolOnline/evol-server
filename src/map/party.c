@@ -545,6 +545,7 @@ int party_recv_movemap (int party_id, int account_id, char *map, int online,
         if (m->account_id == account_id)
         {
             memcpy (m->map, map, 16);
+            m->map[15] = 0;
             m->online = online;
             m->lv = lv;
             break;

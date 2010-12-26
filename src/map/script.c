@@ -6003,6 +6003,7 @@ BUILDIN_FUNC(setmapflagnosave)
     {
         map[m].flag.nosave = 1;
         memcpy (map[m].save.map, str2, 16);
+        map[m].save.map[15] = 0;
         map[m].save.x = x;
         map[m].save.y = y;
     }

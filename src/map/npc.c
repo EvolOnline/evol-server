@@ -936,11 +936,12 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
         case MESSAGE:
         case SCRIPT:
         {
-            char *name = (char *) aCalloc (50, sizeof (char));
-
-            memcpy (name, map[m].npc[i]->name, 50);
             if (sd->areanpc_id == map[m].npc[i]->bl.id)
                 return 1;
+
+            char *name = (char *) aCalloc (50, sizeof (char));
+            memcpy (name, map[m].npc[i]->name, 24);
+
             sd->areanpc_id = map[m].npc[i]->bl.id;
             if (npc_event (sd, strcat (name, "::OnTouch"), 0) > 0)
                 npc_click (sd, map[m].npc[i]->bl.id, 0);

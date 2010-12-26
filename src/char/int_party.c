@@ -439,6 +439,7 @@ int mapif_party_membermoved (struct party *p, int idx)
     WBUFL (buf, 2) = p->party_id;
     WBUFL (buf, 6) = p->member[idx].account_id;
     memcpy (WBUFP (buf, 10), p->member[idx].map, 16);
+    (WBUFP (buf, 10))[15] = 0;
     WBUFB (buf, 26) = p->member[idx].online;
     WBUFW (buf, 27) = p->member[idx].lv;
     mapif_sendall (buf, 29);
@@ -521,6 +522,7 @@ int mapif_parse_CreateParty (int fd, int account_id, char *name, char *nick,
     p->member[0].account_id = account_id;
     memcpy (p->member[0].name, nick, 24);
     memcpy (p->member[0].map, map, 16);
+    p->member[0].map[15] = 0;
     p->member[0].leader = 1;
     p->member[0].online = 1;
     p->member[0].lv = lv;
@@ -573,6 +575,7 @@ int mapif_parse_PartyAddMember (int fd, int party_id, int account_id,
             p->member[i].account_id = account_id;
             memcpy (p->member[i].name, nick, 24);
             memcpy (p->member[i].map, map, 16);
+            p->member[i].map[15] = 0;
             p->member[i].leader = 0;
             p->member[i].online = 1;
             p->member[i].lv = lv;
@@ -665,6 +668,7 @@ int mapif_parse_PartyChangeMap (int fd, int party_id, int account_id,
             int  flag = 0;
 
             memcpy (p->member[i].map, map, 16);
+            p->member[i].map[15] = 0;
             p->member[i].online = online;
             p->member[i].lv = lv;
             mapif_party_membermoved (p, i);

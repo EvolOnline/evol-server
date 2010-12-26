@@ -4523,7 +4523,7 @@ int pc_setpos (struct map_session_data *sd, char *mapname_org, int x, int y,
         sd->disguise = 0;
     }
 
-    memcpy (mapname, mapname_org, 24);
+    memcpy (mapname, mapname_org, 16);
     mapname[16] = 0;
     if (strstr (mapname, ".gat") == NULL && strlen (mapname) < 16)
     {

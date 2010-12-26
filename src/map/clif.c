@@ -3190,6 +3190,8 @@ int clif_joinchatok (struct map_session_data *sd, struct chat_data *cd)
     WFIFOL (fd, 4) = cd->bl.id;
     for (i = 0; i < cd->users; i++)
     {
+        if (!cd->usersd[i])
+            return 0;
         WFIFOL (fd, 8 + i * 28) = (i != 0) || ((*cd->owner)->type == BL_NPC);
         memcpy (WFIFOP (fd, 8 + i * 28 + 4), cd->usersd[i]->status.name, 24);
     }
