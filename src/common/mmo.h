@@ -103,6 +103,7 @@ struct mmo_charstatus
     int  char_id;
     int  account_id;
     int  partner_id;
+    int  language;
 
     int  base_exp, job_exp, zeny;
 
