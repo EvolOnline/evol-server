@@ -17,6 +17,7 @@
 #include "malloc.h"
 
 #include "map.h"
+#include "lang.h"
 #include "chrif.h"
 #include "clif.h"
 #include "intif.h"
@@ -2457,6 +2458,7 @@ int do_init (int argc, char *argv[])
     add_timer_func_list (map_clearflooritem_timer,
                          "map_clearflooritem_timer");
 
+    do_init_langs ();
     do_init_chrif ();
     do_init_clif ();
     do_init_itemdb ();

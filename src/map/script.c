@@ -21,6 +21,7 @@
 #include "lock.h"
 
 #include "atcommand.h"
+#include "lang.h"
 #include "battle.h"
 #include "chat.h"
 #include "chrif.h"
