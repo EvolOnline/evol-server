@@ -129,7 +129,7 @@ const char* lang_trans(const char *str, int lng)
 
     if (!strings[lng])
     {
-        printf ("no lang string (%d) for: %s\n", lang_langs[lng], str);
+        printf ("no lang string (%s) for: %s\n", lang_langs[lng], str);
         return str;
     }
 

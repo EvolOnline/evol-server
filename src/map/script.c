@@ -450,6 +450,7 @@ int  buildin_equip (struct script_state *st);
 int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus script. Lupus
 int  buildin_setnpcclass (struct script_state *st); // [4144]
 int  buildin_getnpcclass (struct script_state *st); // [4144]
+int  buildin_l (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -941,6 +942,8 @@ struct
     buildin_setnpcclass, "setnpcclass", "*"}, // [4144]
     {
     buildin_getnpcclass, "getnpcclass", "*"}, // [4144]
+    {
+    buildin_l, "l", "s"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8788,6 +8791,13 @@ BUILDIN_FUNC(getnpcclass)
 
     script_pushint(st, (int)nd->class);
 
+    return 0;
+}
+
+BUILDIN_FUNC(l)
+{
+    char *str = script_getstr(st, 2);
+    script_pushstr(st, (unsigned char *)lang_trans (str, 1));
     return 0;
 }
 
