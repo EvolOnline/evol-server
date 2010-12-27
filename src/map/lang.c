@@ -68,10 +68,10 @@ static int langsdb_readlangs (void)
 static int langsdb_readdb (void)
 {
     FILE *fp;
-    char line1[1020], line2[1020];
-    char text1[1020], text2[1020];
+    char line[1020], line1[1020], line2[1020];
     char filename[1000];
     char **strings = NULL;
+    char *idx;
     int *lng = NULL;
     int i;
     for (i = 0; i < lang_num; i ++)
@@ -87,25 +87,43 @@ static int langsdb_readdb (void)
             return 1;
         }
 
-        while (fgets (line1, 1010, fp))
+        line1[0] = 0;
+        line2[0] = 0;
+        while (fgets (line, 1010, fp))
         {
-            if (*line1 == 0 || !fgets (line2, 1010, fp) || *line2 == 0)
-                continue;
+            if (*line)
+            {
+                idx = strrchr (line, '\n');
+                if (idx)
+                    *idx = 0;
+            }
 
-            if (sscanf(line1, "%1000s\n", text1) < 1 || sscanf(line2, "%1000s\n", text2) < 1)
+            if (!*line)
+            {
+                line1[0] = 0;
+                line2[0] = 0;
                 continue;
+            }
+            else if (!*line1)
+            {
+                strcpy (line1, line);
+                continue;
+            }
+            strcpy (line2, line);
 
-            strings = strdb_search (translate_db, text1);
+            strings = strdb_search (translate_db, line1);
             if (!strings)
             {
                 strings = aCalloc (lang_num, sizeof(int*));
                 lng = aMalloc (sizeof(int));
                 *lng = i;
-                strings[0] = strdup (text1);
-                strdb_insert (translate_db, strdup (text1), strings);
+                strings[0] = strdup (line1);
+                strdb_insert (translate_db, strdup (line1), strings);
             }
 
-            strings[i] = strdup (text2);
+            strings[i] = strdup (line2);
+            *line1 = 0;
+            *line2 = 0;
         }
         fclose (fp);
     }

@@ -8797,7 +8797,7 @@ BUILDIN_FUNC(getnpcclass)
 BUILDIN_FUNC(l)
 {
     char *str = script_getstr(st, 2);
-    script_pushstr(st, (unsigned char *)lang_trans (str, 1));
+    script_pushstr(st, (unsigned char *)strdup(lang_trans (str, 1)));
     return 0;
 }
 
