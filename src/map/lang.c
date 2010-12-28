@@ -153,3 +153,13 @@ const char* lang_trans(const char *str, int lng)
 
     return strings[lng];
 }
+
+const char* lang_pctrans(const char *str, TBL_PC *sd)
+{
+    int lng = 0;
+
+    if (sd)
+        lng = sd->status.language;
+
+    return lang_trans(str, lng);
+}

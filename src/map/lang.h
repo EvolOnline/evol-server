@@ -8,11 +8,14 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include "mmo.h"
+#include "map.h"
 
 extern struct dbt *translate_db;
 
 void do_init_langs ();
 
 const char* lang_trans(const char *str, int lng);
+
+const char* lang_pctrans(const char *str, TBL_PC *sd);
 
 #endif

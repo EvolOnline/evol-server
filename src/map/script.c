@@ -8803,14 +8803,9 @@ BUILDIN_FUNC(getnpcclass)
 BUILDIN_FUNC(l)
 {
     char *str = script_getstr(st, 2);
-    TBL_PC *sd;
-    int lng = 0;
+    TBL_PC *sd = script_rid2sd(st);
 
-    sd = script_rid2sd(st);
-    if (sd)
-        lng = sd->status.language;
-
-    script_pushstr(st, (unsigned char *)strdup(lang_trans (str, lng)));
+    script_pushstr(st, (unsigned char *)strdup(lang_pctrans (str, sd)));
     return 0;
 }
 
