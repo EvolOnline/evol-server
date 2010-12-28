@@ -176,6 +176,7 @@ int  pc_marriage (struct map_session_data *sd,
                   struct map_session_data *dstsd);
 int  pc_divorce (struct map_session_data *sd);
 struct map_session_data *pc_get_partner (struct map_session_data *sd);
+int  pc_set_lang (struct map_session_data *sd, int lang);
 int  pc_set_gm_level (int account_id, int level);
 void pc_setstand (struct map_session_data *sd);
 void pc_cleanup (struct map_session_data *sd);  // [Fate] Clean up after a logged-out PC

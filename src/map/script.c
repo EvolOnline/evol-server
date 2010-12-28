@@ -451,6 +451,8 @@ int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus scrip
 int  buildin_setnpcclass (struct script_state *st); // [4144]
 int  buildin_getnpcclass (struct script_state *st); // [4144]
 int  buildin_l (struct script_state *st); // [4144]
+int  buildin_setlang (struct script_state *st); // [4144]
+int  buildin_getlang (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -944,6 +946,10 @@ struct
     buildin_getnpcclass, "getnpcclass", "*"}, // [4144]
     {
     buildin_l, "l", "s"}, // [4144]
+    {
+    buildin_getlang, "getlang", "*"}, // [4144]
+    {
+    buildin_setlang, "setlang", "i*"}, // [4144]
         // End Additions
     {
 NULL, NULL, NULL},};
@@ -8797,9 +8803,59 @@ BUILDIN_FUNC(getnpcclass)
 BUILDIN_FUNC(l)
 {
     char *str = script_getstr(st, 2);
-    script_pushstr(st, (unsigned char *)strdup(lang_trans (str, 1)));
+    TBL_PC *sd;
+    int lng = 0;
+
+    sd = script_rid2sd(st);
+    if (sd)
+        lng = sd->status.language;
+
+    script_pushstr(st, (unsigned char *)strdup(lang_trans (str, lng)));
     return 0;
 }
+
+BUILDIN_FUNC(getlang)
+{
+    TBL_PC *sd;
+
+    if (script_hasdata(st, 2))
+    {
+        sd = map_nick2sd(script_getstr(st, 2));
+    }
+    else
+    {
+        sd = script_rid2sd(st);
+    }
+    if (!sd)
+    {
+        script_pushint(st, -1);
+        return 0;
+    }
+
+    script_pushint(st, sd->status.language);
+    return 0;
+}
+
+BUILDIN_FUNC(setlang)
+{
+    TBL_PC *sd = 0;
+
+    if (script_hasdata(st, 3))
+    {
+        sd = map_nick2sd(script_getstr(st, 3));
+    }
+    else
+    {
+        sd = script_rid2sd(st);
+    }
+
+    if (!sd)
+        return 0;
+
+    pc_set_lang (sd, script_getnum(st, 2));
+    return 0;
+}
+
 
 //
 // ��s��main

@@ -8406,6 +8406,15 @@ struct map_session_data *pc_get_partner (struct map_session_data *sd)
     return p_sd;
 }
 
+int pc_set_lang (struct map_session_data *sd, int lang)
+{
+    if (sd == NULL)
+        return -1;
+
+    sd->status.language = lang;
+    return 0;
+}
+
 //
 // ���R�񕜕�
 //
