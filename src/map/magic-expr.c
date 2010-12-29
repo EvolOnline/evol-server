@@ -1,6 +1,7 @@
 #include "magic-expr.h"
 #include "magic-expr-eval.h"
 #include "itemdb.h"
+#include "lang.h"
 #include <math.h>
 
 #define IS_SOLID(c) ((c) == 1 || (c) == 5)
@@ -1425,6 +1426,17 @@ fun_extract_healer_xp (env_t * env __attribute__ ((unused)), int args_nr __attri
     return 0;
 }
 
+static int fun_lang_translate (env_t * env __attribute__ ((unused)), int args_nr __attribute__ ((unused)), val_t * result, val_t * args)
+{
+    if (!result || !args)
+        return 1;
+
+    character_t *sd = (ETY (0) == BL_PC) ? ARGPC (0) : NULL;
+
+    RESULTSTR = strdup(lang_pctrans(ARGSTR (1), sd));
+    return 0;
+}
+
 #define BATTLE_RECORD2(sname, name) { sname, "e", 'i', fun_get_##name }
 #define BATTLE_RECORD(name) BATTLE_RECORD2(#name, name)
 static fun_t functions[] = {
@@ -1503,6 +1515,7 @@ static fun_t functions[] = {
     {"is_dead", "e", 'i', fun_is_dead},
     {"is_pc", "e", 'i', fun_is_pc},
     {"extract_healer_experience", "ei", 'i', fun_extract_healer_xp},
+    {"l", "es", 's', fun_lang_translate},
     {NULL, NULL, '.', NULL}
 };
 
