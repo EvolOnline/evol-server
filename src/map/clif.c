@@ -25,6 +25,7 @@
 #include "nullpo.h"
 #include "md5calc.h"
 
+#include "lang.h"
 #include "strlib.h"
 #include "atcommand.h"
 #include "battle.h"
@@ -7264,7 +7265,7 @@ void clif_parse_QuitGame (int fd, struct map_session_data *sd)
  *
  *------------------------------------------
  */
-void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd __attribute__ ((unused)))
+void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd)
 {
     struct block_list *bl;
     int  account_id;
@@ -7350,7 +7351,7 @@ void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd __attrib
         }
             break;
         case BL_NPC:
-            memcpy (WFIFOP (fd, 6), ((struct npc_data *) bl)->name, 24);
+            memcpy (WFIFOP (fd, 6), lang_pctrans (((struct npc_data *) bl)->name, sd), 24);
             {
                 char *start = WFIFOP (fd, 6);
                 char *end = strchr (start, '#');    // [fate] elim hashed out/invisible names for the client

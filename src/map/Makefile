@@ -32,7 +32,7 @@ obj/magic.o: magic.c magic.h magic-expr.h magic-interpreter.h chrif.h clif.h npc
 obj/map.o: map.c map.h lang.h chrif.h clif.h npc.h pc.h mob.h chat.h skill.h itemdb.h storage.h party.h atcommand.h ../common/core.h ../common/timer.h ../common/db.h ../common/grfio.h ../common/mmo.h
 obj/lang.o: lang.c lang.h ../common/core.h ../common/timer.h ../common/db.h ../common/grfio.h ../common/mmo.h
 obj/chrif.o: chrif.c map.h battle.h chrif.h clif.h intif.h pc.h npc.h ../common/socket.h ../common/timer.h ../common/mmo.h
-obj/clif.o: magic.h clif.c map.h chrif.h clif.h mob.h intif.h pc.h npc.h itemdb.h chat.h script.h storage.h party.h guild.h atcommand.h atcommand.h ../common/socket.h ../common/timer.h ../common/mmo.h ../common/version.h tmw.h
+obj/clif.o: magic.h clif.c lang.h map.h chrif.h clif.h mob.h intif.h pc.h npc.h itemdb.h chat.h script.h storage.h party.h guild.h atcommand.h atcommand.h ../common/socket.h ../common/timer.h ../common/mmo.h ../common/version.h tmw.h
 obj/pc.o: pc.c map.h clif.h intif.h pc.h npc.h mob.h itemdb.h battle.h skill.h script.h party.h guild.h trade.h storage.h chat.h ../common/timer.h ../common/mmo.h ../common/db.h
 obj/npc.o: npc.c map.h npc.h clif.h pc.h script.h mob.h itemdb.h battle.h ../common/db.h ../common/timer.h ../common/mmo.h
 obj/chat.o: chat.c map.h clif.h pc.h chat.h ../common/db.h ../common/mmo.h
