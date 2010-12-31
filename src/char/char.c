@@ -3103,8 +3103,6 @@ int parse_char (int fd)
 
     sd = session[fd]->session_data;
 
-    //+++ need check for sd == 0?
-
     while (RFIFOREST (fd) >= 2)
     {
 //      if (RFIFOW(fd,0) < 30000)
@@ -3119,7 +3117,7 @@ int parse_char (int fd)
                 break;
 
             case 0x61:         // change password request
-                if (RFIFOREST (fd) < 50)
+                if (RFIFOREST (fd) < 50 || !sd)
                     return 0;
                 {
                     WFIFOW (login_fd, 0) = 0x2740;

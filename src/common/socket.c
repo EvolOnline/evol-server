@@ -164,8 +164,8 @@ static int connect_client (int listen_fd)
 
     //printf("connect_client : %d\n",listen_fd);
 
-    printf ("used: %d, max FDs: %d, SOFT: %d\n", currentuse, FD_SETSIZE,
-            SOFT_LIMIT);
+//    printf ("used: %d, max FDs: %d, SOFT: %d\n", currentuse, FD_SETSIZE,
+//            SOFT_LIMIT);
 
     len = sizeof (client_address);
 
