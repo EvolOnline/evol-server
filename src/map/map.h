@@ -42,6 +42,7 @@
 #define MAX_LEVEL 255
 #define MAX_WALKPATH 48
 #define MAX_DROP_PER_MAP 48
+#define MAX_EQUIP_SIZE 13
 
 #define DEFAULT_AUTOSAVE_INTERVAL 60*1000
 
@@ -206,7 +207,7 @@ struct map_session_data
     unsigned char tmw_version;  // tmw client version
     struct mmo_charstatus status;
     struct item_data *inventory_data[MAX_INVENTORY];
-    short equip_index[11];
+    short equip_index[MAX_EQUIP_SIZE];
     int  weight, max_weight;
     int  cart_weight, cart_max_weight, cart_num, cart_max_num;
     char mapname[24];

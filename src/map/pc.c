@@ -88,9 +88,9 @@ static int percentrefinery[5][10];  // ���B������(refine_db.tx
 static int dirx[8] = { 0, -1, -1, -1, 0, 1, 1, 1 };
 static int diry[8] = { 1, 1, 0, -1, -1, -1, 0, 1 };
 
-static unsigned int equip_pos[11] =
+static unsigned int equip_pos[MAX_EQUIP_SIZE] =
     { 0x0080, 0x0008, 0x0040, 0x0004, 0x0001, 0x0200, 0x0100, 0x0010, 0x0020,
-    0x0002, 0x8000
+    0x0002, 0x8000, 0x0400, 0x0800
 };
 
 int pc_attack_timer (int tid, unsigned int tick, int id, int data);
@@ -604,7 +604,7 @@ int pc_setequipindex (struct map_session_data *sd)
 
     nullpo_retr (0, sd);
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
         sd->equip_index[i] = -1;
 
     for (i = 0; i < MAX_INVENTORY; i++)
@@ -613,7 +613,7 @@ int pc_setequipindex (struct map_session_data *sd)
             continue;
         if (sd->status.inventory[i].equip)
         {
-            for (j = 0; j < 11; j++)
+            for (j = 0; j < MAX_EQUIP_SIZE; j++)
                 if (sd->status.inventory[i].equip & equip_pos[j])
                     sd->equip_index[j] = i;
             if (sd->status.inventory[i].equip & 0x0002)
@@ -1484,8 +1484,12 @@ int pc_calcstatus (struct map_session_data *sd, int first)
 
     sd->spellpower_bonus_target = 0;
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
+        //+++ skiping arrow slot?
+        if (i == 10)
+            continue;
+
         index = sd->equip_index[i];
         if (index < 0)
             continue;
@@ -1570,8 +1574,13 @@ int pc_calcstatus (struct map_session_data *sd, int first)
     memcpy (sd->paramcard, sd->parame, sizeof (sd->paramcard));
 
     // �����i�ɂ����X�e�[�^�X�ω��͂����Ŏ�s
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
+
+        //+++ skip arrow slot?
+        if (i == 10)
+            continue;
+
         index = sd->equip_index[i];
         if (index < 0)
             continue;
@@ -5160,7 +5169,7 @@ int pc_checkequip (struct map_session_data *sd, int pos)
 
     nullpo_retr (-1, sd);
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
         if (pos & equip_pos[i])
             return sd->equip_index[i];
@@ -6178,7 +6187,7 @@ int pc_resetlvl (struct map_session_data *sd, int type)
     clif_updatestatus (sd, SP_UDEX);
     clif_updatestatus (sd, SP_ULUK);    // End Addition
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {                           // unequip items that can't be equipped by base 1 [Valaris]
         if (sd->equip_index[i] >= 0)
             if (!pc_isequip (sd, sd->equip_index[i]))
@@ -7143,7 +7152,7 @@ int pc_jobchange (struct map_session_data *sd, int job, int upper)
     clif_updatestatus (sd, SP_JOBEXP);
     clif_updatestatus (sd, SP_NEXTJOBEXP);
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
         if (sd->equip_index[i] >= 0)
             if (!pc_isequip (sd, sd->equip_index[i]))
@@ -7898,7 +7907,7 @@ int pc_equipitem (struct map_session_data *sd, int n, int pos)
     }
 
     arrow = pc_search_inventory (sd, pc_checkequip (sd, 9));    // Added by RoVeRT
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
         if (pos & equip_pos[i])
         {
@@ -7920,7 +7929,7 @@ int pc_equipitem (struct map_session_data *sd, int n, int pos)
             clif_equipitemack (sd, n, pos, 1);
     }
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
         if (pos & equip_pos[i])
             sd->equip_index[i] = n;
@@ -8036,7 +8045,7 @@ int pc_unequipitem (struct map_session_data *sd, int n, int type)
     if (sd->status.inventory[n].equip)
     {
         int  i;
-        for (i = 0; i < 11; i++)
+        for (i = 0; i < MAX_EQUIP_SIZE; i++)
         {
             if (sd->status.inventory[n].equip & equip_pos[i])
                 sd->equip_index[i] = -1;
@@ -8115,7 +8124,7 @@ int pc_unequipinvyitem (struct map_session_data *sd, int n, int type)
 
     nullpo_retr (1, sd);
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
         if (equip_pos[i] > 0 && sd->equip_index[i] == n)
         {                       //Slot taken, remove item from there.

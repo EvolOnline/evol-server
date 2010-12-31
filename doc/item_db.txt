@@ -45,11 +45,14 @@ Loc: Equipment's placement. Values are:
     2^6   064 = Footgear          J
     2^3   008 = Accessory 1       I
     2^7   128 = Accessory 2       B
+   2^10  1024 = Rings 1           L
+   2^11  2048 = Rings 2           M
    2^15 32768 = Ammo              E
 
         A
        B C
       D   E
+      L   M
       F   G
       H   I
        J K

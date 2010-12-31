@@ -7524,7 +7524,7 @@ BUILDIN_FUNC(nude)
     if (sd == NULL)
         return 0;
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < MAX_EQUIP_SIZE; i++)
         if (sd->equip_index[i] >= 0)
             pc_unequipitem (sd, sd->equip_index[i], i);
     pc_calcstatus (sd, 0);
@@ -7545,7 +7545,7 @@ BUILDIN_FUNC(unequip_by_id)
 
     int  slot_id = conv_num (st, &(st->stack->stack_data[st->start + 2]));
 
-    if (slot_id >= 0 && slot_id < 11 && sd->equip_index[slot_id] >= 0)
+    if (slot_id >= 0 && slot_id < MAX_EQUIP_SIZE && sd->equip_index[slot_id] >= 0)
         pc_unequipitem (sd, sd->equip_index[slot_id], slot_id);
 
     pc_calcstatus (sd, 0);
