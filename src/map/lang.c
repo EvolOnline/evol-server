@@ -74,6 +74,7 @@ static int langsdb_readdb (void)
     char *idx;
     int *lng = NULL;
     int i;
+    int sz;
     for (i = 0; i < lang_num; i ++)
     {
         strcpy (filename, "langs/lang_");
@@ -117,11 +118,18 @@ static int langsdb_readdb (void)
                 strings = aCalloc (lang_num, sizeof(int*));
                 lng = aMalloc (sizeof(int));
                 *lng = i;
-                strings[0] = strdup (line1);
+                //strings[0] = strdup (line1);
+                sz = strlen(line1) + 1;
+                strings[0] = aCalloc (sz < 24 ? 24 : sz, sizeof(char));
+                strcpy (strings[0], line1);
                 strdb_insert (translate_db, strdup (line1), strings);
             }
 
-            strings[i] = strdup (line2);
+            //strings[i] = strdup (line2);
+            sz = strlen(line2) + 1;
+            strings[i] = aCalloc (sz < 24 ? 24 : sz, sizeof(char));
+            strcpy (strings[i], line2);
+
             *line1 = 0;
             *line2 = 0;
         }
