@@ -60,7 +60,7 @@ static int recv_to_fifo (int fd)
     int  len;
 
     //printf("recv_to_fifo : %d %d\n",fd,session[fd]->eof);
-    if (session[fd]->eof)
+    if (!session[fd] || session[fd]->eof)
         return -1;
 
 #ifdef LCCWIN32
@@ -107,7 +107,7 @@ static int send_from_fifo (int fd)
     int  len;
 
     //printf("send_from_fifo : %d\n",fd);
-    if (session[fd]->eof)
+    if (!session[fd] || session[fd]->eof)
         return -1;
 
 #ifdef LCCWIN32
@@ -386,6 +386,9 @@ int delete_session (int fd)
 int realloc_fifo (int fd, int rfifo_size, int wfifo_size)
 {
     struct socket_data *s = session[fd];
+    if (!s)
+        return 0;
+
     if (s->max_rdata != rfifo_size && s->rdata_size < rfifo_size)
     {
         RECREATE (s->rdata, unsigned char, rfifo_size);
@@ -402,6 +405,9 @@ int realloc_fifo (int fd, int rfifo_size, int wfifo_size)
 int WFIFOSET (int fd, int len)
 {
     struct socket_data *s = session[fd];
+    if (!s)
+        return 0;
+
     if (s->wdata_size + len + 16384 > s->max_wdata)
     {
         realloc_fifo (fd, s->max_rdata, s->max_wdata << 1);
@@ -464,12 +470,13 @@ int do_sendrecv (int next)
 int do_parsepacket (void)
 {
     int  i;
+    time_t seconds = time (NULL);
     for (i = 0; i < fd_max; i++)
     {
         if (!session[i])
             continue;
         if (!session[i]->connected
-            && time (NULL) - session[i]->created > CONNECT_TIMEOUT)
+            && seconds - session[i]->created > CONNECT_TIMEOUT)
         {
             printf ("Session #%d timed out\n", i);
             session[i]->eof = 1;
@@ -496,6 +503,9 @@ void do_socket (void)
 int RFIFOSKIP (int fd, int len)
 {
     struct socket_data *s = session[fd];
+
+    if (!s)
+        return -1;
 
     if (s->rdata_size - s->rdata_pos - len < 0)
     {
