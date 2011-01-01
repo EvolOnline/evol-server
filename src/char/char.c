@@ -2647,7 +2647,7 @@ int parse_frommap (int fd)
                     WFIFOL (fd, 2) = RFIFOL (fd, 2);
                     WFIFOSET (fd, 6);
                     printf
-                        ("auth_fifo search error! account %d not authentified.\n",
+                        ("auth_fifo search error! account %u not authentified.\n",
                          RFIFOL (fd, 2));
                 }
                 RFIFOSKIP (fd, 22);

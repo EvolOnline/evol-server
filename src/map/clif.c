@@ -1288,6 +1288,8 @@ static int equip_points[LOOK_LAST + 1] = {
     1,                          /* cape */
     7,                          /* misc1 */
     0,                          /* misc2 */
+    0,                          /* evol ring 1? */
+    0,                          /* evol ring 2? */
 };
 
 /*==========================================
@@ -2694,7 +2696,7 @@ int clif_changelook_towards (struct block_list *bl, int type, int val,
             int  equip_point = equip_points[type];
 
             WBUFB (buf, 6) = type;
-            if (sd->equip_index[equip_point] >= 0)
+            if (equip_point >= 0 && sd->equip_index[equip_point] >= 0)
             {
                 if (sd->
                     inventory_data[sd->equip_index[equip_point]]->view_id > 0)
@@ -10398,11 +10400,11 @@ static int clif_parse (int fd)
             if (sd->status.name != NULL)
                 printf ("Player [%s] has logged off your server.\n", sd->status.name);  // Player logout display [Valaris]
             else
-                printf ("Player with account [%d] has logged off your server.\n", sd->bl.id);   // Player logout display [Yor]
+                printf ("Player with account [%u] has logged off your server.\n", sd->bl.id);   // Player logout display [Yor]
         }
         else if (sd)
         {                       // not authentified! (refused by char-server or disconnect before to be authentified)
-            printf ("Player with account [%d] has logged off your server (not auth account).\n", sd->bl.id);    // Player logout display [Yor]
+            printf ("Player with account [%u] has logged off your server (not auth account).\n", sd->bl.id);    // Player logout display [Yor]
             map_deliddb (&sd->bl);  // account_id has been included in the DB before auth answer
         }
         if (fd)
@@ -10527,18 +10529,18 @@ static int clif_parse (int fd)
                     {
                         if (sd->status.name != NULL)
                             fprintf (fp,
-                                     "%sPlayer with account ID %d (character ID %d, player name %s) sent wrong packet:\n",
+                                     "%sPlayer with account ID %u (character ID %u, player name %s) sent wrong packet:\n",
                                      asctime (gmtime (&now)),
                                      sd->status.account_id,
                                      sd->status.char_id, sd->status.name);
                         else
                             fprintf (fp,
-                                     "%sPlayer with account ID %d sent wrong packet:\n",
+                                     "%sPlayer with account ID %u sent wrong packet:\n",
                                      asctime (gmtime (&now)), sd->bl.id);
                     }
                     else if (sd)    // not authentified! (refused by char-server or disconnect before to be authentified)
                         fprintf (fp,
-                                 "%sPlayer with account ID %d sent wrong packet:\n",
+                                 "%sPlayer with account ID %u sent wrong packet:\n",
                                  asctime (gmtime (&now)), sd->bl.id);
 
                     fprintf (fp,

@@ -699,7 +699,9 @@ enum
     LOOK_GLOVES,
     LOOK_CAPE,
     LOOK_MISC1,
-    LOOK_MISC2
+    LOOK_MISC2,
+    LOOK_EVOL_RING1,
+    LOOK_EVOL_RING2
 };
 
 enum
@@ -708,7 +710,7 @@ enum
     EQUIP_WEAPON = 9
 };
 
-#define LOOK_LAST LOOK_MISC2
+#define LOOK_LAST LOOK_EVOL_RING2
 
 struct chat_data
 {
