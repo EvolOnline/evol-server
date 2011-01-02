@@ -343,7 +343,7 @@ static int itemdb_readdb (void)
             if (line[0] == '/' && line[1] == '/')
                 continue;
             memset (str, 0, sizeof (str));
-            for (j = 0, np = p = line; j < 17 && p; j++)
+            for (j = 0, np = p = line; j < 18 && p; j++)
             {
                 while (*p == '\t' || *p == ' ')
                     p++;
@@ -373,9 +373,11 @@ static int itemdb_readdb (void)
 
             if (!strlen(str[3]))
                 printf("item type error. Id %d\n", nameid);
-            id->type = atoi (str[3]);
-            id->value_buy = atoi (str[4]);
-            id->value_sell = atoi (str[5]);
+
+            id->attr = atoi (str[3]);
+            id->type = atoi (str[4]);
+            id->value_buy = atoi (str[5]);
+            id->value_sell = atoi (str[6]);
             if (id->value_buy == 0 && id->value_sell == 0)
             {
                 // may be here need warning?
@@ -389,23 +391,23 @@ static int itemdb_readdb (void)
                 id->value_sell = id->value_buy / 2;
             }
 
-            if (!strlen(str[6]))
+            if (!strlen(str[7]))
                 printf("item weight error. Id %d\n", nameid);
-            id->weight = atoi (str[6]);
-            id->atk = atoi (str[7]);
-            id->def = atoi (str[8]);
-            id->range = atoi (str[9]);
-            id->magic_bonus = atoi (str[10]);
-            id->slot = atoi (str[11]);
-            id->sex = atoi (str[12]);
+            id->weight = atoi (str[7]);
+            id->atk = atoi (str[8]);
+            id->def = atoi (str[9]);
+            id->range = atoi (str[10]);
+            id->magic_bonus = atoi (str[11]);
+            id->slot = atoi (str[12]);
+            id->sex = atoi (str[13]);
 
-            if (id->type != 0 && id->type != 2 && id->type != 3 && !strlen(str[13]))
+            if (id->type != 0 && id->type != 2 && id->type != 3 && !strlen(str[14]))
                 printf("item Loc error. Id %d\n", nameid);
 
-            id->equip = atoi (str[13]);
-            id->wlv = atoi (str[14]);
-            id->elv = atoi (str[15]);
-            id->look = atoi (str[16]);
+            id->equip = atoi (str[14]);
+            id->wlv = atoi (str[15]);
+            id->elv = atoi (str[16]);
+            id->look = atoi (str[17]);
             id->flag.available = 1;
             id->flag.value_notdc = 0;
             id->flag.value_notoc = 0;
