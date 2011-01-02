@@ -210,6 +210,8 @@ static int parse_cmd;
  */
 unsigned char *parse_subexpr (unsigned char *, int);
 int  buildin_mes (struct script_state *st);
+int  buildin_mesn (struct script_state *st);
+int  buildin_mesq (struct script_state *st);
 int  buildin_goto (struct script_state *st);
 int  buildin_callsub (struct script_state *st);
 int  buildin_callfunc (struct script_state *st);
@@ -469,6 +471,10 @@ struct
 {
     {
     buildin_mes, "mes", "s"},
+    {
+    buildin_mesn, "mesn", "s"},
+    {
+    buildin_mesq, "mesq", "s"},
     {
     buildin_next, "next", ""},
     {
@@ -2211,9 +2217,35 @@ void pop_stack (struct script_stack *stack, int start, int end)
  */
 BUILDIN_FUNC(mes)
 {
-    conv_str (st, &(st->stack->stack_data[st->start + 2]));
-    clif_scriptmes (script_rid2sd (st), st->oid,
-                    st->stack->stack_data[st->start + 2].u.str);
+    clif_scriptmes (script_rid2sd (st), st->oid, script_getstr(st, 2));
+    return 0;
+}
+
+BUILDIN_FUNC(mesn)
+{
+    char *msg = script_getstr(st, 2);
+    if (!msg)
+        return 0;
+    char *buf = (char *) aCalloc (strlen(msg) + 3, sizeof (char));
+    strcpy (buf, "[");
+    strcat (buf, msg);
+    strcat (buf, "]");
+
+    clif_scriptmes (script_rid2sd (st), st->oid, buf);
+    return 0;
+}
+
+BUILDIN_FUNC(mesq)
+{
+    char *msg = script_getstr(st, 2);
+    if (!msg)
+        return 0;
+    char *buf = (char *) aCalloc (strlen(msg) + 3, sizeof (char));
+    strcpy (buf, "\"");
+    strcat (buf, msg);
+    strcat (buf, "\"");
+
+    clif_scriptmes (script_rid2sd (st), st->oid, buf);
     return 0;
 }
 
