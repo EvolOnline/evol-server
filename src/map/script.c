@@ -383,6 +383,7 @@ int  buildin_getinventorylist (struct script_state *st);
 int  buildin_getskilllist (struct script_state *st);
 int  buildin_get_pool_skills (struct script_state *st); // [fate]
 int  buildin_get_activated_pool_skills (struct script_state *st);   // [fate]
+int  buildin_get_unactivated_pool_skills (struct script_state *st);   // [PO]
 int  buildin_activate_pool_skill (struct script_state *st); // [fate]
 int  buildin_deactivate_pool_skill (struct script_state *st);   // [fate]
 int  buildin_check_pool_skill (struct script_state *st);    // [fate]
@@ -825,6 +826,8 @@ struct
     buildin_get_pool_skills, "getpoolskilllist", ""},
     {
     buildin_get_activated_pool_skills, "getactivatedpoolskilllist", ""},
+    {
+    buildin_get_unactivated_pool_skills, "getunactivatedpoolskilllist", ""},
     {
     buildin_activate_pool_skill, "poolskill", "i"},
     {
@@ -4301,12 +4304,12 @@ BUILDIN_FUNC(getskilllv)
 }
 
 /*==========================================
- * getgdskilllv(Guild_ID, Skill_ID);               
- * skill_id = 10000 : GD_APPROVAL                      
- *            10001 : GD_KAFRACONTACT                  
- *            10002 : GD_GUARDIANRESEARCH              
- *            10003 : GD_CHARISMA                      
- *            10004 : GD_EXTENSION                     
+ * getgdskilllv(Guild_ID, Skill_ID);
+ * skill_id = 10000 : GD_APPROVAL
+ *            10001 : GD_KAFRACONTACT
+ *            10002 : GD_GUARDIANRESEARCH
+ *            10003 : GD_CHARISMA
+ *            10004 : GD_EXTENSION
  *------------------------------------------
  */
 BUILDIN_FUNC(getgdskilllv)
@@ -4686,7 +4689,7 @@ BUILDIN_FUNC(savepoint)
 
 /*==========================================
  * gettimetick(type)
- * 
+ *
  * type The type of time measurement.
  *  Specify 0 for the system tick, 1 for
  *  seconds elapsed today, or 2 for seconds
@@ -4717,7 +4720,7 @@ BUILDIN_FUNC(gettimetick)   /* Asgard Version */
         case 2:
             push_val (st->stack, C_INT, (int) time (NULL));
             break;
-        /* System tick (unsigned int, and yes, it will wrap). */ 
+        /* System tick (unsigned int, and yes, it will wrap). */
         case 0:
         default:
             push_val (st->stack, C_INT, gettick ());
@@ -7312,6 +7315,36 @@ BUILDIN_FUNC(get_activated_pool_skills)
 //extern int skill_pool_skills[];
 //extern int skill_pool_skills_size;
 
+BUILDIN_FUNC(buildin_get_unactivated_pool_skills)
+{
+    struct map_session_data *sd = script_rid2sd (st);
+    int  i, count = 0;
+
+    if (!sd)
+        return 0;
+
+    for (i = 0; i < skill_pool_skills_size; i++)
+    {
+        int  skill_id = skill_pool_skills[i];
+
+        if (sd->status.skill[skill_id].id == skill_id && !(sd->status.skill[skill_id].flags & SKILL_POOL_ACTIVATED))
+        {
+            pc_setreg (sd, add_str ("@skilllist_id") + (count << 24),
+                       sd->status.skill[skill_id].id);
+            pc_setreg (sd, add_str ("@skilllist_lv") + (count << 24),
+                       sd->status.skill[skill_id].lv);
+            pc_setreg (sd, add_str ("@skilllist_flag") + (count << 24),
+                       sd->status.skill[skill_id].flags);
+            pc_setregstr (sd, add_str ("@skilllist_name$") + (count << 24),
+                          skill_name (skill_id));
+            ++count;
+        }
+    }
+    pc_setreg (sd, add_str ("@skilllist_count"), count);
+
+    return 0;
+}
+
 BUILDIN_FUNC(get_pool_skills)
 {
     struct map_session_data *sd = script_rid2sd (st);
@@ -9653,7 +9686,7 @@ static int script_autosave_mapreg (int tid __attribute__ ((unused)),
 }
 
 /*==========================================
- * 
+ *
  *------------------------------------------
  */
 static int set_posword (char *p)
