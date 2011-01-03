@@ -129,6 +129,13 @@ void trade_tradeadditem (struct map_session_data *sd, int index, int amount)
             int  c;
             int  i;
 
+            if (itemdb_attr (sd->status.inventory[index - 2].nameid) & ITEM_ATTR_DONTTRADE)
+            {
+                clif_tradeitemok (sd, index, 0, 3); //fail to add item -- cant trade this item
+                amount = 0;
+                return;
+            }
+
             // determine free slots of receiver
             for (i = 0; i < MAX_INVENTORY; i++)
             {

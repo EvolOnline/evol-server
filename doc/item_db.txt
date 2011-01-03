@@ -4,6 +4,18 @@ Name: Name in english for displaying as output for @ and script commands.
 
 Label: Name with spaces
 
+Attr: Item attribute flags
+    0   0x0000   0000 0000 0000 0000   All default
+    1   0x0001   0000 0000 0000 0001   Dont drop
+    2   0x0002   0000 0000 0000 0010   Dont trade
+    4   0x0004   0000 0000 0000 0100   Dont remove on use (same as Type 2)
+    8   0x0008   0000 0000 0000 1000   Dont move to storage
+   16   0x0010   0000 0000 0001 0000   Dont move to cart
+   32   0x0020   0000 0000 0010 0000   Dont use
+   64   0x0040   0000 0000 0100 0000   Dont equip
+  128   0x0080   0000 0000 1000 0000   Dont remove in magic use
+  256   0x0100   0000 0001 0000 0000   Dont move to guild storage
+
 Type: 
     0   Usable item (after using removed).
     2   Usable item.

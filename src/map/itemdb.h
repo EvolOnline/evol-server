@@ -4,6 +4,16 @@
 
 #include "map.h"
 
+#define ITEM_ATTR_DONTDROP 1
+#define ITEM_ATTR_DONTTRADE 2
+#define ITEM_ATTR_DONTREMOVE 4
+#define ITEM_ATTR_DONTMOVETOSTORAGE 8
+#define ITEM_ATTR_DONTMOVETOCART 16
+#define ITEM_ATTR_DONTUSE 32
+#define ITEM_ATTR_DONTEQUIP 64
+#define ITEM_ATTR_DONTREMOVEMAGIC 128
+#define ITEM_ATTR_DONTMOVETOGSTORAGE 256
+
 struct item_data
 {
     int  nameid;
@@ -50,6 +60,7 @@ struct random_item_data
 struct item_data *itemdb_searchname (const char *name);
 struct item_data *itemdb_search (int nameid);
 struct item_data *itemdb_exists (int nameid);
+#define itemdb_attr(n) itemdb_search(n)->attr
 #define itemdb_type(n) itemdb_search(n)->type
 #define itemdb_atk(n) itemdb_search(n)->atk
 #define itemdb_def(n) itemdb_search(n)->def

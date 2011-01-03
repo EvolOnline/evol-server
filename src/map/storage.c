@@ -278,6 +278,9 @@ int storage_storageadd (struct map_session_data *sd, int index, int amount)
     if (amount < 1 || amount > sd->status.inventory[index].amount)
         return 0;
 
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOSTORAGE)
+        return 0;
+
 //  log_tostorage(sd, index, 0);
     if (storage_additem (sd, stor, &sd->status.inventory[index], amount) == 0)
     {
@@ -342,6 +345,9 @@ int storage_storageaddfromcart (struct map_session_data *sd, int index,
     if (amount < 1 || amount > sd->status.cart[index].amount)
         return 0;
 
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOSTORAGE)
+        return 0;
+
     if (storage_additem (sd, stor, &sd->status.cart[index], amount) == 0)
         pc_cart_delitem (sd, index, amount, 0);
 
@@ -370,6 +376,9 @@ int storage_storagegettocart (struct map_session_data *sd, int index,
         return 0;               //Nothing there.
 
     if (amount < 1 || amount > stor->storage_[index].amount)
+        return 0;
+
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOCART)
         return 0;
 
     if (pc_cart_additem (sd, &stor->storage_[index], amount) == 0)
@@ -644,6 +653,9 @@ int storage_guild_storageadd (struct map_session_data *sd, int index,
     if (amount < 1 || amount > sd->status.inventory[index].amount)
         return 0;
 
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOGSTORAGE)
+        return 0;
+
 //  log_tostorage(sd, index, 1);
     if (guild_storage_additem (sd, stor, &sd->status.inventory[index], amount)
         == 0)
@@ -702,6 +714,9 @@ int storage_guild_storageaddfromcart (struct map_session_data *sd, int index,
     if (amount < 1 || amount > sd->status.cart[index].amount)
         return 0;
 
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOGSTORAGE)
+        return 0;
+
     if (guild_storage_additem (sd, stor, &sd->status.cart[index], amount) ==
         0)
         pc_cart_delitem (sd, index, amount, 0);
@@ -727,6 +742,9 @@ int storage_guild_storagegettocart (struct map_session_data *sd, int index,
         return 0;
 
     if (amount < 1 || amount > stor->storage_[index].amount)
+        return 0;
+
+    if (itemdb_attr (sd->status.inventory[index].nameid) & ITEM_ATTR_DONTMOVETOCART)
         return 0;
 
     if (pc_cart_additem (sd, &stor->storage_[index], amount) == 0)

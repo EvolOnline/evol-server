@@ -3948,12 +3948,14 @@ int pc_dropitem (struct map_session_data *sd, int n, int amount)
     if (amount <= 0)
         return 0;
 
-    pc_unequipinvyitem (sd, n, 0);
-
     if (sd->status.inventory[n].nameid <= 0 ||
         sd->status.inventory[n].amount < amount ||
-        sd->trade_partner != 0 || sd->status.inventory[n].amount <= 0)
+        sd->trade_partner != 0 || sd->status.inventory[n].amount <= 0 ||
+        (itemdb_attr (sd->status.inventory[n].nameid) & ITEM_ATTR_DONTDROP))
         return 1;
+
+    pc_unequipinvyitem (sd, n, 0);
+
     map_addflooritem (&sd->status.inventory[n], amount, sd->bl.m, sd->bl.x,
                       sd->bl.y, NULL, NULL, NULL, 0);
     pc_delitem (sd, n, amount, 0);
@@ -4123,7 +4125,8 @@ int pc_useitem (struct map_session_data *sd, int n)
 
         run_script (sd->inventory_data[n]->use_script, 0, sd->bl.id, 0);
 
-        if (itemdb_type (sd->status.inventory[n].nameid) != 2)
+        if (itemdb_type (sd->status.inventory[n].nameid) != 2 &&
+            !(itemdb_attr (sd->status.inventory[n].nameid) && ITEM_ATTR_DONTREMOVE))
         {
             clif_useitemack (sd, n, amount - 1, 1);
             pc_delitem (sd, n, 1, 1);
@@ -4249,6 +4252,10 @@ int pc_putitemtocart (struct map_session_data *sd, int idx, int amount)
         return 1;
     if (item_data->nameid == 0 || item_data->amount < amount)
         return 1;
+
+    if (itemdb_attr (sd->status.inventory[idx].nameid) & ITEM_ATTR_DONTMOVETOCART)
+        return 1;
+
     if (pc_cart_additem (sd, item_data, amount) == 0)
         return pc_delitem (sd, idx, amount, 0);
 
