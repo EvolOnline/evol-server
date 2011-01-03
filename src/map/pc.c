@@ -4123,6 +4123,9 @@ int pc_useitem (struct map_session_data *sd, int n)
             return 1;
         }
 
+        if (itemdb_attr (sd->status.inventory[n].nameid) && ITEM_ATTR_DONTUSE)
+            return 0;
+
         run_script (sd->inventory_data[n]->use_script, 0, sd->bl.id, 0);
 
         if (itemdb_type (sd->status.inventory[n].nameid) != 2 &&

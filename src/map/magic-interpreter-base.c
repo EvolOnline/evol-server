@@ -279,7 +279,8 @@ static void consume_components (character_t * caster, component_t * component)
 {
     while (component)
     {
-        pc_remove_items (caster, component->item_id, component->count);
+        if (!(itemdb_attr (component->item_id) && ITEM_ATTR_DONTREMOVEMAGIC))
+            pc_remove_items (caster, component->item_id, component->count);
         component = component->next;
     }
 }

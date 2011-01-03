@@ -7913,6 +7913,9 @@ void clif_parse_EquipItem (int fd, struct map_session_data *sd)
             || sd->sc_data[SC_BERSERK].timer != -1))
         return;
 
+    if (itemdb_attr (sd->status.inventory[index].nameid) && ITEM_ATTR_DONTEQUIP)
+        return;
+
     if (sd->status.inventory[index].identify != 1)
     {                           // ���Ӓ�
         // Bjorn: Auto-identify items when equipping them as there
