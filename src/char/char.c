@@ -4170,8 +4170,8 @@ int char_config_read (const char *cfgName)
         else if (strcmpi (w1, "min_hair_style") == 0)
         {
             min_hair_style = atoi (w2);
-            if (min_hair_style <= 0)
-                min_hair_style = 1;
+            if (min_hair_style < 0)
+                min_hair_style = 0;
         }
         else if (strcmpi (w1, "max_hair_style") == 0)
         {
@@ -4182,8 +4182,8 @@ int char_config_read (const char *cfgName)
         else if (strcmpi (w1, "min_hair_color") == 0)
         {
             min_hair_color = atoi (w2);
-            if (min_hair_color <= 0)
-                min_hair_color = 1;
+            if (min_hair_color < 0)
+                min_hair_color = 0;
         }
         else if (strcmpi (w1, "max_hair_color") == 0)
         {
