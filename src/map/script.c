@@ -7315,7 +7315,7 @@ BUILDIN_FUNC(get_activated_pool_skills)
 //extern int skill_pool_skills[];
 //extern int skill_pool_skills_size;
 
-BUILDIN_FUNC(buildin_get_unactivated_pool_skills)
+BUILDIN_FUNC(get_unactivated_pool_skills)
 {
     struct map_session_data *sd = script_rid2sd (st);
     int  i, count = 0;
