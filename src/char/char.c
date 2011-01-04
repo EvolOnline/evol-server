@@ -76,6 +76,8 @@ int min_hair_color = 0;
 int max_hair_style = 20;
 int max_hair_color = 9;
 
+int wan_ip = 0;
+
 struct char_session_data
 {
     int  account_id, login_id1, login_id2, sex;
@@ -3363,7 +3365,9 @@ int parse_char (int fd)
                              char_dat[sd->found_char[ch]].name,
                              sd->account_id, ch, ip);
                         printf ("--Send IP of map-server. ");
-                        if (lan_ip_check (p))
+                        if (wan_ip)
+                            WFIFOL (fd, 22) = wan_ip;
+                        else if (lan_ip_check (p))
                             WFIFOL (fd, 22) = inet_addr (lan_map_ip);
                         else
                             WFIFOL (fd, 22) = server[i].ip;
@@ -4021,6 +4025,10 @@ int char_config_read (const char *cfgName)
         else if (strcmpi (w1, "char_port") == 0)
         {
             char_port = atoi (w2);
+        }
+        else if (strcmpi (w1, "wan_ip") == 0)
+        {
+            wan_ip = inet_addr (w2);
         }
         else if (strcmpi (w1, "char_maintenance") == 0)
         {

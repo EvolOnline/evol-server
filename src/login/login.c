@@ -67,6 +67,7 @@ int  anti_freeze_enable = 0;
 int  ANTI_FREEZE_INTERVAL = 15;
 
 int  login_fd;
+int  wan_ip = 0;
 
 enum
 {
@@ -3820,7 +3821,10 @@ int parse_login (int fd)
                             {
                                 if (server_fd[i] >= 0)
                                 {
-                                    if (lan_ip_check (p))
+                                    if (wan_ip)
+                                        WFIFOL (fd, 47 + server_num * 32) =
+                                            wan_ip;
+                                    else if (lan_ip_check (p))
                                         WFIFOL (fd, 47 + server_num * 32) =
                                             inet_addr (lan_char_ip);
                                     else
@@ -3845,7 +3849,11 @@ int parse_login (int fd)
                             {
                                 if (server_fd[i] >= 0)
                                 {
-                                    if (lan_ip_check (p))
+                                    //+++ one ip send to client
+                                    if (wan_ip)
+                                        WFIFOL (fd, 47 + server_num * 32) =
+                                            wan_ip;
+                                    else if (lan_ip_check (p))
                                         WFIFOL (fd, 47 + server_num * 32) =
                                             inet_addr (lan_char_ip);
                                     else
@@ -4587,6 +4595,10 @@ int login_config_read (const char *cfgName)
             else if (strcmpi (w1, "check_ip_flag") == 0)
             {
                 check_ip_flag = config_switch (w2);
+            }
+            else if (strcmpi (w1, "wan_ip") == 0)
+            {
+                wan_ip = inet_addr (w2);
             }
             else if (strcmpi (w1, "order") == 0)
             {
