@@ -37,6 +37,9 @@
 
 #define PVP_CALCRANK_INTERVAL 1000  // PVP���ʌv�Z�̊Ԋu
 
+//define it here, since the ifdef only occurs in this file
+#define USE_ASTRAL_SOUL_SKILL
+
 #define STATE_BLIND 0x10
 
 #ifdef USE_ASTRAL_SOUL_SKILL
@@ -4620,7 +4623,7 @@ int pc_setpos (struct map_session_data *sd, char *mapname_org, int x, int y,
     sd->to_x = x;
     sd->to_y = y;
 
-    // moved and changed dance effect stopping  
+    // moved and changed dance effect stopping
 
     sd->bl.x = x;
     sd->bl.y = y;
@@ -6228,7 +6231,7 @@ int pc_resetstate (struct map_session_data *sd)
 
 //  New statpoint table used here - Dexity
     sd->status.status_point = atoi (statp[sd->status.base_level - 1]);
-//  End addition 
+//  End addition
 
 //  Removed by Dexity - old count
 //  add += sumsp(sd->status.str);
@@ -9599,7 +9602,7 @@ int pc_logout (struct map_session_data *sd) // [fate] Player logs out
     if (sd->sc_data[SC_POISON].timer != -1)
         sd->status.hp = 1;      // Logging out while poisoned -> bad
 
-    /* 
+    /*
      * Trying to rapidly sign out/in or switch characters to avoid a spell's
      * cast time is also bad. [remoitnane]
      */
