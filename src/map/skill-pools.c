@@ -49,6 +49,9 @@ char *skill_name (int skill)
 
 int skill_pool (struct map_session_data *sd, int *skills)
 {
+    if (!sd)
+        return 0;
+
     int  i, count = 0;
 
     for (i = 0; count < MAX_SKILL_POOL && i < skill_pool_skills_size; i++)
@@ -72,7 +75,7 @@ void skill_pool_empty (struct map_session_data *sd)
     if (!sd)
         return;
 
-    for (i = 0; i < skill_pool_skills_size; i++)
+    for (i = 0; i < skill_pool_skills_size && i < MAX_SKILL; i++)
     {
         int  skill_id = skill_pool_skills[i];
         sd->status.skill[skill_id].flags = 0;
