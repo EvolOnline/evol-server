@@ -47,19 +47,20 @@ Gender: Gender restriction. 0 is female, 1 is male, 2 for both.
 
 Loc: Equipment's placement. Values are:
 
-    2^8   256 = Upper Headgear    A
-    2^9   512 = Middle Headgear   C
-    2^0   001 = Lower Headgear    J
-    2^4   016 = Armor             H
-    2^1   002 = Weapon            F
-    2^5   032 = Shield            G
-    2^2   004 = Garment           D
-    2^6   064 = Footgear          J
-    2^3   008 = Accessory 1       I
-    2^7   128 = Accessory 2       B
-   2^10  1024 = Rings 1           L
-   2^11  2048 = Rings 2           M
-   2^15 32768 = Ammo              E
+                eathena                 evol
+    2^8   256 = Upper Headgear    A     head
+    2^9   512 = Middle Headgear   C     body
+    2^0   001 = Lower Headgear    J     pants
+    2^4   016 = Armor             H     FREE
+    2^1   002 = Weapon            F     weapon
+    2^5   032 = Shield            G     shield
+    2^2   004 = Garment           D     gloves
+    2^6   064 = Footgear          K     boots
+    2^3   008 = Accessory 1       I     wings
+    2^7   128 = Accessory 2       B     head low (scarf)
+   2^10  1024 = Rings 1           L     amulets
+   2^11  2048 = Rings 2           M     rings
+   2^15 32768 = Ammo              E     ammo
 
         A
        B C
