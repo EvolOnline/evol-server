@@ -1952,9 +1952,9 @@ int atcommand_option (const int fd, struct map_session_data *sd,
     {
         if (!pc_isriding (sd))
         {                       // sd have the new value...
-            if (sd->status.class == 13)
-                sd->status.class = sd->view_class = 7;
-            else if (sd->status.class == 21)
+//            if (sd->status.class == 13)
+//                sd->status.class = sd->view_class = 7;
+            if (sd->status.class == 21)
                 sd->status.class = sd->view_class = 14;
             else if (sd->status.class == 4014)
                 sd->status.class = sd->view_class = 4008;
@@ -1972,9 +1972,9 @@ int atcommand_option (const int fd, struct map_session_data *sd,
             }
             else
             {
-                if (sd->status.class == 7)
-                    sd->status.class = sd->view_class = 13;
-                else if (sd->status.class == 14)
+//                if (sd->status.class == 7)
+//                    sd->status.class = sd->view_class = 13;
+                if (sd->status.class == 14)
                     sd->status.class = sd->view_class = 21;
                 else if (sd->status.class == 4008)
                     sd->status.class = sd->view_class = 4014;
@@ -4191,9 +4191,9 @@ int atcommand_character_option (const int fd, struct map_session_data *sd,
             {
                 if (!pc_isriding (pl_sd))
                 {               // pl_sd have the new value...
-                    if (pl_sd->status.class == 13)
-                        pl_sd->status.class = pl_sd->view_class = 7;
-                    else if (pl_sd->status.class == 21)
+//                    if (pl_sd->status.class == 13)
+//                        pl_sd->status.class = pl_sd->view_class = 7;
+                    if (pl_sd->status.class == 21)
                         pl_sd->status.class = pl_sd->view_class = 14;
                     else if (pl_sd->status.class == 4014)
                         pl_sd->status.class = pl_sd->view_class = 4008;
@@ -4211,9 +4211,9 @@ int atcommand_character_option (const int fd, struct map_session_data *sd,
                     }
                     else
                     {
-                        if (pl_sd->status.class == 7)
-                            pl_sd->status.class = pl_sd->view_class = 13;
-                        else if (pl_sd->status.class == 14)
+//                        if (pl_sd->status.class == 7)
+//                            pl_sd->status.class = pl_sd->view_class = 13;
+                        if (pl_sd->status.class == 14)
                             pl_sd->status.class = pl_sd->view_class = 21;
                         else if (pl_sd->status.class == 4008)
                             pl_sd->status.class = pl_sd->view_class = 4014;
@@ -6464,12 +6464,12 @@ int atcommand_mount_peco (const int fd, struct map_session_data *sd,
 
     if (!pc_isriding (sd))
     {                           // if actually no peco
-        if (sd->status.class == 7 || sd->status.class == 14
+        if (/*sd->status.class == 7 ||*/ sd->status.class == 14
             || sd->status.class == 4008 || sd->status.class == 4015)
         {
-            if (sd->status.class == 7)
-                sd->status.class = sd->view_class = 13;
-            else if (sd->status.class == 14)
+//            if (sd->status.class == 7)
+//                sd->status.class = sd->view_class = 13;
+            if (sd->status.class == 14)
                 sd->status.class = sd->view_class = 21;
             else if (sd->status.class == 4008)
                 sd->status.class = sd->view_class = 4014;
@@ -6486,9 +6486,9 @@ int atcommand_mount_peco (const int fd, struct map_session_data *sd,
     }
     else
     {
-        if (sd->status.class == 13)
-            sd->status.class = sd->view_class = 7;
-        else if (sd->status.class == 21)
+//        if (sd->status.class == 13)
+//            sd->status.class = sd->view_class = 7;
+        if (sd->status.class == 21)
             sd->status.class = sd->view_class = 14;
         else if (sd->status.class == 4014)
             sd->status.class = sd->view_class = 4008;
@@ -6533,12 +6533,12 @@ int atcommand_char_mount_peco (const int fd, struct map_session_data *sd,
 
         if (!pc_isriding (pl_sd))
         {                       // if actually no peco
-            if (pl_sd->status.class == 7 || pl_sd->status.class == 14
+            if (/*pl_sd->status.class == 7 || */pl_sd->status.class == 14
                 || pl_sd->status.class == 4008 || pl_sd->status.class == 4015)
             {
-                if (pl_sd->status.class == 7)
-                    pl_sd->status.class = pl_sd->view_class = 13;
-                else if (pl_sd->status.class == 14)
+//                if (pl_sd->status.class == 7)
+//                    pl_sd->status.class = pl_sd->view_class = 13;
+                if (pl_sd->status.class == 14)
                     pl_sd->status.class = pl_sd->view_class = 21;
                 else if (pl_sd->status.class == 4008)
                     pl_sd->status.class = pl_sd->view_class = 4014;
@@ -6555,9 +6555,9 @@ int atcommand_char_mount_peco (const int fd, struct map_session_data *sd,
         }
         else
         {
-            if (pl_sd->status.class == 13)
-                pl_sd->status.class = pl_sd->view_class = 7;
-            else if (pl_sd->status.class == 21)
+//            if (pl_sd->status.class == 13)
+//                pl_sd->status.class = pl_sd->view_class = 7;
+            if (pl_sd->status.class == 21)
                 pl_sd->status.class = pl_sd->view_class = 14;
             else if (pl_sd->status.class == 4014)
                 pl_sd->status.class = pl_sd->view_class = 4008;

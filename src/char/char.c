@@ -3138,10 +3138,10 @@ int parse_char (int fd)
                     int  GM_value;
                     if ((GM_value = isGM (RFIFOL (fd, 2))))
                         printf
-                            ("Account Logged On; Account ID: %d (GM level %d).\n",
+                            ("Account Logged On; Account ID: %u (GM level %u).\n",
                              RFIFOL (fd, 2), GM_value);
                     else
-                        printf ("Account Logged On; Account ID: %d.\n",
+                        printf ("Account Logged On; Account ID: %u.\n",
                                 RFIFOL (fd, 2));
                     if (sd == NULL)
                     {
