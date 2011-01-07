@@ -2064,7 +2064,7 @@ int npc_parse_mob (char *w1, char *w2, char *w3, char *w4)
     delay1 = delay2 = 0;
     // �����̌��`�F�b�N
     if (sscanf (w1, "%23[^,],%d,%d,%d,%d", mapname, &x, &y, &xs, &ys) < 3 ||
-        sscanf (w4, "%d,%d,%d,%d,%s", &class, &num, &delay1, &delay2,
+        sscanf (w4, "%d,%d,%d,%d,%23s", &class, &num, &delay1, &delay2,
                 eventname) < 2)
     {
         printf ("bad monster line : %s\n", w3);
