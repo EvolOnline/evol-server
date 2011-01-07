@@ -1604,6 +1604,9 @@ int skill_additional_effect (struct block_list *src, struct block_list *bl,
 -------------------------------------------------------------------------*/
 int skill_blown (struct block_list *src, struct block_list *target, int count)
 {
+    nullpo_retr (0, src);
+    nullpo_retr (0, target);
+
     int  dx = 0, dy = 0, nx, ny;
     int  x = target->x, y = target->y;
     int  ret, prev_state = MS_IDLE;
@@ -1611,9 +1614,6 @@ int skill_blown (struct block_list *src, struct block_list *target, int count)
     struct map_session_data *sd = NULL;
     struct mob_data *md = NULL;
     struct skill_unit *su = NULL;
-
-    nullpo_retr (0, src);
-    nullpo_retr (0, target);
 
     if (target->type == BL_PC)
     {
@@ -2215,20 +2215,20 @@ static int skill_check_unit_range_sub (struct block_list *bl, va_list ap)
     }
     else if (skillid == AL_WARP)
     {
-        if ((unit->group->unit_id < 0x8f || unit->group->unit_id > 0x99)
-            && unit->group->unit_id != 0x92)
+        if (!unit->group || ((unit->group->unit_id < 0x8f || unit->group->unit_id > 0x99)
+            && unit->group->unit_id != 0x92))
             return 0;
     }
     else if ((skillid >= HT_SKIDTRAP && skillid <= HT_CLAYMORETRAP)
              || skillid == HT_TALKIEBOX)
     {
-        if ((unit->group->unit_id < 0x8f || unit->group->unit_id > 0x99)
-            && unit->group->unit_id != 0x92)
+        if (!unit->group || ((unit->group->unit_id < 0x8f || unit->group->unit_id > 0x99)
+            && unit->group->unit_id != 0x92))
             return 0;
     }
     else if (skillid == WZ_FIREPILLAR)
     {
-        if (unit->group->unit_id != 0x87)
+        if (!unit->group || unit->group->unit_id != 0x87)
             return 0;
     }
     else
@@ -2332,6 +2332,9 @@ static int skill_timerskill (int tid __attribute__ ((unused)),
 
     nullpo_retr (0, src);
 
+    if (data < 0 || data > MAX_SKILLTIMERSKILL)
+        return 0;
+
     if (src->prev == NULL)
         return 0;
 
@@ -2345,7 +2348,6 @@ static int skill_timerskill (int tid __attribute__ ((unused)),
         nullpo_retr (0, md = (struct mob_data *) src);
         skl = &md->skilltimerskill[data];
     }
-
     else
         return 0;
 
@@ -2614,6 +2616,11 @@ int skill_castend_damage_id (struct block_list *src, struct block_list *bl,
     nullpo_retr (1, src);
     nullpo_retr (1, bl);
 
+    if (skilllv >= MAX_SKILL_LEVEL)
+        skilllv = MAX_SKILL_LEVEL - 1;
+    else if (skilllv < 0)
+        skilllv = 0;
+
     if (src->type == BL_PC)
         sd = (struct map_session_data *) src;
     if (sd && pc_isdead (sd))
@@ -2699,7 +2706,7 @@ int skill_castend_damage_id (struct block_list *src, struct block_list *bl,
             struct status_change *sc_data = battle_get_sc_data (src);
             skill_attack (BF_WEAPON, src, src, bl, skillid, skilllv, tick,
                           flag);
-            if (sc_data[SC_BLADESTOP].timer != -1)
+            if (sc_data && sc_data[SC_BLADESTOP].timer != -1)
                 skill_status_change_end (src, SC_BLADESTOP, -1);
         }
             break;
@@ -3350,7 +3357,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
                 if ((map[bl->m].flag.pvp) && tsd->pvp_point < 0)
                     break;      /* PVP */
 
-                if (pc_isdead (tsd))
+                if (tsd && pc_isdead (tsd))
                 {
                     int  per = 0;
                     clif_skill_nodamage (src, bl, skillid, skilllv, 1);
@@ -5035,7 +5042,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
                 struct item item_tmp;
                 int  flag;
                 if ((bl->type == BL_SKILL) &&
-                    (su = (struct skill_unit *) bl) &&
+                    (su = (struct skill_unit *) bl) && su->group &&
                     (su->group->src_id == src->id || map[bl->m].flag.pvp
                      || map[bl->m].flag.gvg) && (su->group->unit_id >= 0x8f
                                                  && su->group->unit_id <=
@@ -6079,6 +6086,7 @@ struct skill_unit_group *skill_unitsetting (struct block_list *src,
             printf ("skill_castend_map: out of memory !\n");
             exit (1);
         }
+        //+++ may be need set 0 and position 80?
         memcpy (group->valstr, talkie_mes, 80);
     }
     for (i = 0; i < count; i++)
@@ -6670,7 +6678,7 @@ int skill_unit_onplace (struct skill_unit *src, struct block_list *bl,
                                            skill_get_time2 (sg->skill_id,
                                                             sg->skill_lv), 0);
             else if ((unit2 = (struct skill_unit *) sc_data[type].val2)
-                     && unit2 != src)
+                     && unit2 != src && unit2->group)
             {
                 if (DIFF_TICK (sg->tick, unit2->group->tick) > 0)
                     skill_status_change_start (bl, type, sg->skill_lv,
@@ -7042,6 +7050,7 @@ int skill_unit_onlimit (struct skill_unit *src,
                 printf ("skill_unit_onlimit: out of memory !\n");
                 exit (1);
             }
+            //+++ may be need set 0 at position 23?
             memcpy (group->valstr, sg->valstr, 24);
             group->val2 = sg->val2;
         }
@@ -7822,6 +7831,7 @@ int skill_check_condition (struct map_session_data *sd, int type)
             break;
         case ST_RECOV_WEIGHT_RATE:
             if (battle_config.natural_heal_weight_rate <= 100
+                && sd->max_weight != 0
                 && sd->weight * 100 / sd->max_weight >=
                 battle_config.natural_heal_weight_rate)
             {
@@ -8788,10 +8798,10 @@ void skill_devotion (struct map_session_data *md,
 
 void skill_devotion2 (struct block_list *bl, int crusader)
 {
+    nullpo_retv (bl);
+
     // 被ディボーションが歩いた時の距離チェック
     struct map_session_data *sd = map_id2sd (crusader);
-
-    nullpo_retv (bl);
 
     if (sd)
         skill_devotion3 (&sd->bl, bl->id);
@@ -10714,7 +10724,10 @@ int skill_status_effect (struct block_list *bl, int type, int val1, int val2,
             /* セーフティウォール、ニューマ */
         case SC_SAFETYWALL:
         case SC_PNEUMA:
-            tick = ((struct skill_unit *) val2)->group->limit;
+            if (((struct skill_unit *) val2)->group)
+                tick = ((struct skill_unit *) val2)->group->limit;
+            else
+                tick = 1;
             break;
 
             /* アンクル */
