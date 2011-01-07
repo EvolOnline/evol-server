@@ -7339,8 +7339,8 @@ int pc_setriding (struct map_session_data *sd)
     {                           // ���C�f�B���O�X�L������
         pc_setoption (sd, sd->status.option | 0x0020);
 
-        if (sd->status.class == 7)
-            sd->status.class = sd->view_class = 13;
+//        if (sd->status.class == 7)
+//            sd->status.class = sd->view_class = 13;
 
         if (sd->status.class == 14)
             sd->status.class = sd->view_class = 21;

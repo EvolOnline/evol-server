@@ -1351,7 +1351,7 @@ int clif_spawnpc (struct map_session_data *sd)
         pc_setoption (sd, sd->status.option | 0x0020);  // [Valaris]
 
     if ((pc_isriding (sd) && pc_checkskill (sd, KN_RIDING) > 0)
-        && (sd->status.class == 7 || sd->status.class == 14
+        && (/*sd->status.class == 7 ||*/ sd->status.class == 14
             || sd->status.class == 4008 || sd->status.class == 4015))
         pc_setriding (sd);      // update peco riders for people upgrading athena [Valaris]
 
@@ -8199,8 +8199,8 @@ void clif_parse_RemoveOption (int fd __attribute__ ((unused)), struct map_sessio
 {
     if (pc_isriding (sd))
     {                           // jobchange when removing peco [Valaris]
-        if (sd->status.class == 13)
-            sd->status.class = sd->view_class = 7;
+//        if (sd->status.class == 13)
+//            sd->status.class = sd->view_class = 7;
 
         if (sd->status.class == 21)
             sd->status.class = sd->view_class = 14;
