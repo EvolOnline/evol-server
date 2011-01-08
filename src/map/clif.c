@@ -286,7 +286,7 @@ int clif_send_sub (struct block_list *bl, va_list ap)
             break;
     }
 
-    if (session[sd->fd] != NULL)
+    if (buf && session[sd->fd] != NULL)
     {
         if (WFIFOP (sd->fd, 0) == buf)
         {
@@ -299,7 +299,7 @@ int clif_send_sub (struct block_list *bl, va_list ap)
         }
         else
         {
-            if (packet_len_table[RBUFW (buf, 0)])
+            if (RBUFW (buf, 0) < 0x220 && packet_len_table[RBUFW (buf, 0)])
             {                   // packet must exist
                 memcpy (WFIFOP (sd->fd, 0), buf, len);
                 WFIFOSET (sd->fd, len);
@@ -357,6 +357,9 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
     switch (type)
     {
         case ALL_CLIENT:       // �S�N���C�A���g�ɑ��M
+            if (RBUFW (buf, 0) >= 0x220)
+                break;
+
             for (i = 0; i < fd_max; i++)
             {
                 if (session[i] && (sd = session[i]->session_data) != NULL
@@ -372,6 +375,9 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
             break;
         case ALL_SAMEMAP:      // �����}�b�v�̑S�N���C�A���g�ɑ��M
             nullpo_retr (0, bl);
+            if (RBUFW (buf, 0) >= 0x220)
+                break;
+
             for (i = 0; i < fd_max; i++)
             {
                 if (session[i] && (sd = session[i]->session_data) != NULL
@@ -413,12 +419,12 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
             }
             else if (bl->type != BL_CHAT)
                 break;
-            if (cd == NULL)
+            if (cd == NULL || RBUFW (buf, 0) >= 0x220)
                 break;
             for (i = 0; i < cd->users; i++)
             {
-                if (type == CHAT_WOS
-                    && cd->usersd[i] == (struct map_session_data *) bl)
+                if (!cd->usersd[i] || (type == CHAT_WOS
+                    && cd->usersd[i] == (struct map_session_data *) bl))
                     continue;
                 if (packet_len_table[RBUFW (buf, 0)])
                 {               // packet must exist
@@ -453,7 +459,7 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
                         p = party_search (sd->status.party_id);
                 }
             }
-            if (p)
+            if (p && RBUFW (buf, 0) < 0x220)
             {
                 for (i = 0; i < MAX_PARTY; i++)
                 {
@@ -497,7 +503,7 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
         case SELF:
             nullpo_retr (0, bl);
             sd = (struct map_session_data *) bl;
-            if (packet_len_table[RBUFW (buf, 0)])
+            if (RBUFW (buf, 0) < 0x220 && packet_len_table[RBUFW (buf, 0)])
             {                   // packet must exist
                 memcpy (WFIFOP (sd->fd, 0), buf, len);
                 WFIFOSET (sd->fd, len);
@@ -516,7 +522,7 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
         case GUILD:
         case GUILD_WOS:
             nullpo_retr (0, bl);
-            if (bl && bl->type == BL_PC)
+            if (bl->type == BL_PC)
             {                   // guildspy [Syrus22]
                 sd = (struct map_session_data *) bl;
                 if (sd->guildspy > 0)
@@ -529,7 +535,7 @@ int clif_send (unsigned char *buf, int len, struct block_list *bl, int type)
                         g = guild_search (sd->status.guild_id);
                 }
             }
-            if (g)
+            if (g && RBUFW (buf, 0) < 0x220)
             {
                 for (i = 0; i < g->max_member; i++)
                 {
@@ -1288,8 +1294,8 @@ static int equip_points[LOOK_LAST + 1] = {
     1,                          /* cape */
     7,                          /* misc1 */
     0,                          /* misc2 */
-    0,                          /* evol ring 1? */
-    0,                          /* evol ring 2? */
+    11,                          /* evol ring 1? */
+    12,                          /* evol ring 2? */
 };
 
 /*==========================================
@@ -1894,7 +1900,10 @@ int clif_cutin (struct map_session_data *sd, char *image, int type)
     fd = sd->fd;
 
     WFIFOW (fd, 0) = 0x1b3;
-    memcpy (WFIFOP (fd, 2), image, 64);
+    int sz = strlen(image);
+    if (sz > 64)
+        sz = 64;
+    memcpy (WFIFOP (fd, 2), image, sz);
     WFIFOB (fd, 66) = type;
     WFIFOSET (fd, packet_len_table[0x1b3]);
 
@@ -2345,6 +2354,7 @@ int clif_guildstorageequiplist (struct map_session_data *sd,
     unsigned char *buf;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, stor);
 
     fd = sd->fd;
 
@@ -3018,6 +3028,8 @@ int clif_useitemack (struct map_session_data *sd, int index, int amount,
                      int ok)
 {
     nullpo_retr (0, sd);
+    if (index < 0 || index >= MAX_INVENTORY)
+        return 0;
 
     if (!ok)
     {

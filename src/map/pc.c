@@ -8002,6 +8002,15 @@ int pc_equipitem (struct map_session_data *sd, int n, int pos)
         sd->status.head_mid = view;
         clif_changelook (&sd->bl, LOOK_HEAD_MID, sd->status.head_mid);
     }
+    if (sd->status.inventory[n].equip & 0x0400)
+    {
+        clif_changelook (&sd->bl, LOOK_EVOL_RING1, view);
+    }
+    if (sd->status.inventory[n].equip & 0x0800)
+    {
+        clif_changelook (&sd->bl, LOOK_EVOL_RING2, view);
+    }
+
     pc_signal_advanced_equipment_change (sd, n);
 
     pc_checkallowskill (sd);    // �����i�ŃX�L����������邩�`�F�b�N
@@ -8091,6 +8100,14 @@ int pc_unequipitem (struct map_session_data *sd, int n, int type)
         {
             sd->status.head_mid = 0;
             clif_changelook (&sd->bl, LOOK_HEAD_MID, sd->status.head_mid);
+        }
+        if (sd->status.inventory[n].equip & 0x0400)
+        {
+            clif_changelook (&sd->bl, LOOK_EVOL_RING1, 0);
+        }
+        if (sd->status.inventory[n].equip & 0x0800)
+        {
+            clif_changelook (&sd->bl, LOOK_EVOL_RING2, 0);
         }
         pc_signal_advanced_equipment_change (sd, n);
 
