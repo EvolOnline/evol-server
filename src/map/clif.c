@@ -5159,6 +5159,7 @@ int clif_item_skill (struct map_session_data *sd, int skillid, int skilllv,
     int  range, fd;
 
     nullpo_retr (0, sd);
+    nullpo_retr (0, name);
 
     fd = sd->fd;
 
@@ -5289,7 +5290,7 @@ int clif_cart_itemlist (struct map_session_data *sd)
         if (sd->status.cart[i].nameid <= 0)
             continue;
         id = itemdb_search (sd->status.cart[i].nameid);
-        if (itemdb_isequip2 (id))
+        if (!id || itemdb_isequip2 (id))
             continue;
         WBUFW (buf, n * 18 + 4) = i + 2;
         if (id->view_id > 0)
@@ -5424,7 +5425,7 @@ int clif_party_created (struct map_session_data *sd, int flag)
  */
 int clif_party_info (struct party *p, int fd)
 {
-    unsigned char buf[1024];
+    unsigned char buf[2024];
     int  i, c;
     struct map_session_data *sd = NULL;
 
@@ -5437,6 +5438,7 @@ int clif_party_info (struct party *p, int fd)
         struct party_member *m = &p->member[i];
         if (m && m->account_id > 0)
         {
+            //+++ may be from here bug. party not working for first member connected after server restart.
             if (sd == NULL)
                 sd = m->sd;
             WBUFL (buf, 28 + c * 46) = m->account_id;
@@ -5530,7 +5532,6 @@ int clif_party_option (struct party *p, struct map_session_data *sd, int flag)
     unsigned char buf[16];
 
     nullpo_retr (0, p);
-    nullpo_retr (0, sd);
 
 //  if(battle_config.etc_log)
 //      printf("clif_party_option: %d %d %d\n",p->exp,p->item,flag);
@@ -5541,6 +5542,8 @@ int clif_party_option (struct party *p, struct map_session_data *sd, int flag)
             if ((sd = map_id2sd (p->member[i].account_id)) != NULL)
                 break;
     }
+
+    nullpo_retr (0, sd);
 
     WBUFW (buf, 0) = 0x101;
     WBUFW (buf, 2) = ((flag & 0x01) ? 2 : p->exp);
@@ -5611,7 +5614,7 @@ int clif_party_message (struct party *p, int account_id, char *mes, int len)
     }
     if (sd != NULL)
     {
-        unsigned char buf[1024];
+        unsigned char buf[2024];
         WBUFW (buf, 0) = 0x109;
         WBUFW (buf, 2) = len + 8;
         WBUFL (buf, 4) = account_id;
@@ -5880,6 +5883,7 @@ int clif_changemapcell (int m, int x, int y, int cell_type, int type)
     WBUFW (buf, 2) = x;
     WBUFW (buf, 4) = y;
     WBUFW (buf, 6) = cell_type;
+    //+++ need check m?
     memcpy (WBUFP (buf, 8), map[m].name, 16);
     if (!type)
         clif_send (buf, packet_len_table[0x192], &bl, AREA);
@@ -5984,6 +5988,8 @@ int clif_guild_belonginfo (struct map_session_data *sd, struct guild *g)
     fd = sd->fd;
 
     ps = guild_getposition (sd, g);
+    if (ps < 0 || ps >= MAX_GUILDPOSITION)
+        return 0;
 
     memset (WFIFOP (fd, 0), 0, packet_len_table[0x16c]);
     WFIFOW (fd, 0) = 0x16c;
@@ -6315,7 +6321,7 @@ int clif_guild_memberpositionchanged (struct guild *g, int idx)
 
     nullpo_retr (0, g);
 
-    if (idx < 0 || idx >= MAX_GUILDPOSITION)
+    if (idx < 0 || idx >= MAX_GUILD)
         return 0;
 
     WBUFW (buf, 0) = 0x156;
@@ -7460,14 +7466,13 @@ void clif_parse_GlobalMessage (int fd, struct map_session_data *sd)
 int clif_message (struct block_list *bl, char *msg)
 {
     nullpo_retr (0, msg);
+    nullpo_retr (0, bl);
 
     unsigned short msg_len = strlen (msg) + 1;
     unsigned char buf[512];
 
     if (msg_len + 16 > 512)
         return 0;
-
-    nullpo_retr (0, bl);
 
     WBUFW (buf, 0) = 0x8d;
     WBUFW (buf, 2) = msg_len + 8;
@@ -7794,8 +7799,8 @@ void clif_parse_GMmessage (int fd, struct map_session_data *sd)
         (pc_isGM (sd) >= get_atcommand_level (AtCommand_Broadcast)))
     {
         int sz = RFIFOW (fd, 2) - 4;
-        if (sz > 512)
-            sz = 512;
+        if (sz > 511)
+            sz = 511;
         safestrncpy (m, RFIFOP (fd, 4), sz);
 //        m[sz] = 0;
         log_atcommand (sd, "/announce %s", m);
@@ -7939,7 +7944,7 @@ void clif_parse_EquipItem (int fd, struct map_session_data *sd)
     //�y�b�g�p�����ł��邩�Ȃ���
     if (sd->inventory_data[index])
     {
-        if (sd->inventory_data[index] && sd->inventory_data[index]->type == 10)
+        if (sd->inventory_data[index]->type == 10)
             RFIFOW (fd, 4) = 0x8000;    // ���𖳗����葕���ł����悤�Ɂi�|�|�G
         pc_equipitem (sd, index, RFIFOW (fd, 4));
     }
@@ -8367,6 +8372,7 @@ void clif_parse_UseSkillToPos (int fd, struct map_session_data *sd)
             return;
         }
         memcpy (talkie_mes, RFIFOP (fd, skillmoreinfo), 80);
+        talkie_mes[79] = 0;
     }
 
     if (sd->skilltimer != -1)
@@ -8612,7 +8618,8 @@ void clif_parse_LGMmessage (int fd, struct map_session_data *sd)
     nullpo_retv (sd);
 
     if ((battle_config.atc_gmonly == 0 || pc_isGM (sd)) &&
-        (pc_isGM (sd) >= get_atcommand_level (AtCommand_LocalBroadcast)))
+        (pc_isGM (sd) >= get_atcommand_level (AtCommand_LocalBroadcast)) &&
+        RFIFOW (fd, 2) > 4)
     {
         WBUFW (buf, 0) = 0x9a;
         WBUFW (buf, 2) = RFIFOW (fd, 2);
@@ -8837,7 +8844,7 @@ void clif_parse_PartyMessage (int fd, struct map_session_data *sd)
         clif_displaymessage (fd, msg_txt (505));
         return;
     }
-    
+
     if (is_atcommand (fd, sd, message, 0) != AtCommand_None
             || (sd->sc_data && (sd->sc_data[SC_BERSERK].timer != -1
                                 || sd->sc_data[SC_NOCHAT].timer != -1)))
@@ -9216,6 +9223,7 @@ void clif_parse_Shift (int fd, struct map_session_data *sd)
         (pc_isGM (sd) >= get_atcommand_level (AtCommand_Goto)))
     {
         memcpy (player_name, RFIFOP (fd, 2), 24);
+        player_name[23] = 0;
         log_atcommand (sd, "@goto %s", player_name);
         atcommand_goto (fd, sd, "@goto", player_name);  // as @jumpto
     }
@@ -9239,6 +9247,7 @@ void clif_parse_Recall (int fd, struct map_session_data *sd)
         (pc_isGM (sd) >= get_atcommand_level (AtCommand_Recall)))
     {
         memcpy (player_name, RFIFOP (fd, 2), 24);
+        player_name[23] = 0;
         log_atcommand (sd, "@recall %s", player_name);
         atcommand_recall (fd, sd, "@recall", player_name);  // as @recall
     }
@@ -9372,12 +9381,13 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
                 && i == (sizeof (sd->ignore) / sizeof (sd->ignore[0])))
             {
                 memcpy (sd->ignore[pos].name, nick, 24);
+                sd->ignore[pos].name[23] = 0;
                 WFIFOB (fd, 3) = 0; // success
                 WFIFOSET (fd, packet_len_table[0x0d1]);
                 if (strcmp (wisp_server_name, nick) == 0)
                 {               // to found possible bot users that automaticaly ignores people.
                     sprintf (output,
-                             "Character '%s' (account: %d) has tried to block wisps from '%s' (wisp name of the server). Bot user?",
+                             "Character '%s' (account: %u) has tried to block wisps from '%s' (wisp name of the server). Bot user?",
                              sd->status.name, sd->status.account_id,
                              wisp_server_name);
                     intif_wis_message_to_gm (wisp_server_name,
@@ -9403,7 +9413,7 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
                     if (strcmp (wisp_server_name, nick) == 0)
                     {           // to found possible bot users that automaticaly ignores people.
                         sprintf (output,
-                                 "Character '%s' (account: %d) has tried to block wisps from '%s' (wisp name of the server). Bot user?",
+                                 "Character '%s' (account: %u) has tried to block wisps from '%s' (wisp name of the server). Bot user?",
                                  sd->status.name, sd->status.account_id,
                                  wisp_server_name);
                         intif_wis_message_to_gm (wisp_server_name,
@@ -9421,7 +9431,7 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
                     if (strcmp (wisp_server_name, nick) == 0)
                     {           // to found possible bot users that automaticaly ignores people.
                         sprintf (output,
-                                 "Character '%s' (account: %d) has tried AGAIN to block wisps from '%s' (wisp name of the server). Bot user?",
+                                 "Character '%s' (account: %u) has tried AGAIN to block wisps from '%s' (wisp name of the server). Bot user?",
                                  sd->status.name, sd->status.account_id,
                                  wisp_server_name);
                         intif_wis_message_to_gm (wisp_server_name,
@@ -9481,6 +9491,9 @@ void clif_parse_PMIgnore (int fd, struct map_session_data *sd)
 
 void clif_parse_PMIgnoreAll (int fd, struct map_session_data *sd)
 {                               // Rewritten by [Yor]
+    if (!sd)
+        return;
+
     //printf("Ignore all: state: %d\n", RFIFOB(fd,2));
     if (RFIFOB (fd, 2) == 0)
     {                           // S 00d0 <type>len.B: 00 (/exall) deny all speech, 01 (/inall) allow all speech
@@ -10181,8 +10194,8 @@ int clif_check_packet_flood(fd, cmd)
     // WantToConnection yet. Do not apply flood logic to GMs
     // as approved bots (GMlvl1) should not have to work around
     // flood logic.
-    if (!sd || pc_isGM(sd) || clif_parse_func_table[cmd].rate == -1)
-	return 0;
+    if (pc_isGM(sd) || clif_parse_func_table[cmd].rate == -1)
+        return 0;
 
     // Timer has wrapped
     if (tick < sd->flood_rates[cmd])
@@ -10388,7 +10401,7 @@ static int clif_parse (int fd)
     int  packet_len = 0, cmd = 0;
     struct map_session_data *sd = NULL;
 
-    if (!session[fd])
+    if (fd < 0 || !session[fd])
         return 0;
 
     sd = session[fd]->session_data;
@@ -10522,14 +10535,14 @@ static int clif_parse (int fd)
                 {
                     if (sd->status.name != NULL)
                         printf
-                            ("\nAccount ID %d, character ID %d, player name %s.\n",
+                            ("\nAccount ID %u, character ID %u, player name %s.\n",
                              sd->status.account_id, sd->status.char_id,
                              sd->status.name);
                     else
-                        printf ("\nAccount ID %d.\n", sd->bl.id);
+                        printf ("\nAccount ID %u.\n", sd->bl.id);
                 }
                 else if (sd)    // not authentified! (refused by char-server or disconnect before to be authentified)
-                    printf ("\nAccount ID %d.\n", sd->bl.id);
+                    printf ("\nAccount ID %u.\n", sd->bl.id);
 
                 if ((fp = fopen_ (packet_txt, "a")) == NULL)
                 {
