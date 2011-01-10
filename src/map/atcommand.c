@@ -8916,8 +8916,11 @@ atcommand_magic_info (const int fd, struct map_session_data *sd,
 
 static void set_skill (struct map_session_data *sd, int i, int level)
 {
-    if (!sd || i < 0 || i >= MAX_SKILL)
+    if (!sd || i < 0 || i >= MAX_SKILL || skill_db[i].max == 0)
         return;
+
+    if (level > skill_db[i].max)
+        level = skill_db[i].max;
 
     sd->status.skill[i].id = level ? i : 0;
     sd->status.skill[i].lv = level;
