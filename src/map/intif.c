@@ -1038,7 +1038,7 @@ int intif_parse_GuildMemberInfoChanged (int fd)
     int  idx, dd = *((int *) data);
 
     idx = guild_getindex (g, account_id, char_id);
-    if (idx < 0 || idx > MAX_GUILD)
+    if (idx < 0 || idx >= MAX_GUILD)
         return 0;
 
     switch (type)

@@ -2332,7 +2332,7 @@ static int skill_timerskill (int tid __attribute__ ((unused)),
 
     nullpo_retr (0, src);
 
-    if (data < 0 || data > MAX_SKILLTIMERSKILL)
+    if (data < 0 || data >= MAX_SKILLTIMERSKILL)
         return 0;
 
     if (src->prev == NULL)
@@ -12042,7 +12042,7 @@ int skill_readdb (void)
         }
 
         i = atoi (split[0]);
-        if (i < 0 || i > MAX_SKILL_DB)
+        if (i < 0 || i >= MAX_SKILL_DB)
             continue;
 
         memset (split2, 0, sizeof (split2));
@@ -12155,7 +12155,7 @@ int skill_readdb (void)
             continue;
 
         i = atoi (split[0]);
-        if (i < 0 || i > MAX_SKILL_DB)
+        if (i < 0 || i >= MAX_SKILL_DB)
             continue;
 
         memset (split2, 0, sizeof (split2));
@@ -12338,7 +12338,7 @@ int skill_readdb (void)
             continue;
 
         i = atoi (split[0]);
-        if (i < 0 || i > MAX_SKILL_DB)
+        if (i < 0 || i >= MAX_SKILL_DB)
             continue;
 
         memset (split2, 0, sizeof (split2));
@@ -12415,7 +12415,7 @@ int skill_readdb (void)
         }
 
         i = atoi (split[0]);
-        if (i < 0 || i > MAX_SKILL_DB)
+        if (i < 0 || i >= MAX_SKILL_DB)
             continue;
 
         memset (split2, 0, sizeof (split2));

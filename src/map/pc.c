@@ -256,7 +256,7 @@ static int pc_spiritball_timer (int tid, unsigned int tick __attribute__ ((unuse
         return 0;
     }
     sd->spirit_timer[0] = -1;
-    for (i = 1; i < sd->spiritball; i++)
+    for (i = 1; i < sd->spiritball && i < MAX_SKILL_LEVEL; i++)
     {
         sd->spirit_timer[i - 1] = sd->spirit_timer[i];
         sd->spirit_timer[i] = -1;
@@ -296,9 +296,12 @@ int pc_addspiritball (struct map_session_data *sd, int interval, int max)
     else
         sd->spiritball++;
 
-    sd->spirit_timer[sd->spiritball - 1] =
-        add_timer (gettick () + interval, pc_spiritball_timer, sd->bl.id, 0);
-    clif_spiritball (sd);
+    if (sd->spiritball >= 1 && sd->spiritball <= MAX_SKILL_LEVEL)
+    {
+        sd->spirit_timer[sd->spiritball - 1] =
+            add_timer (gettick () + interval, pc_spiritball_timer, sd->bl.id, 0);
+        clif_spiritball (sd);
+    }
 
     return 0;
 }
@@ -1046,7 +1049,10 @@ static int pc_calc_skillpoint (struct map_session_data *sd)
 
     nullpo_retr (0, sd);
 
-    for (i = 0; i < skill_pool_skills_size; i++) {
+    for (i = 0; i < skill_pool_skills_size; i++)
+    {
+        if (skill_pool_skills[i] < 0 || skill_pool_skills[i] >= MAX_SKILL)
+            continue;
         int lv = sd->status.skill[skill_pool_skills[i]].lv;
         if (lv)
             skill_points += ((lv * (lv - 1)) >> 1) - 1;
@@ -1494,7 +1500,7 @@ int pc_calcstatus (struct map_session_data *sd, int first)
             continue;
 
         index = sd->equip_index[i];
-        if (index < 0)
+        if (index < 0 || index >= MAX_INVENTORY)
             continue;
         if (i == 9 && sd->equip_index[8] == index)
             continue;
@@ -1579,13 +1585,12 @@ int pc_calcstatus (struct map_session_data *sd, int first)
     // �����i�ɂ����X�e�[�^�X�ω��͂����Ŏ�s
     for (i = 0; i < MAX_EQUIP_SIZE; i++)
     {
-
         //+++ skip arrow slot?
         if (i == 10)
             continue;
 
         index = sd->equip_index[i];
-        if (index < 0)
+        if (index < 0 || index >= MAX_INVENTORY)
             continue;
         if (i == 9 && sd->equip_index[8] == index)
             continue;
@@ -3819,7 +3824,7 @@ int pc_remove_items (struct map_session_data *player, int item_id, int count)
             pc_delitem (player, i, to_delete,
                         0 /* means `really delete and update status' */ );
 
-            if (!count)
+            if (!count || count < 0)
                 return 0;
         }
     }
@@ -4412,10 +4417,19 @@ int pc_steal_item (struct map_session_data *sd, struct block_list *bl)
 
                     if (itemid > 0 && itemdb_type (itemid) != 6)
                     {
-                        rate =
-                            (mob_db[md->class].dropitem[i].p /
-                             battle_config.item_rate_common * 100 * skill) /
-                            100;
+                        if (!battle_config.item_rate_common)
+                        {
+                            rate =
+                                (mob_db[md->class].dropitem[i].p /
+                                 battle_config.item_rate_common * 100 * skill) /
+                                100;
+                        }
+                        else
+                        {
+                            rate =
+                                (mob_db[md->class].dropitem[i].p /
+                                 1 * 100 * skill) / 100;
+                        }
 
                         if (rand () % 10000 < rate)
                         {
@@ -6060,7 +6074,7 @@ int pc_skillup (struct map_session_data *sd, int skill_num)
 {
     nullpo_retr (0, sd);
 
-    if (skill_num < 0 || skill_num > MAX_SKILL)
+    if (skill_num < 0 || skill_num >= MAX_SKILL)
         return 0;
 
     if (sd->status.skill[skill_num].id != 0
@@ -6228,6 +6242,9 @@ int pc_resetstate (struct map_session_data *sd)
 //  int add=0; // Removed by Dexity
 
     nullpo_retr (0, sd);
+
+    if (sd->status.base_level < 1)
+        return 0;
 
 //  New statpoint table used here - Dexity
     sd->status.status_point = atoi (statp[sd->status.base_level - 1]);
@@ -6920,7 +6937,9 @@ pc_heal_quick_accumulate (int new_amount,
 
     int  new_speed = pc_heal_quick_speed (new_amount);
 
-    int  average_speed = ((new_speed * new_amount) + (current_speed * current_amount)) / (current_amount + new_amount); // new_amount > 0, current_amount >= 0
+    int  average_speed = 1;
+    if (current_amount != new_amount)
+        average_speed = ((new_speed * new_amount) + (current_speed * current_amount)) / (current_amount + new_amount); // new_amount > 0, current_amount >= 0
 
     quick_regen->speed = average_speed;
     quick_regen->amount = MIN (current_amount + new_amount, max);
@@ -7689,6 +7708,7 @@ int pc_percentrefinery (struct map_session_data *sd, struct item *item)
 
     nullpo_retr (0, item);
 
+    //++++ need check itemdb_wlv (item->nameid)?
     percent = percentrefinery[itemdb_wlv (item->nameid)][(int) item->refine];
     percent += pc_checkskill (sd, BS_WEAPONRESEARCH);   // ���팤���X�L������
 
