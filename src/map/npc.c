@@ -1263,6 +1263,8 @@ int npc_selllist (struct map_session_data *sd, int n,
             sd->status.inventory[item_list[i * 2] - 2].amount <
             item_list[i * 2 + 1])
             return 1;
+        if (!sd->inventory_data[i] || sd->inventory_data[i]->attr & ITEM_ATTR_DONTSELL)
+            return 3;           // cant sell restricted item
         if (sd->trade_partner != 0)
             return 2;           // cant sell while trading
         if (itemdb_value_notoc (nameid))

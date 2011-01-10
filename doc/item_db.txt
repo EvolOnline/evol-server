@@ -15,6 +15,7 @@ Attr: Item attribute flags
    64   0x0040   0000 0000 0100 0000   Dont equip
   128   0x0080   0000 0000 1000 0000   Dont remove in magic use
   256   0x0100   0000 0001 0000 0000   Dont move to guild storage
+  512   0x0200   0000 0010 0000 0000   Dont sell
 
 Type: 
     0   Usable item (after using removed).

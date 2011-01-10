@@ -1725,7 +1725,7 @@ int clif_selllist (struct map_session_data *sd)
         if (sd->status.inventory[i].nameid > 0 && sd->inventory_data[i])
         {
             val = sd->inventory_data[i]->value_sell;
-            if (val < 0)
+            if (val < 0 || (sd->inventory_data[i]->attr & ITEM_ATTR_DONTSELL))
                 continue;
             WFIFOW (fd, 4 + c * 10) = i + 2;
             WFIFOL (fd, 6 + c * 10) = val;
