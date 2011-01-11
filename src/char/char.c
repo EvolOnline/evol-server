@@ -946,12 +946,12 @@ int make_new_char (int fd, unsigned char *dat)
     struct char_session_data *sd;
 
     if (!session[fd])
-        return -1;
+        return 1;
 
     sd = session[fd]->session_data;
 
     if (!sd)
-        return -1;
+        return 1;
 
     // remove control characters from the name
     dat[23] = '\0';
@@ -960,7 +960,7 @@ int make_new_char (int fd, unsigned char *dat)
         char_log
             ("Make new char error (control char received in the name): (connection #%d, account: %d)."
              RETCODE, fd, sd->account_id);
-        return -1;
+        return 1;
     }
 
     // Eliminate whitespace
@@ -973,7 +973,7 @@ int make_new_char (int fd, unsigned char *dat)
         char_log
             ("Make new char error (character name too small): (connection #%d, account: %d, name: '%s')."
              RETCODE, fd, sd->account_id, dat);
-        return -1;
+        return 1;
     }
 
     // Check Authorised letters/symbols in the name of the character
@@ -985,7 +985,7 @@ int make_new_char (int fd, unsigned char *dat)
                 char_log
                     ("Make new char error (invalid letter in the name): (connection #%d, account: %d), name: %s, invalid letter: %c."
                      RETCODE, fd, sd->account_id, dat, dat[i]);
-                return -1;
+                return 2;
             }
     }
     else if (char_name_option == 2)
@@ -996,13 +996,22 @@ int make_new_char (int fd, unsigned char *dat)
                 char_log
                     ("Make new char error (invalid letter in the name): (connection #%d, account: %d), name: %s, invalid letter: %c."
                      RETCODE, fd, sd->account_id, dat, dat[i]);
-                return -1;
+                return 2;
             }
     }                           // else, all letters/symbols are authorised (except control char removed before)
 
-    if (dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29] != 5 * 6 ||   // stats
-        dat[30] >= 9 ||         // slots (dat[30] can not be negativ)
-        dat[33] < min_hair_style || dat[33] >= max_hair_style || // hair style
+    if (dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29] != 5 * 6)   // stats
+    {
+        char_log
+            ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"
+             RETCODE, fd, sd->account_id, dat[30], dat, dat[24], dat[25],
+             dat[26], dat[27], dat[28], dat[29],
+             dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
+             dat[33], dat[31]);
+        return 3;
+    }
+
+    if (dat[33] < min_hair_style || dat[33] >= max_hair_style || // hair style
         dat[31] < min_hair_color || dat[31] >= max_hair_color)
     {                           // hair color (dat[31] can not be negativ)
         char_log
@@ -1011,7 +1020,18 @@ int make_new_char (int fd, unsigned char *dat)
              dat[26], dat[27], dat[28], dat[29],
              dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
              dat[33], dat[31]);
-        return -1;
+        return 4;
+    }
+
+    if (dat[30] >= 9)
+    {
+        char_log
+            ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"
+             RETCODE, fd, sd->account_id, dat[30], dat, dat[24], dat[25],
+             dat[26], dat[27], dat[28], dat[29],
+             dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
+             dat[33], dat[31]);
+        return 1;
     }
 
     // check individual stat value
@@ -1025,7 +1045,7 @@ int make_new_char (int fd, unsigned char *dat)
                  dat[26], dat[27], dat[28], dat[29],
                  dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
                  dat[33], dat[31]);
-            return -1;
+            return 1;
         }
     }
 
@@ -1041,7 +1061,7 @@ int make_new_char (int fd, unsigned char *dat)
                  dat[24], dat[25], dat[26], dat[27], dat[28], dat[29],
                  dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
                  dat[33], dat[31]);
-            return -1;
+            return 1;
         }
         if (char_dat[i].account_id == sd->account_id
             && char_dat[i].char_num == dat[30])
@@ -1052,7 +1072,7 @@ int make_new_char (int fd, unsigned char *dat)
                  dat[24], dat[25], dat[26], dat[27], dat[28], dat[29],
                  dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
                  dat[33], dat[31]);
-            return -1;
+            return 1;
         }
     }
 
@@ -1064,7 +1084,7 @@ int make_new_char (int fd, unsigned char *dat)
              dat[24], dat[25], dat[26], dat[27], dat[28], dat[29],
              dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
              dat[33], dat[31]);
-        return -1;
+        return 1;
     }
 
     if (char_num >= char_max)
@@ -3401,10 +3421,10 @@ int parse_char (int fd)
                 if (!sd || RFIFOREST (fd) < 37)
                     return 0;
                 i = make_new_char (fd, RFIFOP (fd, 2));
-                if (i < 0)
+                if (i != 0)
                 {
                     WFIFOW (fd, 0) = 0x6e;
-                    WFIFOB (fd, 2) = 0x00;
+                    WFIFOB (fd, 2) = i;
                     WFIFOSET (fd, 3);
                     RFIFOSKIP (fd, 37);
                     break;
