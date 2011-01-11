@@ -1289,7 +1289,7 @@ int mmo_auth_new (struct mmo_account *account, char sex, char *email)
 //---------------------------------------
 int mmo_auth (struct mmo_account *account, int fd)
 {
-    if (!account)
+    if (!account || !account->userid)
         return 1;
 
     int  i;
@@ -1306,7 +1306,15 @@ int mmo_auth (struct mmo_account *account, int fd)
     sprintf (ip, "%d.%d.%d.%d", sin_addr[0], sin_addr[1], sin_addr[2],
              sin_addr[3]);
 
-    len = strlen (account->userid) - 2;
+    if (!account->userid)
+        return 0;
+
+    len = strlen (account->userid);
+    if (len <= 2)
+        return 0;
+
+    len -= 2;
+
     // Account creation with _M/_F
     if (account->passwdenc == 0 && account->userid[len] == '_' &&
         (account->userid[len + 1] == 'F' || account->userid[len + 1] == 'M')
@@ -3719,7 +3727,7 @@ int parse_login (int fd)
                 break;
 
             case 0x64:         // Ask connection of a client
-            case 0x01dd:       // Ask connection of a client (encryption mode)
+//            case 0x01dd:       // Ask connection of a client (encryption mode)
                 if (RFIFOREST (fd) < ((RFIFOW (fd, 0) == 0x64) ? 55 : 47))
                     return 0;
 
@@ -3942,6 +3950,7 @@ int parse_login (int fd)
                 RFIFOSKIP (fd, (RFIFOW (fd, 0) == 0x64) ? 55 : 47);
                 break;
 
+/*
             case 0x01db:       // Sending request of the coding key
             case 0x791a:       // Sending request of the coding key (administration packet)
             {
@@ -3985,7 +3994,7 @@ int parse_login (int fd)
                 WFIFOSET (fd, WFIFOW (fd, 2));
             }
                 break;
-
+*/
             case 0x2710:       // Connection request of a char-server
                 if (RFIFOREST (fd) < 86)
                     return 0;
@@ -4111,6 +4120,7 @@ int parse_login (int fd)
                 session[fd]->eof = 1;
                 return 0;
 
+/*
             case 0x7918:       // Request for administation login
                 if (RFIFOREST (fd) < 4
                     || RFIFOREST (fd) < ((RFIFOW (fd, 2) == 0) ? 28 : 20))
@@ -4199,6 +4209,7 @@ int parse_login (int fd)
                 WFIFOSET (fd, 3);
                 RFIFOSKIP (fd, (RFIFOW (fd, 2) == 0) ? 28 : 20);
                 break;
+*/
 
             default:
                 if (save_unknown_packets)
