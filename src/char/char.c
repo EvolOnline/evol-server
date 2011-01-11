@@ -82,7 +82,7 @@ struct char_session_data
 {
     int  account_id, login_id1, login_id2, sex;
     unsigned short packet_tmw_version;
-    int  found_char[9];
+    int  found_char[MAX_SLOTS];
     char email[40];             // e-mail (default: a@a.com) by [Yor]
     time_t connect_until_time;  // # of seconds 1/1/1970 (timestamp): Validity limit of the account (0 = unlimited)
 };
@@ -1023,7 +1023,7 @@ int make_new_char (int fd, unsigned char *dat)
         return 4;
     }
 
-    if (dat[30] >= 9)
+    if (dat[30] >= MAX_SLOTS)
     {
         char_log
             ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"
@@ -1739,11 +1739,11 @@ int mmo_char_send006b (int fd, struct char_session_data *sd)
         {
             sd->found_char[found_num] = i;
             found_num++;
-            if (found_num == 9)
+            if (found_num == MAX_SLOTS)
                 break;
         }
     }
-    for (i = found_num; i < 9; i++)
+    for (i = found_num; i < MAX_SLOTS; i++)
         sd->found_char[i] = -1;
 
     memset (WFIFOP (fd, 0), 0, offset + found_num * 106);
@@ -2364,7 +2364,7 @@ int parse_tologin (int fd)
                                         && sd2->account_id ==
                                         char_dat[char_num - 1].account_id)
                                     {
-                                        for (k = 0; k < 9; k++)
+                                        for (k = 0; k < MAX_SLOTS; k++)
                                         {
                                             if (sd2->found_char[k] ==
                                                 char_num - 1)
@@ -3267,12 +3267,12 @@ int parse_char (int fd)
                 }
                 else
                 {
-                    for (ch = 0; ch < 9; ch++)
+                    for (ch = 0; ch < MAX_SLOTS; ch++)
                         if (sd->found_char[ch] >= 0
                             && char_dat[sd->found_char[ch]].char_num ==
                             RFIFOB (fd, 2))
                             break;
-                    if (ch != 9)
+                    if (ch != MAX_SLOTS)
                     {
                         char_log
                             ("Character Selected, Account ID: %d, Character Slot: %d, Character Name: %s [%s]"
@@ -3483,7 +3483,7 @@ int parse_char (int fd)
 
                 WFIFOSET (fd, 108);
                 RFIFOSKIP (fd, 37);
-                for (ch = 0; ch < 9; ch++)
+                for (ch = 0; ch < MAX_SLOTS; ch++)
                 {
                     if (sd->found_char[ch] == -1)
                     {
@@ -3515,7 +3515,7 @@ int parse_char (int fd)
                     else
                     {
                         // we change the packet to set it like selection.
-                        for (i = 0; i < 9; i++)
+                        for (i = 0; i < MAX_SLOTS; i++)
                             if (char_dat[sd->found_char[i]].char_id ==
                                 RFIFOL (fd, 2))
                             {
@@ -3535,7 +3535,7 @@ int parse_char (int fd)
                                 // not send packet, it's modify of actual packet
                                 break;
                             }
-                        if (i == 9)
+                        if (i == MAX_SLOTS)
                         {
                             WFIFOW (fd, 0) = 0x70;
                             WFIFOB (fd, 2) = 0; // 00 = Incorrect Email address
@@ -3554,7 +3554,7 @@ int parse_char (int fd)
                      * WFIFOSET(fd, 3);
                      * // if mail is correct
                      * } else { */
-                    for (i = 0; i < 9; i++)
+                    for (i = 0; i < MAX_SLOTS; i++)
                     {
                         struct mmo_charstatus *cs = NULL;
                         if (sd->found_char[i] >= 0
@@ -3581,7 +3581,7 @@ int parse_char (int fd)
                                             && sd2->account_id ==
                                             char_dat[char_num - 1].account_id)
                                         {
-                                            for (k = 0; k < 9; k++)
+                                            for (k = 0; k < MAX_SLOTS; k++)
                                             {
                                                 if (sd2->found_char[k] ==
                                                     char_num - 1)
@@ -3598,16 +3598,16 @@ int parse_char (int fd)
                             }
 
                             char_num--;
-                            for (ch = i; ch < 9 - 1; ch++)
+                            for (ch = i; ch < MAX_SLOTS - 1; ch++)
                                 sd->found_char[ch] = sd->found_char[ch + 1];
-                            sd->found_char[8] = -1;
+                            sd->found_char[MAX_SLOTS - 1] = -1;
                             WFIFOW (fd, 0) = 0x6f;
                             WFIFOSET (fd, 2);
                             break;
                         }
                     }
 
-                    if (i == 9)
+                    if (i == MAX_SLOTS)
                     {
                         WFIFOW (fd, 0) = 0x70;
                         WFIFOB (fd, 2) = 0;
