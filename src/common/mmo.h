@@ -68,7 +68,7 @@
 #define MAP_NAME_LENGTH 24
 #define NAME_LENGTH (23 + 1)
 
-#define MAX_SLOTS 9
+#define MAX_SLOTS 10
 
 struct item
 {
