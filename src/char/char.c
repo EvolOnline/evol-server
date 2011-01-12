@@ -78,7 +78,7 @@ int max_hair_color = 9;
 
 int wan_ip = 0;
 
-int char_slots = 9;
+int char_slots = 10;
 
 struct char_session_data
 {
