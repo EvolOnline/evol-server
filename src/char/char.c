@@ -78,6 +78,8 @@ int max_hair_color = 9;
 
 int wan_ip = 0;
 
+int char_slots = 9;
+
 struct char_session_data
 {
     int  account_id, login_id1, login_id2, sex;
@@ -1023,7 +1025,7 @@ int make_new_char (int fd, unsigned char *dat)
         return -4;
     }
 
-    if (dat[30] >= MAX_SLOTS)
+    if (dat[30] >= char_slots)
     {
         char_log
             ("Make new char error (invalid values): (connection #%d, account: %d) slot %d, name: %s, stats: %d+%d+%d+%d+%d+%d=%d, hair: %d, hair color: %d"
@@ -1031,7 +1033,7 @@ int make_new_char (int fd, unsigned char *dat)
              dat[26], dat[27], dat[28], dat[29],
              dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
              dat[33], dat[31]);
-        return -1;
+        return -5;
     }
 
     // check individual stat value
@@ -1045,7 +1047,7 @@ int make_new_char (int fd, unsigned char *dat)
                  dat[26], dat[27], dat[28], dat[29],
                  dat[24] + dat[25] + dat[26] + dat[27] + dat[28] + dat[29],
                  dat[33], dat[31]);
-            return -1;
+            return -3;
         }
     }
 
@@ -1749,6 +1751,7 @@ int mmo_char_send006b (int fd, struct char_session_data *sd)
     memset (WFIFOP (fd, 0), 0, offset + found_num * 106);
     WFIFOW (fd, 0) = 0x6b;
     WFIFOW (fd, 2) = offset + found_num * 106;
+    WFIFOW (fd, 4) = char_slots;
 
     for (i = 0; i < found_num; i++)
     {
@@ -4141,8 +4144,16 @@ int char_config_read (const char *cfgName)
         else if (strcmpi (w1, "char_name_letters") == 0)
         {
             strcpy (char_name_letters, w2);
-// online files options
         }
+        else if (strcmpi (w1, "char_slots") == 0)
+        {
+            char_slots  = atoi (w2);
+            if (char_slots < 1)
+                char_slots = 1;
+            else if (char_slots > MAX_SLOTS)
+                char_slots = MAX_SLOTS;
+        }
+// online files options
         else if (strcmpi (w1, "online_txt_filename") == 0)
         {
             strcpy (online_txt_filename, w2);
