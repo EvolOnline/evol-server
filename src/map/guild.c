@@ -1157,11 +1157,10 @@ int guild_payexp (struct map_session_data *sd, int exp)
 // Celest
 int guild_getexp (struct map_session_data *sd, int exp)
 {
-    struct guild *g;
     struct guild_expcache *c;
     nullpo_retr(0, sd);
 
-    if (sd->status.guild_id == 0 || (g = guild_search(sd->status.guild_id)) == NULL)
+    if (sd->status.guild_id == 0 || guild_search(sd->status.guild_id) == NULL)
         return 0;
 
     if ((c = numdb_search (guild_expcache_db, sd->status.account_id /*char_id*/)) == NULL)

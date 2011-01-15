@@ -1339,7 +1339,7 @@ char *job_name (int class)
 //-------------------------------------------------------------
 void create_online_files (void)
 {
-    int  i, j, k, l;            // for loops
+    int  i, j, k;            // for loops
     int  players;               // count the number of players
     FILE *fp;                   // for the txt file
     FILE *fp2;                  // for the html file
@@ -1544,6 +1544,7 @@ void create_online_files (void)
                     fprintf (fp, "-");
                 fprintf (fp, "\n");
 
+                int l;
                 // display each player.
                 for (i = 0; i < players; i++)
                 {

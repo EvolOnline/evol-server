@@ -4523,7 +4523,7 @@ BUILDIN_FUNCU(logmes)
 BUILDIN_FUNC(summon)
 {
     int _class, timeout = 0;
-    const char *str, *event = "";
+    const char *event = "";
     TBL_PC *sd;
     struct mob_data *md;
     int tick = gettick();
@@ -4531,7 +4531,7 @@ BUILDIN_FUNC(summon)
     sd = script_rid2sd(st);
     if (!sd)
         return 0;
-    str = script_getstr(st, 2);
+//    str = script_getstr(st, 2);
     _class = script_getnum(st, 3);
     if (script_hasdata(st, 4))
         timeout = script_getnum(st, 4);

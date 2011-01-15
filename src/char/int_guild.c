@@ -759,10 +759,10 @@ int guild_checkskill (struct guild *g, int id)
 int guild_calcinfo (struct guild *g)
 {
     int  i, c, nextexp;
-    struct guild before = *g;
-
     if (!g)
         return 0;
+
+    struct guild before = *g;
 
     // ƒXƒLƒ‹ID‚Ìİ’è
     for (i = 0; i < 5; i++)
@@ -1843,7 +1843,7 @@ int mapif_parse_GuildCheck (int fd __attribute__ ((unused)), int guild_id,
 
 int mapif_parse_GuildMasterChange(int fd __attribute__ ((unused)), int guild_id, const char* name, int len)
 {
-    struct guild *g = g = numdb_search (guild_db, guild_id);;
+    struct guild *g = numdb_search (guild_db, guild_id);;
     struct guild_member gm;
     int pos;
 

@@ -75,8 +75,7 @@ char *aStrdup_ (const char *p, const char *file, int line, const char *func)
 void aFree_(void *p, const char *file __attribute__ ((unused)), int line __attribute__ ((unused)), const char *func __attribute__ ((unused)))
 {
     // ShowMessage("%s:%d: in func %s: aFree %p\n",file,line,func,p);
-    if (p)
-        FREE(p, file, line, func);
+    FREE(p, file, line, func);
 
     p = NULL;
 }

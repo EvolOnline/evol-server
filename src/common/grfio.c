@@ -830,7 +830,11 @@ static int grfio_entryread (char *gfname, int gentry)
             return 3;           // 3:memory alloc error
         }
         if (!fread (grf_filelist, 1, list_size, fp))
+        {
+            free (grf_filelist);
+            fclose_ (fp);
             return 2;
+        }
         fclose_ (fp);
 
         entrys =
@@ -858,7 +862,7 @@ static int grfio_entryread (char *gfname, int gentry)
                     exit (1);
                 }
                 srclen = 0;
-                if ((period_ptr = rindex (fname, '.')) != NULL)
+                if ((period_ptr = strrchr (fname, '.')) != NULL)
                 {
                     for (lop = 0; lop < 4; lop++)
                     {
@@ -941,7 +945,12 @@ static int grfio_entryread (char *gfname, int gentry)
         }
 
         if (!fread (rBuf, 1, rSize, fp))
+        {
+            free (grf_filelist);
+            free (rBuf);
+            fclose_ (fp);
             return 4;
+        }
 
         fclose_ (fp);
         decode_zip (grf_filelist, &eSize, rBuf, rSize); // Decode function
