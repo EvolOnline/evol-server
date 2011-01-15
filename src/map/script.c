@@ -454,6 +454,7 @@ int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus scrip
 int  buildin_getmonsterinfo (struct script_state *st);// Lupus
 int  buildin_axtoi (struct script_state *st);
 int  buildin_atoi (struct script_state *st);
+int  buildin_rid2name (struct script_state *st);
 int  buildin_setnpcclass (struct script_state *st); // [4144]
 int  buildin_getnpcclass (struct script_state *st); // [4144]
 int  buildin_l (struct script_state *st); // [4144]
@@ -958,6 +959,8 @@ struct
     buildin_axtoi, "axtoi", "s"},
     {
     buildin_axtoi, "atoi", "s"},
+    {
+    buildin_rid2name, "rid2name", "i"},
     {
     buildin_setnpcclass, "setnpcclass", "*"}, // [4144]
     {
@@ -8913,6 +8916,31 @@ BUILDIN_FUNC(atoi)
     const char *value;
     value = script_getstr(st, 2);
     script_pushint(st, atoi(value));
+    return 0;
+}
+
+BUILDIN_FUNC(rid2name)
+{
+    struct block_list *bl = NULL;
+    int rid = script_getnum(st, 2);
+    if ((bl = map_id2bl(rid)))
+    {
+        switch(bl->type)
+        {
+            case BL_MOB: script_pushstrcopy(st, ((TBL_MOB*)bl)->name); break;
+            case BL_PC:  script_pushstrcopy(st, ((TBL_PC*)bl)->status.name); break;
+            case BL_NPC: script_pushstrcopy(st, ((TBL_NPC*)bl)->exname); break;
+            default:
+                ShowError("buildin_rid2name: BL type unknown.\n");
+                script_pushconststr(st, "");
+                break;
+        }
+    }
+    else
+    {
+        ShowError("buildin_rid2name: invalid RID\n");
+        script_pushconststr(st, "(null)");
+    }
     return 0;
 }
 
