@@ -451,6 +451,9 @@ int  buildin_npcshopadditem (struct script_state *st);
 int  buildin_npcshopdelitem (struct script_state *st);
 int  buildin_equip (struct script_state *st);
 int  buildin_setitemscript (struct script_state *st); //Set NEW item bonus script. Lupus
+int  buildin_getmonsterinfo (struct script_state *st);// Lupus
+int  buildin_axtoi (struct script_state *st);
+int  buildin_atoi (struct script_state *st);
 int  buildin_setnpcclass (struct script_state *st); // [4144]
 int  buildin_getnpcclass (struct script_state *st); // [4144]
 int  buildin_l (struct script_state *st); // [4144]
@@ -949,6 +952,12 @@ struct
     buildin_equip, "equip", "i"},
     {
     buildin_setitemscript, "setitemscript", "is*"}, //Set NEW item bonus script. Lupus
+    {
+    buildin_getmonsterinfo, "getmonsterinfo", "ii"}, //Lupus
+    {
+    buildin_axtoi, "axtoi", "s"},
+    {
+    buildin_axtoi, "atoi", "s"},
     {
     buildin_setnpcclass, "setnpcclass", "*"}, // [4144]
     {
@@ -8806,6 +8815,104 @@ BUILDIN_FUNC(setitemscript)
 
     *dstscript = parse_script(script, 0);
     script_pushint(st, 1);
+    return 0;
+}
+
+BUILDIN_FUNC(getmonsterinfo)
+{
+    struct mob_db *mob;
+    int mob_id;
+
+    mob_id = script_getnum(st, 2);
+    if (!mobdb_checkid(mob_id))
+    {
+        ShowError("buildin_getmonsterinfo: Wrong Monster ID: %i\n", mob_id);
+        if (!script_getnum(st, 3)) //requested a string
+            script_pushconststr(st, "null");
+        else
+            script_pushint(st, -1);
+        return -1;
+    }
+
+    mob = &mob_db[mob_id];
+    switch (script_getnum(st, 3))
+    {
+        case 0:  script_pushstrcopy(st, mob->jname); break;
+        case 1:  script_pushint(st, mob->lv); break;
+        case 2:  script_pushint(st, mob->max_hp); break;
+        case 3:  script_pushint(st, mob->base_exp); break;
+        case 4:  script_pushint(st, mob->job_exp); break;
+        case 5:  script_pushint(st, mob->atk1); break;
+        case 6:  script_pushint(st, mob->atk2); break;
+        case 7:  script_pushint(st, mob->def); break;
+        case 8:  script_pushint(st, mob->mdef); break;
+        case 9:  script_pushint(st, mob->str); break;
+        case 10: script_pushint(st, mob->agi); break;
+        case 11: script_pushint(st, mob->vit); break;
+        case 12: script_pushint(st, mob->int_); break;
+        case 13: script_pushint(st, mob->dex); break;
+        case 14: script_pushint(st, mob->luk); break;
+        case 15: script_pushint(st, mob->range); break;
+        case 16: script_pushint(st, mob->range2); break;
+        case 17: script_pushint(st, mob->range3); break;
+        case 18: script_pushint(st, mob->size); break;
+        case 19: script_pushint(st, mob->race); break;
+        case 20: script_pushint(st, mob->element); break;
+        case 21: script_pushint(st, mob->mode); break;
+        default: script_pushint(st, -1); //wrong Index
+    }
+    return 0;
+}
+
+int axtoi(const char *hexStg)
+{
+    int n = 0;         // position in string
+    int m = 0;         // position in digit[] to shift
+    int count;         // loop index
+    int intValue = 0;  // integer value of hex string
+    int digit[11];      // hold values to convert
+    while (n < 10)
+    {
+        if (hexStg[n]=='\0')
+            break;
+        if (hexStg[n] > 0x29 && hexStg[n] < 0x40 ) //if 0 to 9
+            digit[n] = hexStg[n] & 0x0f;            //convert to int
+        else if (hexStg[n] >='a' && hexStg[n] <= 'f') //if a to f
+            digit[n] = (hexStg[n] & 0x0f) + 9;      //convert to int
+        else if (hexStg[n] >='A' && hexStg[n] <= 'F') //if A to F
+            digit[n] = (hexStg[n] & 0x0f) + 9;      //convert to int
+        else
+            break;
+        n++;
+    }
+    count = n;
+    m = n - 1;
+    n = 0;
+    while(n < count)
+    {
+        // digit[n] is value of hex digit at position n
+        // (m << 2) is the number of positions to shift
+        // OR the bits into return value
+        intValue = intValue | (digit[n] << (m << 2));
+        m--;   // adjust the position to set
+        n++;   // next digit to process
+    }
+    return (intValue);
+}
+
+// [Lance] Hex string to integer converter
+BUILDIN_FUNC(axtoi)
+{
+    const char *hex = script_getstr(st, 2);
+    script_pushint(st,axtoi(hex));
+    return 0;
+}
+
+BUILDIN_FUNC(atoi)
+{
+    const char *value;
+    value = script_getstr(st, 2);
+    script_pushint(st, atoi(value));
     return 0;
 }
 
