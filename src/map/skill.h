@@ -14,7 +14,7 @@
 #define SKILL_POOL_ACTIVE	0x2 // is an active pool skill
 #define SKILL_POOL_ACTIVATED	0x4 // pool skill has been activated (used for clif)
 
-// ã‚¹ã‚­ãƒ«ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹
+// ƒXƒLƒ‹ƒf[ƒ^ƒx[ƒX
 struct skill_db
 {
     int  range[MAX_SKILL_LEVEL], hit, inf, pl, nk, max, stat, poolflags, max_raise; // `max' is the global max, `max_raise' is the maximum attainable via skill-ups
@@ -48,7 +48,7 @@ struct skill_unit_group;
 
 int  do_init_skill (void);
 
-// ã‚¹ã‚­ãƒ«ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã¸ã®ã‚¢ã‚¯ã‚»ã‚µ
+// ƒXƒLƒ‹ƒf[ƒ^ƒx[ƒX‚Ö‚ÌƒAƒNƒZƒT
 int  skill_get_hit (int id);
 int  skill_get_inf (int id);
 int  skill_get_pl (int id);
@@ -72,7 +72,7 @@ int  skill_get_inf2 (int id);
 int  skill_get_maxcount (int id);
 int  skill_get_blewcount (int id, int lv);
 
-// ã‚¹ã‚­ãƒ«ã®ä½¿ç”¨
+// ƒXƒLƒ‹‚Ìg—p
 int  skill_use_id (struct map_session_data *sd, int target_id,
                    int skill_num, int skill_lv);
 int  skill_use_pos (struct map_session_data *sd,
@@ -86,12 +86,12 @@ int  skill_addtimerskill (struct block_list *src, unsigned int tick,
                           int target, int x, int y, int skill_id,
                           int skill_lv, int type, int flag);
 
-// è¿½åŠ åŠ¹æœ
+// ’Ç‰ÁŒø‰Ê
 int  skill_additional_effect (struct block_list *src, struct block_list *bl,
                               int skillid, int skilllv, int attack_type,
                               unsigned int tick);
 
-// ãƒ¦ãƒ‹ãƒƒãƒˆã‚¹ã‚­ãƒ«
+// ƒ†ƒjƒbƒgƒXƒLƒ‹
 struct skill_unit *skill_initunit (struct skill_unit_group *group, int idx,
                                    int x, int y);
 int  skill_delunit (struct skill_unit *unit);
@@ -123,7 +123,7 @@ int  skill_unit_move_unit_group (struct skill_unit_group *group, int m,
 struct skill_unit_group *skill_check_dancing (struct block_list *src);
 void skill_stop_dancing (struct block_list *src, int flag);
 
-// è© å”±ã‚­ãƒ£ãƒ³ã‚»ãƒ«
+// ‰r¥ƒLƒƒƒ“ƒZƒ‹
 int  skill_castcancel (struct block_list *bl, int type);
 
 int  skill_gangsterparadise (struct map_session_data *sd, int type);
@@ -138,11 +138,11 @@ void skill_devotion_end (struct map_session_data *md,
 
 #define skill_calc_heal(bl,skill_lv) (( battle_get_lv(bl)+battle_get_int(bl) )/8 *(4+ skill_lv*8))
 
-// ãã®ä»–
+// ‚»‚Ì‘¼
 int  skill_check_cloaking (struct block_list *bl);
 int  skill_is_danceskill (int id);
 
-// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ç•°å¸¸
+// ƒXƒe[ƒ^ƒXˆÙí
 int  skill_status_effect (struct block_list *bl, int type, int val1, int val2,
                           int val3, int val4, int tick, int flag,
                           int spell_invocation);
@@ -155,7 +155,7 @@ int  skill_encchant_eremental_end (struct block_list *bl, int type);
 int  skill_status_change_end (struct block_list *bl, int type, int tid);
 int  skill_status_change_clear (struct block_list *bl, int type);
 
-// mobã‚¹ã‚­ãƒ«ã®ãŸã‚
+// mobƒXƒLƒ‹‚Ì‚½‚ß
 int  skill_castend_nodamage_id (struct block_list *src, struct block_list *bl,
                                 int skillid, int skilllv, unsigned int tick,
                                 int flag);
@@ -165,7 +165,7 @@ int  skill_castend_damage_id (struct block_list *src, struct block_list *bl,
 int  skill_castend_pos2 (struct block_list *src, int x, int y, int skillid,
                          int skilllv, unsigned int tick, int flag);
 
-// ã‚¹ã‚­ãƒ«æ”»æ’ƒä¸€æ‹¬å‡¦ç†
+// ƒXƒLƒ‹UŒ‚ˆêŠ‡ˆ—
 int  skill_attack (int attack_type, struct block_list *src,
                    struct block_list *dsrc, struct block_list *bl,
                    int skillid, int skilllv, unsigned int tick, int flag);
@@ -182,7 +182,7 @@ enum
 };
 
 enum
-{                               // struct map_session_data ã® status_changeã®ç•ªå·ãƒ†ãƒ¼ãƒ–ãƒ«
+{                               // struct map_session_data ‚Ì status_change‚Ì”Ô†ƒe[ƒuƒ‹
     SC_SENDMAX = 256,
     SC_PROVOKE = 0,
     SC_ENDURE = 1,

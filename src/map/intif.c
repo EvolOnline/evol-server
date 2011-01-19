@@ -57,11 +57,11 @@ static const int packet_len_table[] = {
     11, -1, 7, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-extern int char_fd;             // inter serverã®fdã¯char_fdã‚’ä½¿ã†
-#define inter_fd (char_fd)      // ã‚¨ã‚¤ãƒªã‚¢ã‚¹
+extern int char_fd;             // inter server‚Ìfd‚Íchar_fd‚ğg‚¤
+#define inter_fd (char_fd)      // ƒGƒCƒŠƒAƒX
 
 //-----------------------------------------------------------------
-// inter serverã¸ã®é€ä¿¡
+// inter server‚Ö‚Ì‘—M
 
 // Message for all GMs on all map servers
 int intif_GMmessage (char *mes, int len, int flag)
@@ -136,7 +136,7 @@ int intif_wis_message_to_gm (char *Wisp_name, int min_gm_level, char *mes,
     return 0;
 }
 
-// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°é€ä¿¡
+// ƒAƒJƒEƒ“ƒg•Ï”‘—M
 int intif_saveaccountreg (struct map_session_data *sd)
 {
     int  j, p;
@@ -155,7 +155,7 @@ int intif_saveaccountreg (struct map_session_data *sd)
     return 0;
 }
 
-// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°è¦æ±‚
+// ƒAƒJƒEƒ“ƒg•Ï”—v‹
 int intif_request_accountreg (struct map_session_data *sd)
 {
     nullpo_retr (0, sd);
@@ -166,7 +166,7 @@ int intif_request_accountreg (struct map_session_data *sd)
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿è¦æ±‚
+// ‘qŒÉƒf[ƒ^—v‹
 int intif_request_storage (int account_id)
 {
     WFIFOW (inter_fd, 0) = 0x3010;
@@ -175,7 +175,7 @@ int intif_request_storage (int account_id)
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿é€ä¿¡
+// ‘qŒÉƒf[ƒ^‘—M
 int intif_send_storage (struct storage *stor)
 {
     nullpo_retr (0, stor);
@@ -209,7 +209,7 @@ int intif_send_guild_storage (int account_id, struct guild_storage *gstor)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ä½œæˆè¦æ±‚
+// ƒp[ƒeƒBì¬—v‹
 int intif_create_party (struct map_session_data *sd, char *name)
 {
     nullpo_retr (0, sd);
@@ -227,7 +227,7 @@ int intif_create_party (struct map_session_data *sd, char *name)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£æƒ…å ±è¦æ±‚
+// ƒp[ƒeƒBî•ñ—v‹
 int intif_request_partyinfo (int party_id)
 {
     WFIFOW (inter_fd, 0) = 0x3021;
@@ -238,7 +238,7 @@ int intif_request_partyinfo (int party_id)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è¿½åŠ è¦æ±‚
+// ƒp[ƒeƒB’Ç‰Á—v‹
 int intif_party_addmember (int party_id, int account_id)
 {
     struct map_session_data *sd;
@@ -274,7 +274,7 @@ int intif_guild_change_gm(int guild_id, const char* name, int len)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è¨­å®šå¤‰æ›´
+// ƒp[ƒeƒBİ’è•ÏX
 int intif_party_changeoption (int party_id, int account_id, int exp, int item)
 {
     WFIFOW (inter_fd, 0) = 0x3023;
@@ -286,7 +286,7 @@ int intif_party_changeoption (int party_id, int account_id, int exp, int item)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è„±é€€è¦æ±‚
+// ƒp[ƒeƒB’E‘Ş—v‹
 int intif_party_leave (int party_id, int account_id)
 {
 //  if(battle_config.etc_log)
@@ -298,7 +298,7 @@ int intif_party_leave (int party_id, int account_id)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ç§»å‹•è¦æ±‚
+// ƒp[ƒeƒBˆÚ“®—v‹
 int intif_party_changemap (struct map_session_data *sd, int online)
 {
     if (sd != NULL)
@@ -316,7 +316,7 @@ int intif_party_changemap (struct map_session_data *sd, int online)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¼è§£æ•£è¦æ±‚
+// ƒp[ƒeƒB[‰ğU—v‹
 int intif_break_party (int party_id)
 {
     WFIFOW (inter_fd, 0) = 0x3026;
@@ -325,7 +325,7 @@ int intif_break_party (int party_id)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ä¼šè©±é€ä¿¡
+// ƒp[ƒeƒB‰ï˜b‘—M
 int intif_party_message (int party_id, int account_id, char *mes, int len)
 {
     nullpo_retr (0, mes);
@@ -341,7 +341,7 @@ int intif_party_message (int party_id, int account_id, char *mes, int len)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ç«¶åˆãƒã‚§ãƒƒã‚¯è¦æ±‚
+// ƒp[ƒeƒB‹£‡ƒ`ƒFƒbƒN—v‹
 int intif_party_checkconflict (int party_id, int account_id, char *nick)
 {
     nullpo_retr (0, nick);
@@ -354,7 +354,7 @@ int intif_party_checkconflict (int party_id, int account_id, char *nick)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ä½œæˆè¦æ±‚
+// ƒMƒ‹ƒhì¬—v‹
 int intif_guild_create (const char *name, const struct guild_member *master)
 {
     nullpo_retr (0, name);
@@ -369,7 +369,7 @@ int intif_guild_create (const char *name, const struct guild_member *master)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰æƒ…å ±è¦æ±‚
+// ƒMƒ‹ƒhî•ñ—v‹
 int intif_guild_request_info (int guild_id)
 {
     WFIFOW (inter_fd, 0) = 0x3031;
@@ -378,7 +378,7 @@ int intif_guild_request_info (int guild_id)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒè¿½åŠ è¦æ±‚
+// ƒMƒ‹ƒhƒƒ“ƒo’Ç‰Á—v‹
 int intif_guild_addmember (int guild_id, struct guild_member *m)
 {
     nullpo_retr (0, m);
@@ -391,7 +391,7 @@ int intif_guild_addmember (int guild_id, struct guild_member *m)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒè„±é€€/è¿½æ”¾è¦æ±‚
+// ƒMƒ‹ƒhƒƒ“ƒo’E‘Ş/’Ç•ú—v‹
 int intif_guild_leave (int guild_id, int account_id, int char_id, int flag,
                        const char *mes)
 {
@@ -407,7 +407,7 @@ int intif_guild_leave (int guild_id, int account_id, int char_id, int flag,
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒã®ã‚ªãƒ³ãƒ©ã‚¤ãƒ³çŠ¶æ³/Lvæ›´æ–°è¦æ±‚
+// ƒMƒ‹ƒhƒƒ“ƒo‚ÌƒIƒ“ƒ‰ƒCƒ“ó‹µ/LvXV—v‹
 int intif_guild_memberinfoshort (int guild_id,
                                  int account_id, int char_id, int online,
                                  int lv, int class)
@@ -423,7 +423,7 @@ int intif_guild_memberinfoshort (int guild_id,
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰è§£æ•£é€šçŸ¥
+// ƒMƒ‹ƒh‰ğU’Ê’m
 int intif_guild_break (int guild_id)
 {
     WFIFOW (inter_fd, 0) = 0x3036;
@@ -432,7 +432,7 @@ int intif_guild_break (int guild_id)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ä¼šè©±é€ä¿¡
+// ƒMƒ‹ƒh‰ï˜b‘—M
 int intif_guild_message (int guild_id, int account_id, char *mes, int len)
 {
     nullpo_retr (0, mes);
@@ -446,7 +446,7 @@ int intif_guild_message (int guild_id, int account_id, char *mes, int len)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ç«¶åˆãƒã‚§ãƒƒã‚¯è¦æ±‚
+// ƒMƒ‹ƒh‹£‡ƒ`ƒFƒbƒN—v‹
 int intif_guild_checkconflict (int guild_id, int account_id, int char_id)
 {
     WFIFOW (inter_fd, 0) = 0x3038;
@@ -457,7 +457,7 @@ int intif_guild_checkconflict (int guild_id, int account_id, int char_id)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰åŸºæœ¬æƒ…å ±å¤‰æ›´è¦æ±‚
+// ƒMƒ‹ƒhŠî–{î•ñ•ÏX—v‹
 int intif_guild_change_basicinfo (int guild_id, int type, const void *data,
                                   int len)
 {
@@ -472,7 +472,7 @@ int intif_guild_change_basicinfo (int guild_id, int type, const void *data,
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒæƒ…å ±å¤‰æ›´è¦æ±‚
+// ƒMƒ‹ƒhƒƒ“ƒoî•ñ•ÏX—v‹
 int intif_guild_change_memberinfo (int guild_id, int account_id, int char_id,
                                    int type, const void *data, int len)
 {
@@ -489,7 +489,7 @@ int intif_guild_change_memberinfo (int guild_id, int account_id, int char_id,
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰å½¹è·å¤‰æ›´è¦æ±‚
+// ƒMƒ‹ƒh–ğE•ÏX—v‹
 int intif_guild_position (int guild_id, int idx, struct guild_position *p)
 {
     nullpo_retr (0, p);
@@ -503,7 +503,7 @@ int intif_guild_position (int guild_id, int idx, struct guild_position *p)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ã‚¹ã‚­ãƒ«ã‚¢ãƒƒãƒ—è¦æ±‚
+// ƒMƒ‹ƒhƒXƒLƒ‹ƒAƒbƒv—v‹
 int intif_guild_skillup (int guild_id, int skill_num, int account_id)
 {
     WFIFOW (inter_fd, 0) = 0x303c;
@@ -514,7 +514,7 @@ int intif_guild_skillup (int guild_id, int skill_num, int account_id)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰åŒç›Ÿ/æ•µå¯¾è¦æ±‚
+// ƒMƒ‹ƒh“¯–¿/“G‘Î—v‹
 int intif_guild_alliance (int guild_id1, int guild_id2, int account_id1,
                           int account_id2, int flag)
 {
@@ -528,7 +528,7 @@ int intif_guild_alliance (int guild_id1, int guild_id2, int account_id1,
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰å‘ŠçŸ¥å¤‰æ›´è¦æ±‚
+// ƒMƒ‹ƒh’m•ÏX—v‹
 int intif_guild_notice (int guild_id, const char *mes1, const char *mes2)
 {
     nullpo_retr (0, mes1);
@@ -542,7 +542,7 @@ int intif_guild_notice (int guild_id, const char *mes1, const char *mes2)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ã‚¨ãƒ³ãƒ–ãƒ¬ãƒ å¤‰æ›´è¦æ±‚
+// ƒMƒ‹ƒhƒGƒ“ƒuƒŒƒ€•ÏX—v‹
 int intif_guild_emblem (int guild_id, int len, const char *data)
 {
     nullpo_retr (0, data);
@@ -558,7 +558,7 @@ int intif_guild_emblem (int guild_id, int len, const char *data)
     return 0;
 }
 
-//ç¾åœ¨ã®ã‚®ãƒ«ãƒ‰åŸå é ˜ã‚®ãƒ«ãƒ‰ã‚’èª¿ã¹ã‚‹
+//Œ»İ‚ÌƒMƒ‹ƒhéè—ÌƒMƒ‹ƒh‚ğ’²‚×‚é
 int intif_guild_castle_dataload (int castle_id, int index)
 {
     WFIFOW (inter_fd, 0) = 0x3040;
@@ -568,7 +568,7 @@ int intif_guild_castle_dataload (int castle_id, int index)
     return 0;
 }
 
-//ã‚®ãƒ«ãƒ‰åŸå é ˜ã‚®ãƒ«ãƒ‰å¤‰æ›´è¦æ±‚
+//ƒMƒ‹ƒhéè—ÌƒMƒ‹ƒh•ÏX—v‹
 int intif_guild_castle_datasave (int castle_id, int index, int value)
 {
     WFIFOW (inter_fd, 0) = 0x3041;
@@ -672,7 +672,7 @@ int mapif_parse_WisToGM (int fd)
     return 0;
 }
 
-// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°é€šçŸ¥
+// ƒAƒJƒEƒ“ƒg•Ï”’Ê’m
 int intif_parse_AccountReg (int fd)
 {
     int  j, p;
@@ -692,7 +692,7 @@ int intif_parse_AccountReg (int fd)
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿å—ä¿¡
+// ‘qŒÉƒf[ƒ^óM
 int intif_parse_LoadStorage (int fd)
 {
     struct storage *stor;
@@ -752,7 +752,7 @@ int intif_parse_LoadStorage (int fd)
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿é€ä¿¡æˆåŠŸ
+// ‘qŒÉƒf[ƒ^‘—M¬Œ÷
 int intif_parse_SaveStorage (int fd)
 {
     if (battle_config.save_log)
@@ -836,7 +836,7 @@ int intif_parse_SaveGuildStorage (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ä½œæˆå¯å¦
+// ƒp[ƒeƒBì¬‰Â”Û
 int intif_parse_PartyCreated (int fd)
 {
     if (battle_config.etc_log)
@@ -846,7 +846,7 @@ int intif_parse_PartyCreated (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£æƒ…å ±
+// ƒp[ƒeƒBî•ñ
 int intif_parse_PartyInfo (int fd)
 {
     if (RFIFOW (fd, 2) == 8)
@@ -869,7 +869,7 @@ int intif_parse_PartyInfo (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è¿½åŠ é€šçŸ¥
+// ƒp[ƒeƒB’Ç‰Á’Ê’m
 int intif_parse_PartyMemberAdded (int fd)
 {
     if (battle_config.etc_log)
@@ -879,7 +879,7 @@ int intif_parse_PartyMemberAdded (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è¨­å®šå¤‰æ›´é€šçŸ¥
+// ƒp[ƒeƒBİ’è•ÏX’Ê’m
 int intif_parse_PartyOptionChanged (int fd)
 {
     party_optionchanged (RFIFOL (fd, 2), RFIFOL (fd, 6), RFIFOW (fd, 10),
@@ -887,7 +887,7 @@ int intif_parse_PartyOptionChanged (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è„±é€€é€šçŸ¥
+// ƒp[ƒeƒB’E‘Ş’Ê’m
 int intif_parse_PartyMemberLeaved (int fd)
 {
     if (battle_config.etc_log)
@@ -897,14 +897,14 @@ int intif_parse_PartyMemberLeaved (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è§£æ•£é€šçŸ¥
+// ƒp[ƒeƒB‰ğU’Ê’m
 int intif_parse_PartyBroken (int fd)
 {
     party_broken (RFIFOL (fd, 2));
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ç§»å‹•é€šçŸ¥
+// ƒp[ƒeƒBˆÚ“®’Ê’m
 int intif_parse_PartyMove (int fd)
 {
 //  if(battle_config.etc_log)
@@ -914,7 +914,7 @@ int intif_parse_PartyMove (int fd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+// ƒp[ƒeƒBƒƒbƒZ[ƒW
 int intif_parse_PartyMessage (int fd)
 {
 //  if(battle_config.etc_log)
@@ -924,14 +924,14 @@ int intif_parse_PartyMessage (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ä½œæˆå¯å¦
+// ƒMƒ‹ƒhì¬‰Â”Û
 int intif_parse_GuildCreated (int fd)
 {
     guild_created (RFIFOL (fd, 2), RFIFOL (fd, 6));
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰æƒ…å ±
+// ƒMƒ‹ƒhî•ñ
 int intif_parse_GuildInfo (int fd)
 {
     if (RFIFOW (fd, 2) == 8)
@@ -955,7 +955,7 @@ int intif_parse_GuildInfo (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒè¿½åŠ é€šçŸ¥
+// ƒMƒ‹ƒhƒƒ“ƒo’Ç‰Á’Ê’m
 int intif_parse_GuildMemberAdded (int fd)
 {
     if (battle_config.etc_log)
@@ -966,7 +966,7 @@ int intif_parse_GuildMemberAdded (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒè„±é€€/è¿½æ”¾é€šçŸ¥
+// ƒMƒ‹ƒhƒƒ“ƒo’E‘Ş/’Ç•ú’Ê’m
 int intif_parse_GuildMemberLeaved (int fd)
 {
     guild_member_leaved (RFIFOL (fd, 2), RFIFOL (fd, 6), RFIFOL (fd, 10),
@@ -974,7 +974,7 @@ int intif_parse_GuildMemberLeaved (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒã‚ªãƒ³ãƒ©ã‚¤ãƒ³çŠ¶æ…‹/Lvå¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒhƒƒ“ƒoƒIƒ“ƒ‰ƒCƒ“ó‘Ô/Lv•ÏX’Ê’m
 int intif_parse_GuildMemberInfoShort (int fd)
 {
     guild_recv_memberinfoshort (RFIFOL (fd, 2), RFIFOL (fd, 6),
@@ -984,14 +984,14 @@ int intif_parse_GuildMemberInfoShort (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰è§£æ•£é€šçŸ¥
+// ƒMƒ‹ƒh‰ğU’Ê’m
 int intif_parse_GuildBroken (int fd)
 {
     guild_broken (RFIFOL (fd, 2), RFIFOB (fd, 6));
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰åŸºæœ¬æƒ…å ±å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒhŠî–{î•ñ•ÏX’Ê’m
 int intif_parse_GuildBasicInfoChanged (int fd)
 {
     int  type = RFIFOW (fd, 8), guild_id = RFIFOL (fd, 4);
@@ -1022,7 +1022,7 @@ int intif_parse_GuildBasicInfoChanged (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ãƒ¡ãƒ³ãƒæƒ…å ±å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒhƒƒ“ƒoî•ñ•ÏX’Ê’m
 int intif_parse_GuildMemberInfoChanged (int fd)
 {
     int  type = RFIFOW (fd, 16), guild_id = RFIFOL (fd, 4);
@@ -1056,7 +1056,7 @@ int intif_parse_GuildMemberInfoChanged (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰å½¹è·å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒh–ğE•ÏX’Ê’m
 int intif_parse_GuildPosition (int fd)
 {
     if (RFIFOW (fd, 2) != sizeof (struct guild_position) + 12)
@@ -1071,14 +1071,14 @@ int intif_parse_GuildPosition (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ã‚¹ã‚­ãƒ«å‰²ã‚ŠæŒ¯ã‚Šé€šçŸ¥
+// ƒMƒ‹ƒhƒXƒLƒ‹Š„‚èU‚è’Ê’m
 int intif_parse_GuildSkillUp (int fd)
 {
     guild_skillupack (RFIFOL (fd, 2), RFIFOL (fd, 6), RFIFOL (fd, 10));
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰åŒç›Ÿ/æ•µå¯¾é€šçŸ¥
+// ƒMƒ‹ƒh“¯–¿/“G‘Î’Ê’m
 int intif_parse_GuildAlliance (int fd)
 {
     guild_allianceack (RFIFOL (fd, 2), RFIFOL (fd, 6), RFIFOL (fd, 10),
@@ -1087,14 +1087,14 @@ int intif_parse_GuildAlliance (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰å‘ŠçŸ¥å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒh’m•ÏX’Ê’m
 int intif_parse_GuildNotice (int fd)
 {
     guild_notice_changed (RFIFOL (fd, 2), RFIFOP (fd, 6), RFIFOP (fd, 66));
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ã‚¨ãƒ³ãƒ–ãƒ¬ãƒ å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒhƒGƒ“ƒuƒŒƒ€•ÏX’Ê’m
 int intif_parse_GuildEmblem (int fd)
 {
     guild_emblem_changed (RFIFOW (fd, 2) - 12, RFIFOL (fd, 4), RFIFOL (fd, 8),
@@ -1102,7 +1102,7 @@ int intif_parse_GuildEmblem (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰ä¼šè©±å—ä¿¡
+// ƒMƒ‹ƒh‰ï˜bóM
 int intif_parse_GuildMessage (int fd)
 {
     guild_recv_message (RFIFOL (fd, 4), RFIFOL (fd, 8), RFIFOP (fd, 12),
@@ -1110,21 +1110,21 @@ int intif_parse_GuildMessage (int fd)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰åŸãƒ‡ãƒ¼ã‚¿è¦æ±‚è¿”ä¿¡
+// ƒMƒ‹ƒhéƒf[ƒ^—v‹•ÔM
 int intif_parse_GuildCastleDataLoad (int fd)
 {
     return guild_castledataloadack (RFIFOW (fd, 2), RFIFOB (fd, 4),
                                     RFIFOL (fd, 5));
 }
 
-// ã‚®ãƒ«ãƒ‰åŸãƒ‡ãƒ¼ã‚¿å¤‰æ›´é€šçŸ¥
+// ƒMƒ‹ƒhéƒf[ƒ^•ÏX’Ê’m
 int intif_parse_GuildCastleDataSave (int fd)
 {
     return guild_castledatasaveack (RFIFOW (fd, 2), RFIFOB (fd, 4),
                                     RFIFOL (fd, 5));
 }
 
-// ã‚®ãƒ«ãƒ‰åŸãƒ‡ãƒ¼ã‚¿ä¸€æ‹¬å—ä¿¡(åˆæœŸåŒ–æ™‚)
+// ƒMƒ‹ƒhéƒf[ƒ^ˆêŠ‡óM(‰Šú‰»)
 int intif_parse_GuildCastleAllDataLoad (int fd)
 {
     return guild_castlealldataload (RFIFOW (fd, 2),
@@ -1137,14 +1137,14 @@ int intif_parse_GuildMasterChanged(int fd)
 }
 
 //-----------------------------------------------------------------
-// inter serverã‹ã‚‰ã®é€šä¿¡
-// ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Œã°0(false)ã‚’è¿”ã™ã“ã¨
-// ãƒ‘ã‚±ãƒƒãƒˆãŒå‡¦ç†ã§ãã‚Œã°1,ãƒ‘ã‚±ãƒƒãƒˆé•·ãŒè¶³ã‚Šãªã‘ã‚Œã°2ã‚’è¿”ã™ã“ã¨
+// inter server‚©‚ç‚Ì’ÊM
+// ƒGƒ‰[‚ª‚ ‚ê‚Î0(false)‚ğ•Ô‚·‚±‚Æ
+// ƒpƒPƒbƒg‚ªˆ—‚Å‚«‚ê‚Î1,ƒpƒPƒbƒg’·‚ª‘«‚è‚È‚¯‚ê‚Î2‚ğ•Ô‚·‚±‚Æ
 int intif_parse (int fd)
 {
     int  packet_len;
     int  cmd = RFIFOW (fd, 0);
-    // ãƒ‘ã‚±ãƒƒãƒˆã®IDç¢ºèª
+    // ƒpƒPƒbƒg‚ÌIDŠm”F
     if (cmd < 0x3800
         || cmd >=
         0x3800 + (sizeof (packet_len_table) / sizeof (packet_len_table[0]))
@@ -1152,7 +1152,7 @@ int intif_parse (int fd)
     {
         return 0;
     }
-    // ãƒ‘ã‚±ãƒƒãƒˆã®é•·ã•ç¢ºèª
+    // ƒpƒPƒbƒg‚Ì’·‚³Šm”F
     packet_len = packet_len_table[cmd - 0x3800];
     if (packet_len == -1)
     {
@@ -1166,7 +1166,7 @@ int intif_parse (int fd)
     {
         return 2;
     }
-    // å‡¦ç†åˆ†å²
+    // ˆ—•ªŠò
     switch (cmd)
     {
         case 0x3800:
@@ -1284,7 +1284,7 @@ int intif_parse (int fd)
                         RFIFOW (fd, 0));
             return 0;
     }
-    // ãƒ‘ã‚±ãƒƒãƒˆèª­ã¿é£›ã°ã—
+    // ƒpƒPƒbƒg“Ç‚İ”ò‚Î‚µ
     RFIFOSKIP (fd, packet_len);
     return 1;
 }

@@ -204,7 +204,7 @@ int mmo_auth_init (void)
     return 0;
 }
 
-// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆãƒ‡??ãƒ™?ã‚¹ã®æ›¸ãè¾¼ã¿
+// ƒAƒJƒEƒ“ƒgƒf??ƒx?ƒX‚Ì‘‚«‚İ
 void nowork (void)
 {
     //null

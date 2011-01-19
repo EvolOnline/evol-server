@@ -19,7 +19,7 @@
 int  chat_triggerevent (struct chat_data *cd);
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ä½œæˆ
+ * ƒ`ƒƒƒbƒgƒ‹[ƒ€ì¬
  *------------------------------------------
  */
 int chat_createchat (struct map_session_data *sd, int limit, int pub,
@@ -65,7 +65,7 @@ int chat_createchat (struct map_session_data *sd, int limit, int pub,
 }
 
 /*==========================================
- * æ—¢å­˜ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ã«å‚åŠ 
+ * Šù‘¶ƒ`ƒƒƒbƒgƒ‹[ƒ€‚ÉQ‰Á
  *------------------------------------------
  */
 int chat_joinchat (struct map_session_data *sd, int chatid, char *pass)
@@ -95,17 +95,17 @@ int chat_joinchat (struct map_session_data *sd, int chatid, char *pass)
 
     pc_setchatid (sd, cd->bl.id);
 
-    clif_joinchatok (sd, cd);   // æ–°ãŸã«å‚åŠ ã—ãŸäººã«ã¯å…¨å“¡ã®ãƒªã‚¹ãƒˆ
-    clif_addchat (cd, sd);      // æ—¢ã«ä¸­ã«å±…ãŸäººã«ã¯è¿½åŠ ã—ãŸäººã®å ±å‘Š
-    clif_dispchat (cd, 0);      // å‘¨å›²ã®äººã«ã¯äººæ•°å¤‰åŒ–å ±å‘Š
+    clif_joinchatok (sd, cd);   // V‚½‚ÉQ‰Á‚µ‚½l‚É‚Í‘Sˆõ‚ÌƒŠƒXƒg
+    clif_addchat (cd, sd);      // Šù‚É’†‚É‹‚½l‚É‚Í’Ç‰Á‚µ‚½l‚Ì•ñ
+    clif_dispchat (cd, 0);      // üˆÍ‚Ìl‚É‚Íl”•Ï‰»•ñ
 
-    chat_triggerevent (cd);     // ã‚¤ãƒ™ãƒ³ãƒˆ
+    chat_triggerevent (cd);     // ƒCƒxƒ“ƒg
 
     return 0;
 }
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ã‹ã‚‰æŠœã‘ã‚‹
+ * ƒ`ƒƒƒbƒgƒ‹[ƒ€‚©‚ç”²‚¯‚é
  *------------------------------------------
  */
 int chat_leavechat (struct map_session_data *sd)
@@ -127,17 +127,17 @@ int chat_leavechat (struct map_session_data *sd)
             break;
         }
     }
-    if (leavechar < 0)          // ãã®chatã«æ‰€å±ã—ã¦ã„ãªã„ã‚‰ã—ã„ (ãƒã‚°æ™‚ã®ã¿)
+    if (leavechar < 0)          // ‚»‚Ìchat‚ÉŠ‘®‚µ‚Ä‚¢‚È‚¢‚ç‚µ‚¢ (ƒoƒO‚Ì‚İ)
         return -1;
 
     if (leavechar == 0 && cd->users > 1 && (*cd->owner)->type == BL_PC)
     {
-        // æ‰€æœ‰è€…ã ã£ãŸ&ä»–ã«äººãŒå±…ã‚‹&PCã®ãƒãƒ£ãƒƒãƒˆ
+        // Š—LÒ‚¾‚Á‚½&‘¼‚Él‚ª‹‚é&PC‚Ìƒ`ƒƒƒbƒg
         clif_changechatowner (cd, cd->usersd[1]);
         clif_clearchat (cd, 0);
     }
 
-    // æŠœã‘ã‚‹PCã«ã‚‚é€ã‚‹ã®ã§usersã‚’æ¸›ã‚‰ã™å‰ã«å®Ÿè¡Œ
+    // ”²‚¯‚éPC‚É‚à‘—‚é‚Ì‚Åusers‚ğŒ¸‚ç‚·‘O‚ÉÀs
     clif_leavechat (cd, sd);
 
     cd->users--;
@@ -145,9 +145,9 @@ int chat_leavechat (struct map_session_data *sd)
 
     if (cd->users == 0 && (*cd->owner)->type == BL_PC)
     {
-        // å…¨å“¡å±…ãªããªã£ãŸ&PCã®ãƒãƒ£ãƒƒãƒˆãªã®ã§æ¶ˆã™
+        // ‘Sˆõ‹‚È‚­‚È‚Á‚½&PC‚Ìƒ`ƒƒƒbƒg‚È‚Ì‚ÅÁ‚·
         clif_clearchat (cd, 0);
-        map_delobject (cd->bl.id, BL_CHAT); // freeã¾ã§ã—ã¦ãã‚Œã‚‹
+        map_delobject (cd->bl.id, BL_CHAT); // free‚Ü‚Å‚µ‚Ä‚­‚ê‚é
     }
     else
     {
@@ -155,7 +155,7 @@ int chat_leavechat (struct map_session_data *sd)
             cd->usersd[i] = cd->usersd[i + 1];
         if (leavechar == 0 && (*cd->owner)->type == BL_PC)
         {
-            // PCã®ãƒãƒ£ãƒƒãƒˆãªã®ã§æ‰€æœ‰è€…ãŒæŠœã‘ãŸã®ã§ä½ç½®å¤‰æ›´
+            // PC‚Ìƒ`ƒƒƒbƒg‚È‚Ì‚ÅŠ—LÒ‚ª”²‚¯‚½‚Ì‚ÅˆÊ’u•ÏX
             cd->bl.x = cd->usersd[0]->bl.x;
             cd->bl.y = cd->usersd[0]->bl.y;
         }
@@ -166,7 +166,7 @@ int chat_leavechat (struct map_session_data *sd)
 }
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ã®æŒã¡ä¸»ã‚’è­²ã‚‹
+ * ƒ`ƒƒƒbƒgƒ‹[ƒ€‚Ì‚¿å‚ğ÷‚é
  *------------------------------------------
  */
 int chat_changechatowner (struct map_session_data *sd, char *nextownername)
@@ -190,34 +190,34 @@ int chat_changechatowner (struct map_session_data *sd, char *nextownername)
             break;
         }
     }
-    if (nextowner < 0)          // ãã‚“ãªäººã¯å±…ãªã„
+    if (nextowner < 0)          // ‚»‚ñ‚Èl‚Í‹‚È‚¢
         return -1;
 
     if (!cd->usersd[nextowner])
         return 1;
 
     clif_changechatowner (cd, cd->usersd[nextowner]);
-    // ä¸€æ—¦æ¶ˆã™
+    // ˆê’UÁ‚·
     clif_clearchat (cd, 0);
 
-    // userlistã®é †ç•ªå¤‰æ›´ (0ãŒæ‰€æœ‰è€…ãªã®ã§)
+    // userlist‚Ì‡”Ô•ÏX (0‚ªŠ—LÒ‚È‚Ì‚Å)
     if ((tmp_sd = cd->usersd[0]) == NULL)
-        return 1;               //ã‚ã‚Šãˆã‚‹ã®ã‹ãªï¼Ÿ
+        return 1;               //‚ ‚è‚¦‚é‚Ì‚©‚ÈH
     cd->usersd[0] = cd->usersd[nextowner];
     cd->usersd[nextowner] = tmp_sd;
 
-    // æ–°ã—ã„æ‰€æœ‰è€…ã®ä½ç½®ã¸å¤‰æ›´
+    // V‚µ‚¢Š—LÒ‚ÌˆÊ’u‚Ö•ÏX
     cd->bl.x = cd->usersd[0]->bl.x;
     cd->bl.y = cd->usersd[0]->bl.y;
 
-    // å†åº¦è¡¨ç¤º
+    // Ä“x•\¦
     clif_dispchat (cd, 0);
 
     return 0;
 }
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆã®çŠ¶æ…‹(ã‚¿ã‚¤ãƒˆãƒ«ç­‰)ã‚’å¤‰æ›´
+ * ƒ`ƒƒƒbƒg‚Ìó‘Ô(ƒ^ƒCƒgƒ‹“™)‚ğ•ÏX
  *------------------------------------------
  */
 int chat_changechatstatus (struct map_session_data *sd, int limit, int pub,
@@ -248,7 +248,7 @@ int chat_changechatstatus (struct map_session_data *sd, int limit, int pub,
 }
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ã‹ã‚‰è¹´ã‚Šå‡ºã™
+ * ƒ`ƒƒƒbƒgƒ‹[ƒ€‚©‚çR‚èo‚·
  *------------------------------------------
  */
 int chat_kickchat (struct map_session_data *sd, char *kickusername)
@@ -271,7 +271,7 @@ int chat_kickchat (struct map_session_data *sd, char *kickusername)
             break;
         }
     }
-    if (kickuser < 0)           // ãã‚“ãªäººã¯å±…ãªã„
+    if (kickuser < 0)           // ‚»‚ñ‚Èl‚Í‹‚È‚¢
         return -1;
 
     chat_leavechat (cd->usersd[kickuser]);
@@ -280,7 +280,7 @@ int chat_kickchat (struct map_session_data *sd, char *kickusername)
 }
 
 /*==========================================
- * npcãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ä½œæˆ
+ * npcƒ`ƒƒƒbƒgƒ‹[ƒ€ì¬
  *------------------------------------------
  */
 int chat_createnpcchat (struct npc_data *nd, int limit, int pub, int trigger,
@@ -327,7 +327,7 @@ int chat_createnpcchat (struct npc_data *nd, int limit, int pub, int trigger,
 }
 
 /*==========================================
- * npcãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ å‰Šé™¤
+ * npcƒ`ƒƒƒbƒgƒ‹[ƒ€íœ
  *------------------------------------------
  */
 int chat_deletenpcchat (struct npc_data *nd)
@@ -339,14 +339,14 @@ int chat_deletenpcchat (struct npc_data *nd)
 
     chat_npckickall (cd);
     clif_clearchat (cd, 0);
-    map_delobject (cd->bl.id, BL_CHAT); // freeã¾ã§ã—ã¦ãã‚Œã‚‹
+    map_delobject (cd->bl.id, BL_CHAT); // free‚Ü‚Å‚µ‚Ä‚­‚ê‚é
     nd->chat_id = 0;
 
     return 0;
 }
 
 /*==========================================
- * è¦å®šäººæ•°ä»¥ä¸Šã§ã‚¤ãƒ™ãƒ³ãƒˆãŒå®šç¾©ã•ã‚Œã¦ã‚‹ãªã‚‰å®Ÿè¡Œ
+ * ‹K’èl”ˆÈã‚ÅƒCƒxƒ“ƒg‚ª’è‹`‚³‚ê‚Ä‚é‚È‚çÀs
  *------------------------------------------
  */
 int chat_triggerevent (struct chat_data *cd)
@@ -359,7 +359,7 @@ int chat_triggerevent (struct chat_data *cd)
 }
 
 /*==========================================
- * ã‚¤ãƒ™ãƒ³ãƒˆã®æœ‰åŠ¹åŒ–
+ * ƒCƒxƒ“ƒg‚Ì—LŒø‰»
  *------------------------------------------
  */
 int chat_enableevent (struct chat_data *cd)
@@ -372,7 +372,7 @@ int chat_enableevent (struct chat_data *cd)
 }
 
 /*==========================================
- * ã‚¤ãƒ™ãƒ³ãƒˆã®ç„¡åŠ¹åŒ–
+ * ƒCƒxƒ“ƒg‚Ì–³Œø‰»
  *------------------------------------------
  */
 int chat_disableevent (struct chat_data *cd)
@@ -384,7 +384,7 @@ int chat_disableevent (struct chat_data *cd)
 }
 
 /*==========================================
- * ãƒãƒ£ãƒƒãƒˆãƒ«ãƒ¼ãƒ ã‹ã‚‰å…¨å“¡è¹´ã‚Šå‡ºã™
+ * ƒ`ƒƒƒbƒgƒ‹[ƒ€‚©‚ç‘SˆõR‚èo‚·
  *------------------------------------------
  */
 int chat_npckickall (struct chat_data *cd)
@@ -399,7 +399,7 @@ int chat_npckickall (struct chat_data *cd)
 }
 
 /*==========================================
- * çµ‚äº†
+ * I—¹
  *------------------------------------------
  */
 int do_final_chat (void)

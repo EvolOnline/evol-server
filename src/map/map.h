@@ -295,8 +295,8 @@ struct map_session_data
     int  castrate, hprate, sprate, dsprate;
     int  addele[10], addrace[12], addsize[3], subele[10], subrace[12];
     int  addeff[10], addeff2[10], reseff[10];
-    int  watk_, watk_2, atkmods_[3], addele_[10], addrace_[12], addsize_[3];    //äºŒåˆ€æµã®ãŸã‚ã«è¿½åŠ 
-    int  atk_ele_, star_, overrefine_;  //äºŒåˆ€æµã®ãŸã‚ã«è¿½åŠ 
+    int  watk_, watk_2, atkmods_[3], addele_[10], addrace_[12], addsize_[3];    //“ñ“—¬‚Ì‚½‚ß‚É’Ç‰Á
+    int  atk_ele_, star_, overrefine_;  //“ñ“—¬‚Ì‚½‚ß‚É’Ç‰Á
     int  base_atk, atk_rate;
     int  arrow_atk, arrow_ele, arrow_cri, arrow_hit, arrow_range;
     int  arrow_addele[10], arrow_addrace[12], arrow_addsize[3],
@@ -457,7 +457,7 @@ struct npc_data
         } warp;
         char *message;          // for MESSAGE: only send this message
     } u;
-    // ã“ã“ã«ãƒ¡ãƒ³ãƒã‚’è¿½åŠ ã—ã¦ã¯ãªã‚‰ãªã„(shop_itemãŒå¯å¤‰é•·ã®ç‚º)
+    // ‚±‚±‚Éƒƒ“ƒo‚ğ’Ç‰Á‚µ‚Ä‚Í‚È‚ç‚È‚¢(shop_item‚ª‰Â•Ï’·‚Ìˆ×)
 
     char eventqueue[MAX_EVENTQUEUE][50];
     int  eventtimer[MAX_EVENTTIMER];
@@ -558,7 +558,7 @@ enum
 { NONE_ATTACKABLE, ATTACKABLE };
 
 enum
-{ ATK_LUCKY = 1, ATK_FLEE, ATK_DEF };   // å›²ã¾ã‚ŒãƒšãƒŠãƒ«ãƒ†ã‚£è¨ˆç®—ç”¨
+{ ATK_LUCKY = 1, ATK_FLEE, ATK_DEF };   // ˆÍ‚Ü‚êƒyƒiƒ‹ƒeƒBŒvZ—p
 
 enum
 {
@@ -571,7 +571,7 @@ struct map_data
 {
     char name[24];
     char alias[24];             // [MouseJstr]
-    unsigned char *gat;         // NULLãªã‚‰ä¸‹ã®map_data_other_serverã¨ã—ã¦æ‰±ã†
+    unsigned char *gat;         // NULL‚È‚ç‰º‚Ìmap_data_other_server‚Æ‚µ‚Äˆµ‚¤
     struct block_list **block;
     struct block_list **block_mob;
     int *block_count, *block_mob_count;
@@ -625,7 +625,7 @@ struct map_data
 struct map_data_other_server
 {
     char name[24];
-    unsigned char *gat;         // NULLå›ºå®šã«ã—ã¦åˆ¤æ–­
+    unsigned char *gat;         // NULLŒÅ’è‚É‚µ‚Ä”»’f
     unsigned long ip;
     unsigned int port;
 };
@@ -742,14 +742,14 @@ extern char talkie_mes[];
 
 extern char wisp_server_name[];
 
-// é¯–å…¨ä½“æƒ…å ±
+// I‘S‘Ìî•ñ
 void map_setusers (int);
 int  map_getusers (void);
-// blockå‰Šé™¤é–¢é€£
+// blockíœŠÖ˜A
 int  map_freeblock (void *bl);
 int  map_freeblock_lock (void);
 int  map_freeblock_unlock (void);
-// blocké–¢é€£
+// blockŠÖ˜A
 int  map_addblock (struct block_list *);
 int  map_delblock (struct block_list *);
 void map_foreachinarea (int (*)(struct block_list *, va_list), int, int, int,
@@ -762,9 +762,9 @@ void map_foreachincell (int (*)(struct block_list *, va_list), int, int, int,
 void map_foreachinmovearea (int (*)(struct block_list *, va_list), int, int,
                             int, int, int, int, int, int, ...);
 int  map_countnearpc (int, int, int);
-//blocké–¢é€£ã«è¿½åŠ 
+//blockŠÖ˜A‚É’Ç‰Á
 int  map_count_oncell (int m, int x, int y);
-// ä¸€æ™‚çš„objecté–¢é€£
+// ˆê“IobjectŠÖ˜A
 int  map_addobject (struct block_list *);
 int  map_delobject (int, int type);
 int  map_delobjectnofree (int id, int type);
@@ -780,7 +780,7 @@ void map_write_log (char *format, ...) __attribute__((__format__(__printf__, 1, 
 
 #define MAP_LOG_PC(sd, fmt, args...) MAP_LOG("PC%d %d:%d,%d " fmt, sd->status.char_id, sd->bl.m, sd->bl.x, sd->bl.y, ## args)
 
-// åºŠã‚¢ã‚¤ãƒ†ãƒ é–¢é€£
+// °ƒAƒCƒeƒ€ŠÖ˜A
 int  map_clearflooritem_timer (int, unsigned int, int, int);
 #define map_clearflooritem(id) map_clearflooritem_timer(0,0,id,1)
 int  map_addflooritem_any (struct item *, int amount, int m, int x, int y,
@@ -792,7 +792,7 @@ int  map_addflooritem (struct item *, int, int, int, int,
                        struct map_session_data *, int);
 int  map_searchrandfreecell (int, int, int, int);
 
-// ã‚­ãƒ£ãƒ©idï¼ï¼ã‚­ãƒ£ãƒ©å å¤‰æ›é–¢é€£
+// ƒLƒƒƒ‰id„ƒLƒƒƒ‰–¼ •ÏŠ·ŠÖ˜A
 void map_addchariddb (int charid, char *name);
 void map_delchariddb (int charid);
 int  map_reqchariddb (struct map_session_data *sd, int charid);
@@ -819,16 +819,16 @@ struct map_session_data *map_get_next_session (struct map_session_data
 struct map_session_data *map_get_prev_session (struct map_session_data
                                                *current);
 
-// gaté–¢é€£
+// gatŠÖ˜A
 int  map_getcell (int, int, int);
 int  map_setcell (int, int, int, int);
 int  map_setcells(int, int, int, int, int, int);
 
-// ãã®ä»–
+// ‚»‚Ì‘¼
 int  map_check_dir (int s_dir, int t_dir);
 int  map_calc_dir (struct block_list *src, int x, int y);
 
-// path.cã‚ˆã‚Š
+// path.c‚æ‚è
 int  path_search (struct walkpath_data *, int, int, int, int, int, int);
 int  path_blownpos (int m, int x0, int y0, int dx, int dy, int count);
 

@@ -22,13 +22,13 @@
 #include "memwatch.h"
 #endif
 
-#define PARTY_SEND_XYHP_INVERVAL	1000    // åº§æ¨™ã‚„ï¼¨ï¼°é€ä¿¡ã®é–“éš”
+#define PARTY_SEND_XYHP_INVERVAL	1000    // À•W‚â‚g‚o‘—M‚ÌŠÔŠu
 
 static struct dbt *party_db;
 
 int  party_send_xyhp_timer (int tid, unsigned int tick, int id, int data);
 /*==========================================
- * çµ‚äº†
+ * I—¹
  *------------------------------------------
  */
 static int party_db_final (void *key __attribute__ ((unused)),
@@ -44,7 +44,7 @@ void do_final_party (void)
         numdb_final (party_db, party_db_final);
 }
 
-// åˆæœŸåŒ–
+// ‰Šú‰»
 void do_init_party (void)
 {
     party_db = numdb_init ();
@@ -54,7 +54,7 @@ void do_init_party (void)
                         PARTY_SEND_XYHP_INVERVAL);
 }
 
-// æ¤œç´¢
+// ŒŸõ
 struct party *party_search (int party_id)
 {
     return numdb_search (party_db, party_id);
@@ -77,7 +77,7 @@ int party_searchname_sub (void *key __attribute__ ((unused)),
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£åæ¤œç´¢
+// ƒp[ƒeƒB–¼ŒŸõ
 struct party *party_searchname (char *str)
 {
     nullpo_retr (0, str);
@@ -145,13 +145,13 @@ int party_created (int account_id, int fail, int party_id, char *name)
     return 0;
 }
 
-// æƒ…å ±è¦æ±‚
+// î•ñ—v‹
 int party_request_info (int party_id)
 {
     return intif_request_partyinfo (party_id);
 }
 
-// æ‰€å±ã‚­ãƒ£ãƒ©ã®ç¢ºèª
+// Š‘®ƒLƒƒƒ‰‚ÌŠm”F
 int party_check_member (struct party *p)
 {
     int  i;
@@ -167,13 +167,13 @@ int party_check_member (struct party *p)
             {
                 int  j, f = 1;
                 for (j = 0; j < MAX_PARTY; j++)
-                {               // ãƒ‘ãƒ¼ãƒ†ã‚£ã«ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ã‹ç¢ºèª
+                {               // ƒp[ƒeƒB‚Éƒf[ƒ^‚ª‚ ‚é‚©Šm”F
                     if (p->member[j].account_id == sd->status.account_id)
                     {
                         if (strcmp (p->member[j].name, sd->status.name) == 0)
-                            f = 0;  // ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹
+                            f = 0;  // ƒf[ƒ^‚ª‚ ‚é
                         else
-                            p->member[j].sd = NULL; // åŒå¢åˆ¥ã‚­ãƒ£ãƒ©ã ã£ãŸ
+                            p->member[j].sd = NULL; // “¯C•ÊƒLƒƒƒ‰‚¾‚Á‚½
                     }
                 }
                 if (f)
@@ -189,7 +189,7 @@ int party_check_member (struct party *p)
     return 0;
 }
 
-// æƒ…å ±æ‰€å¾—å¤±æ•—ï¼ˆãã®IDã®ã‚­ãƒ£ãƒ©ã‚’å…¨éƒ¨æœªæ‰€å±ã«ã™ã‚‹ï¼‰
+// î•ñŠ“¾¸”si‚»‚ÌID‚ÌƒLƒƒƒ‰‚ğ‘S•”–¢Š‘®‚É‚·‚éj
 int party_recv_noinfo (int party_id)
 {
     int  i;
@@ -205,7 +205,7 @@ int party_recv_noinfo (int party_id)
     return 0;
 }
 
-// æƒ…å ±æ‰€å¾—
+// î•ñŠ“¾
 int party_recv_info (struct party *sp)
 {
     struct party *p;
@@ -218,13 +218,13 @@ int party_recv_info (struct party *sp)
         p = (struct party *) aCalloc (1, sizeof (struct party));
         numdb_insert (party_db, sp->party_id, p);
 
-        // æœ€åˆã®ãƒ­ãƒ¼ãƒ‰ãªã®ã§ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†
+        // Å‰‚Ìƒ[ƒh‚È‚Ì‚Åƒ†[ƒU[‚Ìƒ`ƒFƒbƒN‚ğs‚¤
         party_check_member (sp);
     }
     memcpy (p, sp, sizeof (struct party));
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // sdã®è¨­å®š
+    {                           // sd‚Ìİ’è
         struct map_session_data *sd = map_id2sd (p->member[i].account_id);
         p->member[i].sd = (sd != NULL
                            && sd->status.party_id == p->party_id) ? sd : NULL;
@@ -233,7 +233,7 @@ int party_recv_info (struct party *sp)
     clif_party_info (p, -1);
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // è¨­å®šæƒ…å ±ã®é€ä¿¡
+    {                           // İ’èî•ñ‚Ì‘—M
 //      struct map_session_data *sd = map_id2sd(p->member[i].account_id);
         struct map_session_data *sd = p->member[i].sd;
         if (sd != NULL && sd->party_sended == 0)
@@ -344,7 +344,7 @@ int party_reply_invite (struct map_session_data *sd, int account_id, int flag)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãŒè¿½åŠ ã•ã‚ŒãŸ
+// ƒp[ƒeƒB‚ª’Ç‰Á‚³‚ê‚½
 int party_member_added (int party_id, int account_id, int flag)
 {
     struct map_session_data *sd = map_id2sd (account_id), *sd2;
@@ -357,7 +357,7 @@ int party_member_added (int party_id, int account_id, int flag)
             if (battle_config.error_log)
                 printf ("party: member added error %d is not online\n",
                         account_id);
-            intif_party_leave (party_id, account_id);   // ã‚­ãƒ£ãƒ©å´ã«ç™»éŒ²ã§ããªã‹ã£ãŸãŸã‚è„±é€€è¦æ±‚ã‚’å‡ºã™
+            intif_party_leave (party_id, account_id);   // ƒLƒƒƒ‰‘¤‚É“o˜^‚Å‚«‚È‚©‚Á‚½‚½‚ß’E‘Ş—v‹‚ğo‚·
         }
         return 0;
     }
@@ -373,20 +373,20 @@ int party_member_added (int party_id, int account_id, int flag)
     }
 
     if (flag == 1)
-    {                           // å¤±æ•—
+    {                           // ¸”s
         if (sd2 != NULL)
             clif_party_inviteack (sd2, sd->status.name, 0);
         return 0;
     }
 
-    // æˆåŠŸ
+    // ¬Œ÷
     sd->party_sended = 0;
     sd->status.party_id = party_id;
 
     if (sd2 != NULL)
         clif_party_inviteack (sd2, sd->status.name, 2);
 
-    // ã„ã¡ãŠã†ç«¶åˆç¢ºèª
+    // ‚¢‚¿‚¨‚¤‹£‡Šm”F
     party_check_conflict (sd);
 
     party_send_xy_clear (p);
@@ -394,7 +394,7 @@ int party_member_added (int party_id, int account_id, int flag)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£é™¤åè¦æ±‚
+// ƒp[ƒeƒBœ–¼—v‹
 int party_removemember (struct map_session_data *sd, int account_id,
                         char *name __attribute__ ((unused)))
 {
@@ -407,14 +407,14 @@ int party_removemember (struct map_session_data *sd, int account_id,
         return 0;
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // ãƒªãƒ¼ãƒ€ãƒ¼ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
+    {                           // ƒŠ[ƒ_[‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
         if (p->member[i].account_id == sd->status.account_id)
             if (p->member[i].leader == 0)
                 return 0;
     }
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // æ‰€å±ã—ã¦ã„ã‚‹ã‹èª¿ã¹ã‚‹
+    {                           // Š‘®‚µ‚Ä‚¢‚é‚©’²‚×‚é
         if (p->member[i].account_id == account_id)
         {
             intif_party_leave (p->party_id, account_id);
@@ -424,7 +424,7 @@ int party_removemember (struct map_session_data *sd, int account_id,
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è„±é€€è¦æ±‚
+// ƒp[ƒeƒB’E‘Ş—v‹
 int party_leave (struct map_session_data *sd)
 {
     struct party *p;
@@ -436,7 +436,7 @@ int party_leave (struct map_session_data *sd)
         return 0;
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // æ‰€å±ã—ã¦ã„ã‚‹ã‹
+    {                           // Š‘®‚µ‚Ä‚¢‚é‚©
         if (p->member[i].account_id == sd->status.account_id)
         {
             intif_party_leave (p->party_id, sd->status.account_id);
@@ -446,7 +446,7 @@ int party_leave (struct map_session_data *sd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒ³ãƒãŒè„±é€€ã—ãŸ
+// ƒp[ƒeƒBƒƒ“ƒo‚ª’E‘Ş‚µ‚½
 int party_member_leaved (int party_id, int account_id, char *name)
 {
     struct map_session_data *sd = map_id2sd (account_id);
@@ -470,7 +470,7 @@ int party_member_leaved (int party_id, int account_id, char *name)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£è§£æ•£é€šçŸ¥
+// ƒp[ƒeƒB‰ğU’Ê’m
 int party_broken (int party_id)
 {
     struct party *p;
@@ -493,7 +493,7 @@ int party_broken (int party_id)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ã®è¨­å®šå¤‰æ›´è¦æ±‚
+// ƒp[ƒeƒB‚Ìİ’è•ÏX—v‹
 int party_changeoption (struct map_session_data *sd, int exp, int item)
 {
     nullpo_retr (0, sd);
@@ -507,7 +507,7 @@ int party_changeoption (struct map_session_data *sd, int exp, int item)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ã®è¨­å®šå¤‰æ›´é€šçŸ¥
+// ƒp[ƒeƒB‚Ìİ’è•ÏX’Ê’m
 int party_optionchanged (int party_id, int account_id, int exp, int item,
                          int flag)
 {
@@ -524,7 +524,7 @@ int party_optionchanged (int party_id, int account_id, int exp, int item,
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒ³ãƒã®ç§»å‹•é€šçŸ¥
+// ƒp[ƒeƒBƒƒ“ƒo‚ÌˆÚ“®’Ê’m
 int party_recv_movemap (int party_id, int account_id, char *map, int online,
                         int lv)
 {
@@ -560,19 +560,19 @@ int party_recv_movemap (int party_id, int account_id, char *map, int online,
     }
 
     for (i = 0; i < MAX_PARTY; i++)
-    {                           // sdå†è¨­å®š
+    {                           // sdÄİ’è
         struct map_session_data *sd = map_id2sd (p->member[i].account_id);
         p->member[i].sd = (sd != NULL
                            && sd->status.party_id == p->party_id) ? sd : NULL;
     }
 
-    party_send_xy_clear (p);    // åº§æ¨™å†é€šçŸ¥è¦è«‹
+    party_send_xy_clear (p);    // À•WÄ’Ê’m—v¿
 
     clif_party_info (p, -1);
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒ³ãƒã®ç§»å‹•
+// ƒp[ƒeƒBƒƒ“ƒo‚ÌˆÚ“®
 int party_send_movemap (struct map_session_data *sd)
 {
     struct party *p;
@@ -583,16 +583,16 @@ int party_send_movemap (struct map_session_data *sd)
         return 0;
     intif_party_changemap (sd, 1);
 
-    if (sd->party_sended != 0)  // ã‚‚ã†ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ‡ãƒ¼ã‚¿ã¯é€ä¿¡æ¸ˆã¿
+    if (sd->party_sended != 0)  // ‚à‚¤ƒp[ƒeƒBƒf[ƒ^‚Í‘—MÏ‚İ
         return 0;
 
-    // ç«¶åˆç¢ºèª 
+    // ‹£‡Šm”F 
     party_check_conflict (sd);
 
-    // ã‚ã‚‹ãªã‚‰ãƒ‘ãƒ¼ãƒ†ã‚£æƒ…å ±é€ä¿¡
+    // ‚ ‚é‚È‚çƒp[ƒeƒBî•ñ‘—M
     if ((p = party_search (sd->status.party_id)) != NULL)
     {
-        party_check_member (p); // æ‰€å±ã‚’ç¢ºèªã™ã‚‹
+        party_check_member (p); // Š‘®‚ğŠm”F‚·‚é
         if (sd->status.party_id == p->party_id)
         {
             clif_party_info (p, sd->fd);
@@ -604,7 +604,7 @@ int party_send_movemap (struct map_session_data *sd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒ³ãƒã®ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ
+// ƒp[ƒeƒBƒƒ“ƒo‚ÌƒƒOƒAƒEƒg
 int party_send_logout (struct map_session_data *sd)
 {
     struct party *p;
@@ -614,7 +614,7 @@ int party_send_logout (struct map_session_data *sd)
     if (sd->status.party_id > 0)
         intif_party_changemap (sd, 0);
 
-    // sdãŒç„¡åŠ¹ã«ãªã‚‹ã®ã§ãƒ‘ãƒ¼ãƒ†ã‚£æƒ…å ±ã‹ã‚‰å‰Šé™¤
+    // sd‚ª–³Œø‚É‚È‚é‚Ì‚Åƒp[ƒeƒBî•ñ‚©‚çíœ
     if ((p = party_search (sd->status.party_id)) != NULL)
     {
         int  i;
@@ -626,7 +626,7 @@ int party_send_logout (struct map_session_data *sd)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
+// ƒp[ƒeƒBƒƒbƒZ[ƒW‘—M
 int party_send_message (struct map_session_data *sd, char *mes, int len)
 {
     nullpo_retr (0, sd);
@@ -638,7 +638,7 @@ int party_send_message (struct map_session_data *sd, char *mes, int len)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+// ƒp[ƒeƒBƒƒbƒZ[ƒWóM
 int party_recv_message (int party_id, int account_id, char *mes, int len)
 {
     struct party *p;
@@ -648,7 +648,7 @@ int party_recv_message (int party_id, int account_id, char *mes, int len)
     return 0;
 }
 
-// ãƒ‘ãƒ¼ãƒ†ã‚£ç«¶åˆç¢ºèª
+// ƒp[ƒeƒB‹£‡Šm”F
 int party_check_conflict (struct map_session_data *sd)
 {
     nullpo_retr (0, sd);
@@ -658,7 +658,7 @@ int party_check_conflict (struct map_session_data *sd)
     return 0;
 }
 
-// ä½ç½®ã‚„ï¼¨ï¼°é€šçŸ¥ç”¨
+// ˆÊ’u‚â‚g‚o’Ê’m—p
 int party_send_xyhp_timer_sub (void *key __attribute__ ((unused)),
                                void *data, va_list ap __attribute__ ((unused)))
 {
@@ -672,14 +672,14 @@ int party_send_xyhp_timer_sub (void *key __attribute__ ((unused)),
         struct map_session_data *sd;
         if ((sd = p->member[i].sd) != NULL)
         {
-            // åº§æ¨™é€šçŸ¥
+            // À•W’Ê’m
             if (sd->party_x != sd->bl.x || sd->party_y != sd->bl.y)
             {
                 clif_party_xy (p, sd);
                 sd->party_x = sd->bl.x;
                 sd->party_y = sd->bl.y;
             }
-            // ï¼¨ï¼°é€šçŸ¥
+            // ‚g‚o’Ê’m
             if (sd->party_hp != sd->status.hp)
             {
                 clif_party_hp (p, sd);
@@ -691,7 +691,7 @@ int party_send_xyhp_timer_sub (void *key __attribute__ ((unused)),
     return 0;
 }
 
-// ä½ç½®ã‚„ï¼¨ï¼°é€šçŸ¥
+// ˆÊ’u‚â‚g‚o’Ê’m
 int party_send_xyhp_timer (int tid __attribute__ ((unused)),
                            unsigned int tick, int id __attribute__ ((unused)),
                            int data __attribute__ ((unused)))
@@ -700,7 +700,7 @@ int party_send_xyhp_timer (int tid __attribute__ ((unused)),
     return 0;
 }
 
-// ä½ç½®é€šçŸ¥ã‚¯ãƒªã‚¢
+// ˆÊ’u’Ê’mƒNƒŠƒA
 int party_send_xy_clear (struct party *p)
 {
     int  i;
@@ -720,7 +720,7 @@ int party_send_xy_clear (struct party *p)
     return 0;
 }
 
-// HPé€šçŸ¥ã®å¿…è¦æ€§æ¤œæŸ»ç”¨ï¼ˆmap_foreachinmoveareaã‹ã‚‰å‘¼ã°ã‚Œã‚‹ï¼‰
+// HP’Ê’m‚Ì•K—v«ŒŸ¸—pimap_foreachinmovearea‚©‚çŒÄ‚Î‚ê‚éj
 int party_send_hp_check (struct block_list *bl, va_list ap)
 {
     int  party_id;
@@ -743,7 +743,7 @@ int party_send_hp_check (struct block_list *bl, va_list ap)
     return 0;
 }
 
-// çµŒé¨“å€¤å…¬å¹³åˆ†é…
+// ŒoŒ±’lŒö•½•ª”z
 int party_exp_share (struct party *p, int map, int base_exp, int job_exp)
 {
     struct map_session_data *sd;
@@ -762,9 +762,9 @@ int party_exp_share (struct party *p, int map, int base_exp, int job_exp)
     return 0;
 }
 
-// åŒã˜ãƒãƒƒãƒ—ã®ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¡ãƒ³ãƒãƒ¼å…¨ä½“ã«å‡¦ç†ã‚’ã‹ã‘ã‚‹
-// type==0 åŒã˜ãƒãƒƒãƒ—
-//     !=0 ç”»é¢å†…
+// “¯‚¶ƒ}ƒbƒv‚Ìƒp[ƒeƒBƒƒ“ƒo[‘S‘Ì‚Éˆ—‚ğ‚©‚¯‚é
+// type==0 “¯‚¶ƒ}ƒbƒv
+//     !=0 ‰æ–Ê“à
 void party_foreachsamemap (int (*func) (struct block_list *, va_list),
                            struct map_session_data *sd, int type, ...)
 {
@@ -802,13 +802,13 @@ void party_foreachsamemap (int (*func) (struct block_list *, va_list),
         }
     }
 
-    map_freeblock_lock ();      // ãƒ¡ãƒ¢ãƒªã‹ã‚‰ã®è§£æ”¾ã‚’ç¦æ­¢ã™ã‚‹
+    map_freeblock_lock ();      // ƒƒ‚ƒŠ‚©‚ç‚Ì‰ğ•ú‚ğ‹Ö~‚·‚é
 
     for (i = 0; i < blockcount; i++)
-        if (list[i]->prev)      // æœ‰åŠ¹ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
+        if (list[i]->prev)      // —LŒø‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
             func (list[i], ap);
 
-    map_freeblock_unlock ();    // è§£æ”¾ã‚’è¨±å¯ã™ã‚‹
+    map_freeblock_unlock ();    // ‰ğ•ú‚ğ‹–‰Â‚·‚é
 
     va_end (ap);
 }

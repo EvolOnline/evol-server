@@ -1,7 +1,7 @@
-S map鯖=>inter鯖
-R inter鯖=>map鯖
+S map�I=>inter�I
+R inter�I=>map�I
 
-パケット長リスト
+�p�P�b�g�����X�g
 R 3800-388f
 	-1,-1,27, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,
 	-1, 7, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0,
@@ -26,179 +26,179 @@ S 3000-308f
 
 
 S 3000 <len>.w <message>.?B
-	GMメッセージ送信要求
+	GM���b�Z�[�W���M�v��
 R 3800 <len>.w <message>.?B
-	GMメッセージ
+	GM���b�Z�[�W
 S 3001 <len>.w <src-nick>.24B <dst-nick>.24B <message>.?B
-	Wis送信要求
+	Wis���M�v��
 R 3801 <len>.w <wis-id>.l <src-nick>.24B <dst-nick>.24B <message>.?B
-	Wisデータ受信
-	wis-id=inter鯖内部のWis-id：map鯖では3002で送信するためだけに使う
+	Wis�f�[�^��M
+	wis-id=inter�I������Wis-id�Fmap�I�ł�3002�ő��M���邽�߂����Ɏg��
 S 3002 <wis-id>.l <flag>.B
-	このmap鯖でのWisの送信結果
-	flag=0 送信完了(このmap鯖にいたので、送信した)
-	flag=1 送信失敗(このmap鯖にはそんな人いません)
-	flag=2 送信終了(このmap鯖にいるが、ignoreされている)
+	����map�I�ł�Wis�̑��M����
+	flag=0 ���M����(����map�I�ɂ����̂ŁA���M����)
+	flag=1 ���M���s(����map�I�ɂ͂���Ȑl���܂���)
+	flag=2 ���M�I��(����map�I�ɂ��邪�Aignore����Ă���)
 R 3802 <src-nick>.24B <flag>.B
-	全map鯖でのWis送信結果
-	flag=0 送信完了
-	flag=1 送信失敗(どのmap鯖にもそんな人いません)
-	flag=2 送信失敗(ignoreされた)
+	�Smap�I�ł�Wis���M����
+	flag=0 ���M����
+	flag=1 ���M���s(�ǂ�map�I�ɂ�����Ȑl���܂���)
+	flag=2 ���M���s(ignore���ꂽ)
 S 3010 <account_id>.l
-	倉庫データ要求
+	�q�Ƀf�[�^�v��
 R 3810 <len>.w <account_id>.l <storage>.?B
-	倉庫データ受信
+	�q�Ƀf�[�^��M
 S 3011 <len>.w <account_id>.l <storage>.?B
-	倉庫データ送信＆保存要求
+	�q�Ƀf�[�^���M���ۑ��v��
 R 3811 <account_id>.l <flag>.b
-	倉庫データ保存終了
-	flag=0 成功（現在の仕様では必ず0なので、返信を待たなくてもいい）
+	�q�Ƀf�[�^�ۑ��I��
+	flag=0 �����i���݂̎d�l�ł͕K��0�Ȃ̂ŁA�ԐM��҂��Ȃ��Ă������j
 
 S 3020 <account_id>.l <party_name>.24B <nick_name>.24B <map_name>.16B <level>.w
-	パーティ作成要求
+	�p�[�e�B�쐬�v��
 R 3820 <account_id>.l <fail>.B <party_id>.l <party_name>.24B 
-	パーティ成功可否（自分のマップ鯖のみ）
-	fail=00 パーティ作成成功
-	fail=01 失敗（party_id,pary_nameはゴミ）
+	�p�[�e�B�����ہi�����̃}�b�v�I�̂݁j
+	fail=00 �p�[�e�B�쐬����
+	fail=01 ���s�iparty_id,pary_name�̓S�~�j
 S 3021 <party_id>.l
-	パーティ情報要求
+	�p�[�e�B���v��
 R 3821 <len>.w <struct party>.?B
-	(struct partyの最初４バイトはparty_id)
-	len=8 パーティは存在しない（受信したら該当キャラを未所属に変更する）
-	len>8 パーティ情報（受信したらクライアントに送ること）
-	（要求してきたマップ鯖へ）
+	(struct party�̍ŏ��S�o�C�g��party_id)
+	len=8 �p�[�e�B�͑��݂��Ȃ��i��M������Y���L�����𖢏����ɕύX����j
+	len>8 �p�[�e�B���i��M������N���C�A���g�ɑ��邱�Ɓj
+	�i�v�����Ă����}�b�v�I�ցj
 S 3022 <party_id>.l <account_id>.l <nick>.24B <map_name>.16B <level>.w
-	パーティ追加要求
+	�p�[�e�B�ǉ��v��
 R 3822 <party_id>.l <account_id>.l <fail>.B
-	パーティ追加通知（要求してきたマップ鯖へ）
-	fail=00で成功、fail=01で失敗
-	（成功時はこの直後に全鯖にパーティ情報が送られる）
+	�p�[�e�B�ǉ��ʒm�i�v�����Ă����}�b�v�I�ցj
+	fail=00�Ő����Afail=01�Ŏ��s
+	�i�������͂��̒���ɑS�I�Ƀp�[�e�B��񂪑�����j
 S 3023 <party_id>.l <account_id>.l <exp>.w <item>.w
-	パーティ設定変更要求
+	�p�[�e�B�ݒ�ύX�v��
 R 3823 <party_id>.l <account_id>.l <exp>.w <item>.w <fail>.B
-	パーティ設定変更通知（成功の場合全マップ鯖へ通知）
-	fail=0x00 パーティ設定変更完了
-	fail=0x01 expの変更失敗
-	fail=0x10 itemの変更失敗
+	�p�[�e�B�ݒ�ύX�ʒm�i�����̏ꍇ�S�}�b�v�I�֒ʒm�j
+	fail=0x00 �p�[�e�B�ݒ�ύX����
+	fail=0x01 exp�̕ύX���s
+	fail=0x10 item�̕ύX���s
 S 3024 <party_id>.l <account_id>.l
-	パーティ脱退要求
+	�p�[�e�B�E�ޗv��
 R 3824 <party_id>.l <account_id>.l <nick>.24B
-	パーティ脱退通知（全マップ鯖へ）
+	�p�[�e�B�E�ޒʒm�i�S�}�b�v�I�ցj
 S 3025 <party_id>.l <account_id>.l <map_name>.16B <online>.B <level>.w
-	パーティマップ更新/オンライン要求
+	�p�[�e�B�}�b�v�X�V/�I�����C���v��
 R 3825 <party_id>.l <account_id>.l <map_name>.16B <online>.B <level>.w
-	パーティマップ更新通知（全マップ鯖へ）
+	�p�[�e�B�}�b�v�X�V�ʒm�i�S�}�b�v�I�ցj
 S 3026 <party_id>.l
-	パーティ解散要求（送られることはないと思われる）
+	�p�[�e�B���U�v���i�����邱�Ƃ͂Ȃ��Ǝv����j
 R 3026 <party_id>.l <fail>.B
-	パーティ解散
-	fail=00 パーティは解散された（今のところ必ず00）
-	（map鯖内の不要データ削除のためだけに使われる）
+	�p�[�e�B���U
+	fail=00 �p�[�e�B�͉��U���ꂽ�i���̂Ƃ���K��00�j
+	�imap�I���̕s�v�f�[�^�폜�̂��߂����Ɏg����j
 S 3027 <len>.w <party_id>.l <account_id>.l <message>.?B
-	パーティ内発言要求
+	�p�[�e�B�������v��
 R 3827 <len>.w <party_id>.l <account_id>.l <message>.?B
-	パーティ内発言通知（全マップ鯖へ）
+	�p�[�e�B�������ʒm�i�S�}�b�v�I�ցj
 S 3028 <party_id>.l <account_id>.l <nick>.24B
-	別パーティに所属していないかチェック<party_id>は本来の所属
+	�ʃp�[�e�B�ɏ������Ă��Ȃ����`�F�b�N<party_id>�͖{���̏���
 
 
 S 3030 <len>.w <account_id>.l <guild_name>.24B <struct guild_member>.?B
-	ギルド作成要求
+	�M���h�쐬�v��
 R 3830 <account_id>.l <guild_id>.l
-	ギルド作成可否(guild_id=0で失敗)
+	�M���h�쐬��(guild_id=0�Ŏ��s)
 S 3031 <guild_id>.l
-	ギルド情報要求
+	�M���h���v��
 R 3831 <len>.w <struct guild>.?B
-	ギルド情報
-	len=8 ギルドは存在しない
-	len>8 ギルド情報
+	�M���h���
+	len=8 �M���h�͑��݂��Ȃ�
+	len>8 �M���h���
 S 3032 <len>.w <guild_id>.l <struct guild_member>.?B
-	ギルドメンバ追加要求
+	�M���h�����o�ǉ��v��
 R 3832 <guild_id>.l <account_id>.l <charactor_id>.l <fail>.B
-	ギルド追加メンバ通知
-	fail=0で成功,1で失敗
+	�M���h�ǉ������o�ʒm
+	fail=0�Ő���,1�Ŏ��s
 S 3034 <guild_id>.l <account_id>.l <charactor_id>.l <flag>.B <mes>.40B
-	ギルド脱退/追放要求
-	flag=0 脱退 / 1 追放
+	�M���h�E��/�Ǖ��v��
+	flag=0 �E�� / 1 �Ǖ�
 R 3834 <guild_id>.l <account_id>.l <charactor_id>.l <flag>.B <mes>.40B <nick>.24B
-	ギルド脱退/追放通知
+	�M���h�E��/�Ǖ��ʒm
 S 3035 <guild_id>.l <account_id>.l <charactor_id>.l <online>.B <lv>.w <class>.w
-	ギルドメンバ情報更新要求
+	�M���h�����o���X�V�v��
 R 3835 <guild_id>.l <account_id>.l <charactor_id>.l <online>.B <lv>.w <class>.w
-	ギルドメンバ情報更新通知
+	�M���h�����o���X�V�ʒm
 S 3036 <guild_id>.l
-	ギルド解散要求
+	�M���h���U�v��
 R 3836 <guild_id>.l <fail>.B
-	ギルド解散通知
-	flag=00 解散成功 / 01 失敗
+	�M���h���U�ʒm
+	flag=00 ���U���� / 01 ���s
 S 3037 <len>.w <guild_id>.l <account_id>.l <message>.?B
-	ギルド発言要求
+	�M���h�����v��
 R 3837 <len>.w <guild_id>.l <account_id>.l <message>.?B
-	ギルド発言通知
+	�M���h�����ʒm
 S 3038 <guild_id>.l <account_id>.l <charactor_id>.l
-	別ギルドに所属していないかチェック
+	�ʃM���h�ɏ������Ă��Ȃ����`�F�b�N
 S 3039 <len>.w <guild_id>.l <type>.w <data>.?B
-	各種基本情報更新要求
+	�e���{���X�V�v��
 R 3839 <len>.w <guild_id>.l <type>.w <data>.?B
-	各種基本情報更新通知
+	�e���{���X�V�ʒm
 S 303A <len>.w <guild_id>.l <account_id>.l <char_id>.l <type>.w <data>.?B
-	各種ギルドメンバ情報更新要求
+	�e��M���h�����o���X�V�v��
 R 383A <len>.w <guild_id>.l <account_id>.l <char_id>.l <type>.w <data>.?B
-	各種ギルドメンバ情報更新通知
+	�e��M���h�����o���X�V�ʒm
 S 303B <len>.w <guild_id>.l <position>.l <struct guild_position>.?B
-	ギルド役職変更要求
+	�M���h��E�ύX�v��
 R 383B <len>.w <guild_id>.l <position>.l <struct guild_position>.?B
-	ギルド役職変更通知
+	�M���h��E�ύX�ʒm
 S 303C <guild_id>.l <skill_num>.l <account_id>.l
-	ギルドスキル割り振り
+	�M���h�X�L������U��
 R 383C <guild_id>.l <skill_num>.l <account_id>.l
-	ギルドスキル割り振り(skill_num==0で失敗)
+	�M���h�X�L������U��(skill_num==0�Ŏ��s)
 S 303D <guild_id1>.l <guild_id2>.l <account_id1>.l <account_id2>.l <flag>.B
-	ギルド同盟/敵対要求
-	flag=0 同盟 / 1 敵対 / 8 同盟解除 / 9 敵対解除
+	�M���h����/�G�Ηv��
+	flag=0 ���� / 1 �G�� / 8 �������� / 9 �G�Ή���
 R 383D <guild_id1>.l <guild_id2>.l <account_id1>.l <account_id2>.l <flag>.B <name1>.24B <name2>.24B
-	ギルド同盟/敵対通知
-	flag=0 同盟 / 1 敵対
-	flag=0x10 同盟失敗 / 0x11 敵対失敗
+	�M���h����/�G�Βʒm
+	flag=0 ���� / 1 �G��
+	flag=0x10 �������s / 0x11 �G�Ύ��s
 S 303E <guild_id>.l <message1>.60B <message2>.120B
-	ギルド告知設定要求
+	�M���h���m�ݒ�v��
 R 383E <guild_id>.l <message1>.60B <message2>.120B
-	ギルド告知設定通知
+	�M���h���m�ݒ�ʒm
 S 303F <len>.w <guild_id>.l <dummy>.l <emblem_data>.?B
-	ギルドエンブレム変更要求 dummyは0固定
+	�M���h�G���u�����ύX�v�� dummy��0�Œ�
 R 383F <len>.w <guild_id>.l <dummy>.l <emblem_data>.?B
-	ギルドエンブレム変更通知
-（以下、ギルド系追加予定）
+	�M���h�G���u�����ύX�ʒm
+�i�ȉ��A�M���h�n�ǉ��\��j
 
 S 3080 <account_id>.l <char_id>.I <pet_type>.w <pet_lv>.w <pet_egg_id>.w 
 	<pet_equip>.w <pet_intimate>.w <pet_hungry>.w <rename_flag>.B <incuvate>.B 
 	<pet_name>.24B
-	ペット生成要求
+	�y�b�g�����v��
 R 3880  <account_id>.l <fail>.B <pet_id>.l
-	ペット生成成功可否
-	fail=00 ペット生成成功
-	fail=01 失敗（pet_idはゴミ）
+	�y�b�g����������
+	fail=00 �y�b�g��������
+	fail=01 ���s�ipet_id�̓S�~�j
 S 3081 <account_id>.l <char_id>.I <pet_id>.l
-	ペットデータ要求
+	�y�b�g�f�[�^�v��
 R 3881 <len>.w <account_id>.l <fail>.B <struct s_pet>.?B
-	ペットデータ受信
-	fail=00 ペットデータ転送
-	fail=01 ペットのデータがないかもしくはaccount_idかchar_idが合わないので
-	失敗（s_petはゴミ）
+	�y�b�g�f�[�^��M
+	fail=00 �y�b�g�f�[�^�]��
+	fail=01 �y�b�g�̃f�[�^���Ȃ�����������account_id��char_id������Ȃ��̂�
+	���s�is_pet�̓S�~�j
 S 3082 <len>.w <account_id>.l <struct s_pet>.?B
-	ペットデータ送信＆保存要求
+	�y�b�g�f�[�^���M���ۑ��v��
 R 3882 <account_id>.l <flag>.b
-	ペットデータ保存終了
-	flag=0 成功（現在の仕様ではメモリ不足以外には必ず0なので、返信を
-		待たなくてもいい）
-	flag=1 失敗
+	�y�b�g�f�[�^�ۑ��I��
+	flag=0 �����i���݂̎d�l�ł̓������s���ȊO�ɂ͕K��0�Ȃ̂ŁA�ԐM��
+		�҂��Ȃ��Ă������j
+	flag=1 ���s
 S 3083 <pet_id>.l
-	ペットデータ削除要求
+	�y�b�g�f�[�^�폜�v��
 R 3883 <flag>.b
-	ペットデータ削除終了
-	flag=0 成功（現在の仕様では既にデータがいない場合以外は必ず0なので、
-		返信を待たなくてもいい）
-	flag=1 失敗（pet_idに当たるデータがない場合の物ですが既にデータが
-		いないと言うことは削除する必要がないことにもなりますので
-		意味はありません）
+	�y�b�g�f�[�^�폜�I��
+	flag=0 �����i���݂̎d�l�ł͊��Ƀf�[�^�����Ȃ��ꍇ�ȊO�͕K��0�Ȃ̂ŁA
+		�ԐM��҂��Ȃ��Ă������j
+	flag=1 ���s�ipet_id�ɓ�����f�[�^���Ȃ��ꍇ�̕��ł������Ƀf�[�^��
+		���Ȃ��ƌ������Ƃ͍폜����K�v���Ȃ����Ƃɂ��Ȃ�܂��̂�
+		�Ӗ��͂���܂���j
 

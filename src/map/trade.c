@@ -12,7 +12,7 @@
 #include "nullpo.h"
 
 /*==========================================
- * å–å¼•è¦è«‹ã‚’ç›¸æ‰‹ã«é€ã‚‹
+ * æˆø—v¿‚ğ‘Šè‚É‘—‚é
  *------------------------------------------
  */
 void trade_traderequest (struct map_session_data *sd, int target_id)
@@ -27,7 +27,7 @@ void trade_traderequest (struct map_session_data *sd, int target_id)
         {
             if (target_sd->guild_invite > 0 || target_sd->party_invite > 0)
             {
-                clif_tradestart (sd, 2);    // ç›¸æ‰‹ã¯PTè¦è«‹ä¸­ã‹Guildè¦è«‹ä¸­
+                clif_tradestart (sd, 2);    // ‘Šè‚ÍPT—v¿’†‚©Guild—v¿’†
                 return;
             }
         }
@@ -66,7 +66,7 @@ void trade_traderequest (struct map_session_data *sd, int target_id)
 }
 
 /*==========================================
- * å–å¼•è¦è«‹
+ * æˆø—v¿
  *------------------------------------------
  */
 void trade_tradeack (struct map_session_data *sd, int type)
@@ -99,7 +99,7 @@ void trade_tradeack (struct map_session_data *sd, int type)
 }
 
 /*==========================================
- * ã‚¢ã‚¤ãƒ†ãƒ è¿½åŠ 
+ * ƒAƒCƒeƒ€’Ç‰Á
  *------------------------------------------
  */
 void trade_tradeadditem (struct map_session_data *sd, int index, int amount)
@@ -230,7 +230,7 @@ void trade_tradeadditem (struct map_session_data *sd, int index, int amount)
 }
 
 /*==========================================
- * ã‚¢ã‚¤ãƒ†ãƒ è¿½åŠ å®Œäº†(okæŠ¼ã—)
+ * ƒAƒCƒeƒ€’Ç‰ÁŠ®—¹(ok‰Ÿ‚µ)
  *------------------------------------------
  */
 void trade_tradeok (struct map_session_data *sd)
@@ -262,7 +262,7 @@ void trade_tradeok (struct map_session_data *sd)
 }
 
 /*==========================================
- * å–å¼•ã‚­ãƒ£ãƒ³ã‚»ãƒ«
+ * æˆøƒLƒƒƒ“ƒZƒ‹
  *------------------------------------------
  */
 void trade_tradecancel (struct map_session_data *sd)
@@ -314,7 +314,7 @@ void trade_tradecancel (struct map_session_data *sd)
 #define MAP_LOG_PC(sd, fmt, args...) MAP_LOG("PC%d %d:%d,%d " fmt, sd->status.char_id, sd->bl.m, sd->bl.x, sd->bl.y, ## args)
 
 /*==========================================
- * å–å¼•è¨±è«¾(tradeæŠ¼ã—)
+ * æˆø‹–‘ø(trade‰Ÿ‚µ)
  *------------------------------------------
  */
 void trade_tradecommit (struct map_session_data *sd)

@@ -13,15 +13,15 @@
 #include "int_storage.h"
 #include "int_guild.h"
 
-// ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
-// inter_config_read()ã§å†è¨­å®šã•ã‚Œã‚‹
+// ƒtƒ@ƒCƒ‹–¼‚ÌƒfƒtƒHƒ‹ƒg
+// inter_config_read()‚ÅÄİ’è‚³‚ê‚é
 char storage_txt[1024] = "save/storage.txt";
 char guild_storage_txt[1024] = "save/g_storage.txt";
 
 static struct dbt *storage_db;
 static struct dbt *guild_storage_db;
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
+// ‘qŒÉƒf[ƒ^‚ğ•¶š—ñ‚É•ÏŠ·
 int storage_tostr (char *str, struct storage *p)
 {
     if (!str || !p)
@@ -52,7 +52,7 @@ int storage_tostr (char *str, struct storage *p)
     return 0;
 }
 
-// æ–‡å­—åˆ—ã‚’å€‰åº«ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
+// •¶š—ñ‚ğ‘qŒÉƒf[ƒ^‚É•ÏŠ·
 int storage_fromstr (char *str, struct storage *p)
 {
     if (!str || !p)
@@ -227,7 +227,7 @@ int guild_storage_fromstr (char *str, struct guild_storage *p)
     return 0;
 }
 
-// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆã‹ã‚‰å€‰åº«ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å¾—ã‚‹ï¼ˆæ–°è¦å€‰åº«è¿½åŠ å¯èƒ½ï¼‰
+// ƒAƒJƒEƒ“ƒg‚©‚ç‘qŒÉƒf[ƒ^ƒCƒ“ƒfƒbƒNƒX‚ğ“¾‚éiV‹K‘qŒÉ’Ç‰Á‰Â”\j
 struct storage *account2storage (int account_id)
 {
     struct storage *s;
@@ -272,7 +272,7 @@ struct guild_storage *guild2storage (int guild_id)
 }
 
 //---------------------------------------------------------
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+// ‘qŒÉƒf[ƒ^‚ğ“Ç‚İ‚Ş
 int inter_storage_init ()
 {
     char line[85536];
@@ -393,7 +393,7 @@ int inter_storage_save_sub (void *key __attribute__ ((unused)), void *data, va_l
 }
 
 //---------------------------------------------------------
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
+// ‘qŒÉƒf[ƒ^‚ğ‘‚«‚Ş
 int inter_storage_save ()
 {
     FILE *fp;
@@ -439,7 +439,7 @@ int inter_guild_storage_save_sub (void *key __attribute__ ((unused)),
 }
 
 //---------------------------------------------------------
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
+// ‘qŒÉƒf[ƒ^‚ğ‘‚«‚Ş
 int inter_guild_storage_save ()
 {
     FILE *fp;
@@ -461,7 +461,7 @@ int inter_guild_storage_save ()
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿å‰Šé™¤
+// ‘qŒÉƒf[ƒ^íœ
 int inter_storage_delete (int account_id)
 {
     struct storage *s =
@@ -474,7 +474,7 @@ int inter_storage_delete (int account_id)
     return 0;
 }
 
-// ã‚®ãƒ«ãƒ‰å€‰åº«ãƒ‡ãƒ¼ã‚¿å‰Šé™¤
+// ƒMƒ‹ƒh‘qŒÉƒf[ƒ^íœ
 int inter_guild_storage_delete (int guild_id)
 {
     struct guild_storage *gs =
@@ -488,9 +488,9 @@ int inter_guild_storage_delete (int guild_id)
 }
 
 //---------------------------------------------------------
-// map serverã¸ã®é€šä¿¡
+// map server‚Ö‚Ì’ÊM
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ã®é€ä¿¡
+// ‘qŒÉƒf[ƒ^‚Ì‘—M
 int mapif_load_storage (int fd, int account_id)
 {
     struct storage *s = account2storage (account_id);
@@ -505,7 +505,7 @@ int mapif_load_storage (int fd, int account_id)
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿ä¿å­˜å®Œäº†é€ä¿¡
+// ‘qŒÉƒf[ƒ^•Û‘¶Š®—¹‘—M
 int mapif_save_storage_ack (int fd, int account_id)
 {
     WFIFOW (fd, 0) = 0x3811;
@@ -549,16 +549,16 @@ int mapif_save_guild_storage_ack (int fd, int account_id, int guild_id,
 }
 
 //---------------------------------------------------------
-// map serverã‹ã‚‰ã®é€šä¿¡
+// map server‚©‚ç‚Ì’ÊM
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿è¦æ±‚å—ä¿¡
+// ‘qŒÉƒf[ƒ^—v‹óM
 int mapif_parse_LoadStorage (int fd)
 {
     mapif_load_storage (fd, RFIFOL (fd, 2));
     return 0;
 }
 
-// å€‰åº«ãƒ‡ãƒ¼ã‚¿å—ä¿¡ï¼†ä¿å­˜
+// ‘qŒÉƒf[ƒ^óM••Û‘¶
 int mapif_parse_SaveStorage (int fd)
 {
     struct storage *s;
@@ -611,11 +611,11 @@ int mapif_parse_SaveGuildStorage (int fd)
     return 0;
 }
 
-// map server ã‹ã‚‰ã®é€šä¿¡
-// ãƒ»ï¼‘ãƒ‘ã‚±ãƒƒãƒˆã®ã¿è§£æã™ã‚‹ã“ã¨
-// ãƒ»ãƒ‘ã‚±ãƒƒãƒˆé•·ãƒ‡ãƒ¼ã‚¿ã¯inter.cã«ã‚»ãƒƒãƒˆã—ã¦ãŠãã“ã¨
-// ãƒ»ãƒ‘ã‚±ãƒƒãƒˆé•·ãƒã‚§ãƒƒã‚¯ã‚„ã€RFIFOSKIPã¯å‘¼ã³å‡ºã—å…ƒã§è¡Œã‚ã‚Œã‚‹ã®ã§è¡Œã£ã¦ã¯ãªã‚‰ãªã„
-// ãƒ»ã‚¨ãƒ©ãƒ¼ãªã‚‰0(false)ã€ãã†ã§ãªã„ãªã‚‰1(true)ã‚’ã‹ãˆã•ãªã‘ã‚Œã°ãªã‚‰ãªã„
+// map server ‚©‚ç‚Ì’ÊM
+// E‚PƒpƒPƒbƒg‚Ì‚İ‰ğÍ‚·‚é‚±‚Æ
+// EƒpƒPƒbƒg’·ƒf[ƒ^‚Íinter.c‚ÉƒZƒbƒg‚µ‚Ä‚¨‚­‚±‚Æ
+// EƒpƒPƒbƒg’·ƒ`ƒFƒbƒN‚âARFIFOSKIP‚ÍŒÄ‚Ño‚µŒ³‚Ås‚í‚ê‚é‚Ì‚Ås‚Á‚Ä‚Í‚È‚ç‚È‚¢
+// EƒGƒ‰[‚È‚ç0(false)A‚»‚¤‚Å‚È‚¢‚È‚ç1(true)‚ğ‚©‚¦‚³‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
 int inter_storage_parse_frommap (int fd)
 {
     switch (RFIFOW (fd, 0))

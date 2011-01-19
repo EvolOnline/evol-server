@@ -237,7 +237,7 @@ static void db_rebalance (struct dbn *p, struct dbn **root)
 
     p->color = RED;
     while (p != *root && p->parent->color == RED)
-    {                           // rootã¯å¿…ãšé»’ã§è¦ªã¯èµ¤ã„ã®ã§è¦ªã®è¦ªã¯å¿…ãšå­˜åœ¨ã™ã‚‹
+    {                           // root‚Í•K‚¸•‚Åe‚ÍÔ‚¢‚Ì‚Åe‚Ìe‚Í•K‚¸‘¶İ‚·‚é
         if (p->parent == p->parent->parent->left)
         {
             struct dbn *y = p->parent->parent->right;
@@ -305,7 +305,7 @@ static void db_rebalance_erase (struct dbn *z, struct dbn **root)
         x = y->right;
     }
     if (y != z)
-    {                           // å·¦å³ãŒä¸¡æ–¹åŸ‹ã¾ã£ã¦ã„ãŸæ™‚ yã‚’zã®ä½ç½®ã«æŒã£ã¦ãã¦zã‚’æµ®ã‹ã›ã‚‹
+    {                           // ¶‰E‚ª—¼•û–„‚Ü‚Á‚Ä‚¢‚½ y‚ğz‚ÌˆÊ’u‚É‚Á‚Ä‚«‚Äz‚ğ•‚‚©‚¹‚é
         z->left->parent = y;
         y->left = z->left;
         if (y != z->right)
@@ -334,7 +334,7 @@ static void db_rebalance_erase (struct dbn *z, struct dbn **root)
         y = z;
     }
     else
-    {                           // ã©ã¡ã‚‰ã‹ç©ºã„ã¦ã„ãŸå ´åˆ xã‚’zã®ä½ç½®ã«æŒã£ã¦ãã¦zã‚’æµ®ã‹ã›ã‚‹
+    {                           // ‚Ç‚¿‚ç‚©‹ó‚¢‚Ä‚¢‚½ê‡ x‚ğz‚ÌˆÊ’u‚É‚Á‚Ä‚«‚Äz‚ğ•‚‚©‚¹‚é
         x_parent = y->parent;
         if (x)
             x->parent = y->parent;
@@ -345,9 +345,9 @@ static void db_rebalance_erase (struct dbn *z, struct dbn **root)
         else
             z->parent->right = x;
     }
-    // ã“ã“ã¾ã§è‰²ã®ç§»å‹•ã®é™¤ã„ã¦é€šå¸¸ã®2åˆ†æœ¨ã¨åŒã˜
+    // ‚±‚±‚Ü‚ÅF‚ÌˆÚ“®‚Ìœ‚¢‚Ä’Êí‚Ì2•ª–Ø‚Æ“¯‚¶
     if (y->color != RED)
-    {                           // èµ¤ãŒæ¶ˆãˆã‚‹åˆ†ã«ã¯å½±éŸ¿ç„¡ã—
+    {                           // Ô‚ªÁ‚¦‚é•ª‚É‚Í‰e‹¿–³‚µ
         while (x != *root && (x == NULL || x->color == BLACK))
             if (x == x_parent->left)
             {
@@ -536,7 +536,7 @@ void db_foreach (struct dbt *table, int (*func) (void *, void *, va_list),
         return;
 
     int  i, sp;
-    // red-black treeãªã®ã§64å€‹stackãŒã‚ã‚Œã°2^32å€‹ãƒãƒ¼ãƒ‰ã¾ã§å¤§ä¸ˆå¤«
+    // red-black tree‚È‚Ì‚Å64ŒÂstack‚ª‚ ‚ê‚Î2^32ŒÂƒm[ƒh‚Ü‚Å‘åä•v
     struct dbn *p, *pn, *stack[64];
     va_list ap;
 

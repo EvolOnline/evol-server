@@ -23,7 +23,7 @@ static struct dbt *storage_db;
 static struct dbt *guild_storage_db;
 
 /*==========================================
- * å€‰åº«å†…ã‚¢ã‚¤ãƒ†ãƒ ã‚½ãƒ¼ãƒˆ
+ * ‘qŒÉ“àƒAƒCƒeƒ€ƒ\[ƒg
  *------------------------------------------
  */
 int storage_comp_item (const void *_i1, const void *_i2)
@@ -71,10 +71,10 @@ void sortage_gsortitem (struct guild_storage *gstor)
 }
 
 /*==========================================
- * åˆæœŸåŒ–ã¨ã‹
+ * ‰Šú‰»‚Æ‚©
  *------------------------------------------
  */
-int do_init_storage (void)      // map.c::do_init()ã‹ã‚‰å‘¼ã°ã‚Œã‚‹
+int do_init_storage (void)      // map.c::do_init()‚©‚çŒÄ‚Î‚ê‚é
 {
     storage_db = numdb_init ();
     guild_storage_db = numdb_init ();
@@ -149,7 +149,7 @@ int storage_delete (int account_id)
 }
 
 /*==========================================
- * ã‚«ãƒ—ãƒ©å€‰åº«ã‚’é–‹ã
+ * ƒJƒvƒ‰‘qŒÉ‚ğŠJ‚­
  *------------------------------------------
  */
 int storage_storageopen (struct map_session_data *sd)

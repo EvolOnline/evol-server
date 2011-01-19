@@ -2,7 +2,7 @@
 #ifndef _BATTLE_H_
 #define _BATTLE_H_
 
-// ãƒ€ãƒ¡ãƒ¼ã‚¸
+// ƒ_ƒ[ƒW
 struct Damage
 {
     int  damage, damage2;
@@ -10,17 +10,17 @@ struct Damage
     int  amotion, dmotion;
     int  blewcount;
     int  flag;
-    int  dmg_lv;                //å›²ã¾ã‚Œæ¸›ç®—è¨ˆç®—ç”¨ã€€0:ã‚¹ã‚­ãƒ«æ”»æ’ƒ ATK_LUCKY,ATK_FLEE,ATK_DEF
+    int  dmg_lv;                //ˆÍ‚Ü‚êŒ¸ZŒvZ—p@0:ƒXƒLƒ‹UŒ‚ ATK_LUCKY,ATK_FLEE,ATK_DEF
 };
 
-// å±æ€§è¡¨ï¼ˆèª­ã¿è¾¼ã¿ã¯pc.cã€battle_attr_fixã§ä½¿ç”¨ï¼‰
+// ‘®«•\i“Ç‚İ‚İ‚Ípc.cAbattle_attr_fix‚Åg—pj
 extern int attr_fix_table[4][10][10];
 
 struct map_session_data;
 struct mob_data;
 struct block_list;
 
-// ãƒ€ãƒ¡ãƒ¼ã‚¸è¨ˆç®—
+// ƒ_ƒ[ƒWŒvZ
 
 struct Damage battle_calc_attack (int attack_type,
                                   struct block_list *bl,
@@ -38,15 +38,15 @@ struct Damage battle_calc_misc_attack (struct block_list *bl,
                                        struct block_list *target,
                                        int skill_num, int skill_lv, int flag);
 
-// å±æ€§ä¿®æ­£è¨ˆç®—
+// ‘®«C³ŒvZ
 int  battle_attr_fix (int damage, int atk_elem, int def_elem);
 
-// ãƒ€ãƒ¡ãƒ¼ã‚¸æœ€çµ‚è¨ˆç®—
+// ƒ_ƒ[ƒWÅIŒvZ
 int  battle_calc_damage (struct block_list *src, struct block_list *bl,
                          int damage, int div_, int skill_num, int skill_lv,
                          int flag);
 enum
-{                               // æœ€çµ‚è¨ˆç®—ã®ãƒ•ãƒ©ã‚°
+{                               // ÅIŒvZ‚Ìƒtƒ‰ƒO
     BF_WEAPON = 0x0001,
     BF_MAGIC = 0x0002,
     BF_MISC = 0x0004,
@@ -59,7 +59,7 @@ enum
     BF_SKILLMASK = 0x0f00
 };
 
-// å®Ÿéš›ã«HPã‚’å¢—æ¸›
+// ÀÛ‚ÉHP‚ğ‘Œ¸
 int  battle_delay_damage (unsigned int tick, struct block_list *src,
                           struct block_list *target, int damage, int flag);
 int  battle_damage (struct block_list *bl, struct block_list *target,
@@ -67,15 +67,15 @@ int  battle_damage (struct block_list *bl, struct block_list *target,
 int  battle_heal (struct block_list *bl, struct block_list *target, int hp,
                   int sp, int flag);
 
-// æ”»æ’ƒã‚„ç§»å‹•ã‚’æ­¢ã‚ã‚‹
+// UŒ‚‚âˆÚ“®‚ğ~‚ß‚é
 int  battle_stopattack (struct block_list *bl);
 int  battle_stopwalking (struct block_list *bl, int type);
 
-// é€šå¸¸æ”»æ’ƒå‡¦ç†ã¾ã¨ã‚
+// ’ÊíUŒ‚ˆ—‚Ü‚Æ‚ß
 int  battle_weapon_attack (struct block_list *bl, struct block_list *target,
                            unsigned int tick, int flag);
 
-// å„ç¨®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+// Šeíƒpƒ‰ƒ[ƒ^‚ğ“¾‚é
 int  battle_counttargeted (struct block_list *bl, struct block_list *src,
                            int target_lv);
 int  battle_is_unarmed (struct block_list *bl);
@@ -107,7 +107,7 @@ int  battle_get_amotion (struct block_list *bl);
 int  battle_get_dmotion (struct block_list *bl);
 int  battle_get_element (struct block_list *bl);
 int  battle_get_attack_element (struct block_list *bl);
-int  battle_get_attack_element2 (struct block_list *bl);    //å·¦æ‰‹æ­¦å™¨å±æ€§å–å¾—
+int  battle_get_attack_element2 (struct block_list *bl);    //¶è•Ší‘®«æ“¾
 #define battle_get_elem_type(bl)	(battle_get_element(bl)%10)
 #define battle_get_elem_level(bl)	(battle_get_element(bl)/10/2)
 int  battle_get_party_id (struct block_list *bl);
@@ -142,7 +142,7 @@ int  battle_check_target (struct block_list *src, struct block_list *target,
 int  battle_check_range (struct block_list *src, struct block_list *bl,
                          int range);
 
-// è¨­å®š
+// İ’è
 
 int  battle_config_switch (const char *str);    // [Valaris]
 
