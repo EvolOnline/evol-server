@@ -1832,8 +1832,7 @@ int atcommand_speed (const int fd, struct map_session_data *sd,
     {
         sd->speed = speed;
         //sd->walktimer = x;
-        //‚±‚Ì•¶‚ð’Ç‰Á by ‚ê‚
-        clif_updatestatus (sd, SP_SPEED);
+        //‚±‚Ì•¶‚ð’Ç‰Á by         clif_updatestatus (sd, SP_SPEED);
         clif_displaymessage (fd, msg_table[8]); // Speed changed.
     }
     else

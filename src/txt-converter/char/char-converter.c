@@ -80,7 +80,7 @@ int  char_num, char_max;
 int  max_connect_user = 0;
 int  autosave_interval = DEFAULT_AUTOSAVE_INTERVAL;
 
-// �ʱ� ��ġ(conf ���Ϸκ��� �缳�� ����)
+
 struct point start_point = { "new_1-1.gat", 53, 111 };
 
 int inter_pet_fromstr (char *str, struct s_pet *p)
@@ -91,8 +91,8 @@ int inter_pet_fromstr (char *str, struct s_pet *p)
 
     memset (p, 0, sizeof (struct s_pet));
 
-//  printf("sscanf pet main info\n");
-    s = sscanf (str, "%d, %d,%[^\t]\t%d, %d, %d, %d, %d, %d, %d, %d, %d",
+//  printf("sscanf pet main info¥n");
+    s = sscanf (str, "%d, %d,%[^¥t]¥t%d, %d, %d, %d, %d, %d, %d, %d, %d",
                 &tmp_int[0], &tmp_int[1], tmp_str, &tmp_int[2], &tmp_int[3],
                 &tmp_int[4], &tmp_int[5], &tmp_int[6], &tmp_int[7],
                 &tmp_int[8], &tmp_int[9], &tmp_int[10]);
@@ -146,7 +146,7 @@ int inter_pet_tosql (int pet_id, struct s_pet *p)
     sprintf (tmp_sql, "SELECT * FROM `pet` WHERE `pet_id`='%d'", pet_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error - %s\n", mysql_error (&mysql_handle));
+        printf ("DB server Error - %s¥n", mysql_error (&mysql_handle));
     }
     sql_res = mysql_store_result (&mysql_handle);
     sql_row = mysql_fetch_row (sql_res);    //row fetching
@@ -165,10 +165,10 @@ int inter_pet_tosql (int pet_id, struct s_pet *p)
     mysql_free_result (sql_res);    //resource free
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error - %s\n", mysql_error (&mysql_handle));
+        printf ("DB server Error - %s¥n", mysql_error (&mysql_handle));
     }
 
-    printf ("pet dump success! - %d:%s\n", pet_id, p->name);
+    printf ("pet dump success! - %d:%s¥n", pet_id, p->name);
 
     return 0;
 }
@@ -181,21 +181,21 @@ int storage_tosql (int account_id, struct storage *p)
 
     j = 0;
 
-    //printf ("starting storage dump to DB - id: %d\n", account_id);
+    //printf ("starting storage dump to DB - id: %d¥n", account_id);
 
     //delete old data.
     sprintf (tmp_sql, "DELETE FROM `storage` WHERE `account_id`='%d'",
              account_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error - %s\n", mysql_error (&mysql_handle));
+        printf ("DB server Error - %s¥n", mysql_error (&mysql_handle));
     }
 
-    //printf ("all storage item was deleted ok\n");
+    //printf ("all storage item was deleted ok¥n");
 
     for (i = 0; i < MAX_STORAGE; i++)
     {
-        //printf ("save storage num: %d (%d:%d)\n",i, p->storage[i].nameid , p->storage[i].amount);
+        //printf ("save storage num: %d (%d:%d)¥n",i, p->storage[i].nameid , p->storage[i].amount);
 
         if ((p->storage[i].nameid) && (p->storage[i].amount))
         {
@@ -207,17 +207,17 @@ int storage_tosql (int account_id, struct storage *p)
                      p->storage[i].attribute, p->storage[i].card[0],
                      p->storage[i].card[1], p->storage[i].card[2],
                      p->storage[i].card[3], p->storage[i].broken);
-            //printf ("%s\n",tmp_sql);
+            //printf ("%s¥n",tmp_sql);
             if (mysql_query (&mysql_handle, tmp_sql))
             {
-                printf ("DB server Error - %s\n",
+                printf ("DB server Error - %s¥n",
                         mysql_error (&mysql_handle));
             }
             j++;
         }
     }
 
-    printf ("storage dump to DB - id: %d (total: %d)\n", account_id, j);
+    printf ("storage dump to DB - id: %d (total: %d)¥n", account_id, j);
     return 0;
 }
 
@@ -232,10 +232,10 @@ int storage_fromstr (char *str, struct storage *p)
 
     if (set != 2)
         return 0;
-    if (str[next] == '\n' || str[next] == '\r')
+    if (str[next] == '¥n' || str[next] == '¥r')
         return 1;
     next++;
-    for (i = 0; str[next] && str[next] != '\t'; i++)
+    for (i = 0; str[next] && str[next] != '¥t'; i++)
     {
         if (sscanf (str + next, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d%n",
                     &tmp_int[0], &tmp_int[1], &tmp_int[2], &tmp_int[3],
@@ -296,10 +296,10 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
     int  set, next, len, i;
 
     // initilialise character
-    memset (p, '\0', sizeof (struct mmo_charstatus));
+    memset (p, '¥0', sizeof (struct mmo_charstatus));
 
     // If it's not char structure of version 1008 and after
-    if ((set = sscanf (str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d" "\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d" "\t%[^,],%d,%d\t%[^,],%d,%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name,  //
+    if ((set = sscanf (str, "%d¥t%d,%d¥t%[^¥t]¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d¥t%d,%d,%d,%d,%d,%d¥t%d,%d" "¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d,%d" "¥t%[^,],%d,%d¥t%[^,],%d,%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name,  //
                        &tmp_int[3], &tmp_int[4], &tmp_int[5], &tmp_int[6], &tmp_int[7], &tmp_int[8], &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12], &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18], &tmp_int[19], &tmp_int[20], &tmp_int[21], &tmp_int[22], &tmp_int[23],   //
                        &tmp_int[24], &tmp_int[25], &tmp_int[26], &tmp_int[27], &tmp_int[28], &tmp_int[29], &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34], p->last_point.map, &tmp_int[35], &tmp_int[36], //
                        p->save_point.map, &tmp_int[37], &tmp_int[38],
@@ -307,7 +307,7 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
     {
         tmp_int[39] = 0;        // partner id
         // If not char structure from version 384 to 1007
-        if ((set = sscanf (str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d" "\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d" "\t%[^,],%d,%d\t%[^,],%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+        if ((set = sscanf (str, "%d¥t%d,%d¥t%[^¥t]¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d¥t%d,%d,%d,%d,%d,%d¥t%d,%d" "¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d,%d" "¥t%[^,],%d,%d¥t%[^,],%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
                            &tmp_int[3], &tmp_int[4], &tmp_int[5], &tmp_int[6], &tmp_int[7], &tmp_int[8], &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12], &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18], &tmp_int[19], &tmp_int[20], &tmp_int[21], &tmp_int[22], &tmp_int[23],   //
                            &tmp_int[24], &tmp_int[25], &tmp_int[26], &tmp_int[27], &tmp_int[28], &tmp_int[29], &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34], p->last_point.map, &tmp_int[35], &tmp_int[36], //
                            p->save_point.map, &tmp_int[37], &tmp_int[38],
@@ -315,26 +315,26 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
         {
             // It's char structure of a version before 384
             tmp_int[26] = 0;    // pet id
-            set = sscanf (str, "%d\t%d,%d\t%[^\t]\t%d,%d,%d\t%d,%d,%d\t%d,%d,%d,%d\t%d,%d,%d,%d,%d,%d\t%d,%d" "\t%d,%d,%d\t%d,%d\t%d,%d,%d\t%d,%d,%d,%d,%d" "\t%[^,],%d,%d\t%[^,],%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
+            set = sscanf (str, "%d¥t%d,%d¥t%[^¥t]¥t%d,%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d¥t%d,%d,%d,%d,%d,%d¥t%d,%d" "¥t%d,%d,%d¥t%d,%d¥t%d,%d,%d¥t%d,%d,%d,%d,%d" "¥t%[^,],%d,%d¥t%[^,],%d,%d%n", &tmp_int[0], &tmp_int[1], &tmp_int[2], p->name, //
                           &tmp_int[3], &tmp_int[4], &tmp_int[5], &tmp_int[6], &tmp_int[7], &tmp_int[8], &tmp_int[9], &tmp_int[10], &tmp_int[11], &tmp_int[12], &tmp_int[13], &tmp_int[14], &tmp_int[15], &tmp_int[16], &tmp_int[17], &tmp_int[18], &tmp_int[19], &tmp_int[20], &tmp_int[21], &tmp_int[22], &tmp_int[23],    //
                           &tmp_int[24], &tmp_int[25],   //
                           &tmp_int[27], &tmp_int[28], &tmp_int[29], &tmp_int[30], &tmp_int[31], &tmp_int[32], &tmp_int[33], &tmp_int[34], p->last_point.map, &tmp_int[35], &tmp_int[36],    //
                           p->save_point.map, &tmp_int[37], &tmp_int[38],
                           &next);
             set += 2;
-            //printf("char: old char data ver.1\n");
+            //printf("char: old char data ver.1¥n");
             // Char structure of version 1007 or older
         }
         else
         {
             set++;
-            //printf("char: old char data ver.2\n");
+            //printf("char: old char data ver.2¥n");
         }
         // Char structure of version 1008+
     }
     else
     {
-        //printf("char: new char data ver.3\n");
+        //printf("char: new char data ver.3¥n");
     }
     if (set != 43)
         return 0;
@@ -386,31 +386,31 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
         if (char_dat[i].char_id == p->char_id)
         {
             printf
-                ("\033[1;31mmmo_auth_init: ******Error: a character has an identical id to another.\n");
+                ("¥033[1;31mmmo_auth_init: ******Error: a character has an identical id to another.¥n");
             printf
-                ("               character id #%d -> new character not readed.\n",
+                ("               character id #%d -> new character not readed.¥n",
                  p->char_id);
-            printf ("               Character saved in log file.\033[0m\n");
+            printf ("               Character saved in log file.¥033[0m¥n");
             return -1;
         }
         else if (strcmp (char_dat[i].name, p->name) == 0)
         {
             printf
-                ("\033[1;31mmmo_auth_init: ******Error: character name already exists.\n");
+                ("¥033[1;31mmmo_auth_init: ******Error: character name already exists.¥n");
             printf
-                ("               character name '%s' -> new character not readed.\n",
+                ("               character name '%s' -> new character not readed.¥n",
                  p->name);
-            printf ("               Character saved in log file.\033[0m\n");
+            printf ("               Character saved in log file.¥033[0m¥n");
             return -2;
         }
     }
 
-    if (str[next] == '\n' || str[next] == '\r')
-        return 1;               // �V�K�f�[�^
+    if (str[next] == '¥n' || str[next] == '¥r')
+        return 1;               // 新規データ
 
     next++;
 
-    for (i = 0; str[next] && str[next] != '\t'; i++)
+    for (i = 0; str[next] && str[next] != '¥t'; i++)
     {
         set =
             sscanf (str + next, "%[^,],%d,%d%n", p->memo_point[i].map,
@@ -426,7 +426,7 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
 
     next++;
 
-    for (i = 0; str[next] && str[next] != '\t'; i++)
+    for (i = 0; str[next] && str[next] != '¥t'; i++)
     {
         if (sscanf (str + next, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d%n",
                     &tmp_int[0], &tmp_int[1], &tmp_int[2], &tmp_int[3],
@@ -465,7 +465,7 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
 
     next++;
 
-    for (i = 0; str[next] && str[next] != '\t'; i++)
+    for (i = 0; str[next] && str[next] != '¥t'; i++)
     {
         if (sscanf (str + next, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d%n",
                     &tmp_int[0], &tmp_int[1], &tmp_int[2], &tmp_int[3],
@@ -504,7 +504,7 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
 
     next++;
 
-    for (i = 0; str[next] && str[next] != '\t'; i++)
+    for (i = 0; str[next] && str[next] != '¥t'; i++)
     {
         set = sscanf (str + next, "%d,%d%n", &tmp_int[0], &tmp_int[1], &len);
         if (set != 2)
@@ -519,9 +519,9 @@ int mmo_char_fromstr (char *str, struct mmo_charstatus *p)
     next++;
 
     for (i = 0;
-         str[next] && str[next] != '\t' && str[next] != '\n'
-         && str[next] != '\r'; i++)
-    {                           // global_reg�����ȑO��athena.txt�݊��̂��߈ꉞ'\n'�`�F�b�N
+         str[next] && str[next] != '¥t' && str[next] != '¥n'
+         && str[next] != '¥r'; i++)
+    {                           // global_reg実装以前のathena.txt互換のため一応'¥n'チェック
         set =
             sscanf (str + next, "%[^,],%d%n", p->global_reg[i].str,
                     &p->global_reg[i].value, &len);
@@ -552,7 +552,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
     int  i, save_flag;
 
     save_flag = char_id;
-    printf ("request save char data... (%d)\n", char_id);
+    printf ("request save char data... (%d)¥n", char_id);
 
     //`char`( `char_id`,`account_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`, //9
     //`str`,`agi`,`vit`,`int`,`dex`,`luk`, //15
@@ -581,7 +581,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
 
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (update `char`)- %s\n",
+        printf ("DB server Error (update `char`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -589,7 +589,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
     sprintf (tmp_sql, "DELETE FROM `memo` WHERE `char_id`='%d'", char_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (delete `memo`)- %s\n",
+        printf ("DB server Error (delete `memo`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -603,7 +603,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
                      char_id, p->memo_point[i].map, p->memo_point[i].x,
                      p->memo_point[i].y);
             if (mysql_query (&mysql_handle, tmp_sql))
-                printf ("DB server Error (insert `memo`)- %s\n",
+                printf ("DB server Error (insert `memo`)- %s¥n",
                         mysql_error (&mysql_handle));
         }
     }
@@ -612,7 +612,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
              char_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (delete `inventory`)- %s\n",
+        printf ("DB server Error (delete `inventory`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -631,7 +631,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
                      p->inventory[i].card[1], p->inventory[i].card[2],
                      p->inventory[i].card[3], p->inventory[i].broken);
             if (mysql_query (&mysql_handle, tmp_sql))
-                printf ("DB server Error (insert `inventory`)- %s\n",
+                printf ("DB server Error (insert `inventory`)- %s¥n",
                         mysql_error (&mysql_handle));
         }
     }
@@ -641,7 +641,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
              char_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (delete `cart_inventory`)- %s\n",
+        printf ("DB server Error (delete `cart_inventory`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -661,7 +661,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
                      p->cart[i].broken);
             if (mysql_query (&mysql_handle, tmp_sql))
             {
-                printf ("DB server Error (insert `cart_inventory`)- %s\n",
+                printf ("DB server Error (insert `cart_inventory`)- %s¥n",
                         mysql_error (&mysql_handle));
             }
         }
@@ -671,7 +671,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
     sprintf (tmp_sql, "DELETE FROM `skill` WHERE `char_id`='%d'", char_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (delete `skill`)- %s\n",
+        printf ("DB server Error (delete `skill`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -689,7 +689,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
                           0) ? p->skill[i].lv : p->skill[i].flag - 2);
                 if (mysql_query (&mysql_handle, tmp_sql))
                 {
-                    printf ("DB server Error (insert `skill`)- %s\n",
+                    printf ("DB server Error (insert `skill`)- %s¥n",
                             mysql_error (&mysql_handle));
                 }
             }
@@ -700,7 +700,7 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
              char_id);
     if (mysql_query (&mysql_handle, tmp_sql))
     {
-        printf ("DB server Error (delete `global_reg_value`)- %s\n",
+        printf ("DB server Error (delete `global_reg_value`)- %s¥n",
                 mysql_error (&mysql_handle));
     }
 
@@ -714,13 +714,13 @@ int mmo_char_tosql (int char_id, struct mmo_charstatus *p)
                      char_id, p->global_reg[i].str, p->global_reg[i].value);
             if (mysql_query (&mysql_handle, tmp_sql))
             {
-                printf ("DB server Error (insert `global_reg_value`)- %s\n",
+                printf ("DB server Error (insert `global_reg_value`)- %s¥n",
                         mysql_error (&mysql_handle));
             }
         }
     }
 
-    printf ("saving char is done... (%d)\n", char_id);
+    printf ("saving char is done... (%d)¥n", char_id);
     save_flag = 0;
 
     return 0;
@@ -739,28 +739,28 @@ int mmo_char_init (void)
 
     //DB connection initialized
     mysql_init (&mysql_handle);
-    printf ("Connect DB server.... (inter server)\n");
+    printf ("Connect DB server.... (inter server)¥n");
     if (!mysql_real_connect
         (&mysql_handle, db_server_ip, db_server_id, db_server_pw,
          db_server_logindb, db_server_port, (char *) NULL, 0))
     {
         //pointer check
-        printf ("%s\n", mysql_error (&mysql_handle));
+        printf ("%s¥n", mysql_error (&mysql_handle));
         exit (1);
     }
     else
     {
-        printf ("connect success! (inter server)\n");
+        printf ("connect success! (inter server)¥n");
     }
 
     printf
-        ("Warning : Make sure you backup your databases before continuing!\n");
+        ("Warning : Make sure you backup your databases before continuing!¥n");
     printf
-        ("\nDo you wish to convert your Character Database to SQL? (y/n) : ");
+        ("¥nDo you wish to convert your Character Database to SQL? (y/n) : ");
     input = getchar ();
     if (input == 'y' || input == 'Y')
     {
-        printf ("\nConverting Character Database...\n");
+        printf ("¥nConverting Character Database...¥n");
         fp = fopen_ ("save/athena.txt", "r");
         char_dat = malloc (sizeof (char_dat[0]) * 256);
         char_max = 256;
@@ -780,27 +780,27 @@ int mmo_char_init (void)
             {
                 mmo_char_tosql (char_dat[char_num].char_id,
                                 &char_dat[char_num]);
-                printf ("convert %d -> DB\n", char_dat[char_num].char_id);
+                printf ("convert %d -> DB¥n", char_dat[char_num].char_id);
                 if (char_dat[char_num].char_id >= char_id_count)
                     char_id_count = char_dat[char_num].char_id + 1;
                 char_num++;
             }
         }
-        printf ("char data convert end\n");
+        printf ("char data convert end¥n");
         fclose_ (fp);
     }
 
-    while (getchar () != '\n');
+    while (getchar () != '¥n');
     printf
-        ("\nDo you wish to convert your Storage Database to SQL? (y/n) : ");
+        ("¥nDo you wish to convert your Storage Database to SQL? (y/n) : ");
     input = getchar ();
     if (input == 'y' || input == 'Y')
     {
-        printf ("\nConverting Storage Database...\n");
+        printf ("¥nConverting Storage Database...¥n");
         fp = fopen_ (storage_txt, "r");
         if (fp == NULL)
         {
-            printf ("cant't read : %s\n", storage_txt);
+            printf ("cant't read : %s¥n", storage_txt);
             return 0;
         }
 
@@ -828,12 +828,12 @@ int mmo_char_init (void)
         fclose_ (fp);
     }
 
-    while (getchar () != '\n');
-    printf ("\nDo you wish to convert your Pet Database to SQL? (y/n) : ");
+    while (getchar () != '¥n');
+    printf ("¥nDo you wish to convert your Pet Database to SQL? (y/n) : ");
     input = getchar ();
     if (input == 'y' || input == 'Y')
     {
-        printf ("\nConverting Pet Database...\n");
+        printf ("¥nConverting Pet Database...¥n");
         if ((fp = fopen_ (pet_txt, "r")) == NULL)
             return 1;
 
@@ -842,7 +842,7 @@ int mmo_char_init (void)
         {
             if (p == NULL)
             {
-                printf ("int_pet: out of memory!\n");
+                printf ("int_pet: out of memory!¥n");
                 exit (0);
             }
             if (inter_pet_fromstr (line, p) == 0 && p->pet_id > 0)
@@ -852,7 +852,7 @@ int mmo_char_init (void)
             }
             else
             {
-                printf ("int_pet: broken data [%s] line %d\n", pet_txt, c);
+                printf ("int_pet: broken data [%s] line %d¥n", pet_txt, c);
             }
             c++;
         }
@@ -864,7 +864,7 @@ int mmo_char_init (void)
 
 int inter_config_read (const char *cfgName)
 {
-    printf ("start reading interserver configuration: %s\n", cfgName);
+    printf ("start reading interserver configuration: %s¥n", cfgName);
     int  i;
     char line[1024], w1[1024], w2[1024];
     FILE *fp;
@@ -872,7 +872,7 @@ int inter_config_read (const char *cfgName)
     fp = fopen_ (cfgName, "r");
     if (fp == NULL)
     {
-        printf ("file not found: %s\n", cfgName);
+        printf ("file not found: %s¥n", cfgName);
         return 1;
     }
     while (fgets (line, 1020, fp))
@@ -882,51 +882,51 @@ int inter_config_read (const char *cfgName)
             continue;
         if (strcmpi (w1, "storage_txt") == 0)
         {
-            printf ("set storage_txt : %s\n", w2);
+            printf ("set storage_txt : %s¥n", w2);
             strncpy (storage_txt, w2, sizeof (storage_txt));
         }
         else if (strcmpi (w1, "pet_txt") == 0)
         {
-            printf ("set pet_txt : %s\n", w2);
+            printf ("set pet_txt : %s¥n", w2);
             strncpy (pet_txt, w2, sizeof (pet_txt));
         }
         //add for DB connection
         else if (strcmpi (w1, "db_server_ip") == 0)
         {
             strcpy (db_server_ip, w2);
-            printf ("set db_server_ip : %s\n", w2);
+            printf ("set db_server_ip : %s¥n", w2);
         }
         else if (strcmpi (w1, "db_server_port") == 0)
         {
             db_server_port = atoi (w2);
-            printf ("set db_server_port : %s\n", w2);
+            printf ("set db_server_port : %s¥n", w2);
         }
         else if (strcmpi (w1, "db_server_id") == 0)
         {
             strcpy (db_server_id, w2);
-            printf ("set db_server_id : %s\n", w2);
+            printf ("set db_server_id : %s¥n", w2);
         }
         else if (strcmpi (w1, "db_server_pw") == 0)
         {
             strcpy (db_server_pw, w2);
-            printf ("set db_server_pw : %s\n", w2);
+            printf ("set db_server_pw : %s¥n", w2);
         }
         else if (strcmpi (w1, "db_server_logindb") == 0)
         {
             strcpy (db_server_logindb, w2);
-            printf ("set db_server_logindb : %s\n", w2);
+            printf ("set db_server_logindb : %s¥n", w2);
         }
     }
     fclose_ (fp);
 
-    printf ("success reading interserver configuration\n");
+    printf ("success reading interserver configuration¥n");
 
     return 0;
 }
 
 int char_config_read (const char *cfgName)
 {
-    printf ("start reading interserver configuration: %s\n", cfgName);
+    printf ("start reading interserver configuration: %s¥n", cfgName);
     int  i;
     char line[1024], w1[1024], w2[1024];
     FILE *fp;
@@ -934,7 +934,7 @@ int char_config_read (const char *cfgName)
     fp = fopen_ (cfgName, "r");
     if (fp == NULL)
     {
-        printf ("file not found: %s\n", cfgName);
+        printf ("file not found: %s¥n", cfgName);
         return 1;
     }
 
@@ -948,12 +948,12 @@ int char_config_read (const char *cfgName)
             continue;
         if (strcmpi (w1, "char_txt") == 0)
         {
-            printf ("set char_txt : %s\n", w2);
+            printf ("set char_txt : %s¥n", w2);
             strcpy (char_txt, w2);
         }
     }
     fclose_ (fp);
-    printf ("reading configure done.....\n");
+    printf ("reading configure done.....¥n");
 
     return 0;
 }
@@ -965,7 +965,7 @@ int do_init (int argc, char **argv)
     inter_config_read ((argc > 2) ? argv[2] : inter_cfgName);
 
     mmo_char_init ();
-    printf ("all conversion success!\n");
+    printf ("all conversion success!¥n");
     exit (0);
     return 0;
 }

@@ -33,7 +33,7 @@ int  db_count = 5*2;
 // 10 minutes (if each 15 sec db saved)
 int  db_skip_count = 40;
 
-// ‘—MƒpƒPƒbƒg’·ƒŠƒXƒg
+// é€ä¿¡ãƒ‘ã‚±ãƒƒãƒˆé•·ãƒªã‚¹ãƒˆ
 int  inter_send_packet_length[] = {
     -1, -1, 27, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     -1, 7, 0, 0, 0, 0, 0, 0, -1, 11, 0, 0, 0, 0, 0, 0,
@@ -46,7 +46,7 @@ int  inter_send_packet_length[] = {
     11, -1, 7, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-// óMƒpƒPƒbƒg’·ƒŠƒXƒg
+// å—ä¿¡ãƒ‘ã‚±ãƒƒãƒˆé•·ãƒªã‚¹ãƒˆ
 int  inter_recv_packet_length[] = {
 // 0x3000
     -1, -1, 7, -1, -1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -79,7 +79,7 @@ static int wis_dellist[WISDELLIST_MAX], wis_delnum;
 
 //--------------------------------------------------------
 
-// ƒAƒJƒEƒ“ƒg•Ï”‚ğ•¶š—ñ‚Ö•ÏŠ·
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ã‚’æ–‡å­—åˆ—ã¸å¤‰æ›
 int inter_accreg_tostr (char *str, struct accreg *reg)
 {
     if (!str || !reg)
@@ -97,7 +97,7 @@ int inter_accreg_tostr (char *str, struct accreg *reg)
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‚ğ•¶š—ñ‚©‚ç•ÏŠ·
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ã‚’æ–‡å­—åˆ—ã‹ã‚‰å¤‰æ›
 int inter_accreg_fromstr (const char *str, struct accreg *reg)
 {
     if (!str || !reg)
@@ -123,7 +123,7 @@ int inter_accreg_fromstr (const char *str, struct accreg *reg)
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‚Ì“Ç‚İ‚İ
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ã®èª­ã¿è¾¼ã¿
 int inter_accreg_init ()
 {
     char line[16382];
@@ -163,7 +163,7 @@ int inter_accreg_init ()
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‚ÌƒZ[ƒu—p
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ã®ã‚»ãƒ¼ãƒ–ç”¨
 int inter_accreg_save_sub (void *key __attribute__ ((unused)), void *data, va_list ap)
 {
     char line[16382];
@@ -180,7 +180,7 @@ int inter_accreg_save_sub (void *key __attribute__ ((unused)), void *data, va_li
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‚ÌƒZ[ƒu
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ã®ã‚»ãƒ¼ãƒ–
 int inter_accreg_save ()
 {
     FILE *fp;
@@ -202,7 +202,7 @@ int inter_accreg_save ()
 //--------------------------------------------------------
 
 /*==========================================
- * İ’èƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
+ * è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
  *------------------------------------------
  */
 int inter_config_read (const char *cfgName)
@@ -285,7 +285,7 @@ int inter_config_read (const char *cfgName)
     return 0;
 }
 
-// ƒƒO‘‚«o‚µ
+// ãƒ­ã‚°æ›¸ãå‡ºã—
 int inter_log (char *fmt, ...)
 {
     if (!fmt)
@@ -306,7 +306,7 @@ int inter_log (char *fmt, ...)
     return 0;
 }
 
-// ƒZ[ƒu
+// ã‚»ãƒ¼ãƒ–
 int inter_save ()
 {
     inter_party_save ();
@@ -318,7 +318,7 @@ int inter_save ()
     return 0;
 }
 
-// ‰Šú‰»
+// åˆæœŸåŒ–
 int inter_init (const char *file)
 {
     inter_config_read (file);
@@ -333,7 +333,7 @@ int inter_init (const char *file)
     return 0;
 }
 
-// ƒ}ƒbƒvƒT[ƒo[Ú‘±
+// ãƒãƒƒãƒ—ã‚µãƒ¼ãƒãƒ¼æ¥ç¶š
 int inter_mapif_init (int fd)
 {
     inter_guild_mapif_init (fd);
@@ -344,7 +344,7 @@ int inter_mapif_init (int fd)
 //--------------------------------------------------------
 // sended packets to map-server
 
-// GMƒƒbƒZ[ƒW‘—M
+// GMãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 int mapif_GMmessage (unsigned char *mes, int len)
 {
     if (!mes || len < 0)
@@ -397,7 +397,7 @@ int mapif_wis_end (struct WisData *wd, int flag)
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‘—M
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°é€ä¿¡
 int mapif_account_reg (int fd, unsigned char *src)
 {
     if (!src)
@@ -412,7 +412,7 @@ int mapif_account_reg (int fd, unsigned char *src)
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”—v‹•ÔM
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°è¦æ±‚è¿”ä¿¡
 int mapif_account_reg_reply (int fd, int account_id)
 {
     struct accreg *reg = numdb_search (accreg_db, account_id);
@@ -488,7 +488,7 @@ int check_ttl_wisdata ()
 //--------------------------------------------------------
 // received packets from map-server
 
-// GMƒƒbƒZ[ƒW‘—M
+// GMãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 int mapif_parse_GMmessage (int fd)
 {
     mapif_GMmessage (RFIFOP (fd, 4), RFIFOW (fd, 2));
@@ -600,7 +600,7 @@ int mapif_parse_WisToGM (int fd)
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”•Û‘¶—v‹
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°ä¿å­˜è¦æ±‚
 int mapif_parse_AccReg (int fd)
 {
     int  j, p;
@@ -625,12 +625,12 @@ int mapif_parse_AccReg (int fd)
     }
     reg->reg_num = j;
 
-    mapif_account_reg (fd, RFIFOP (fd, 0)); // ‘¼‚ÌMAPƒT[ƒo[‚É‘—M
+    mapif_account_reg (fd, RFIFOP (fd, 0)); // ä»–ã®MAPã‚µãƒ¼ãƒãƒ¼ã«é€ä¿¡
 
     return 0;
 }
 
-// ƒAƒJƒEƒ“ƒg•Ï”‘—M—v‹
+// ã‚¢ã‚«ã‚¦ãƒ³ãƒˆå¤‰æ•°é€ä¿¡è¦æ±‚
 int mapif_parse_AccRegRequest (int fd)
 {
 //  printf("mapif: accreg request\n");
@@ -639,15 +639,15 @@ int mapif_parse_AccRegRequest (int fd)
 
 //--------------------------------------------------------
 
-// map server ‚©‚ç‚Ì’ÊMi‚PƒpƒPƒbƒg‚Ì‚İ‰ğÍ‚·‚é‚±‚Æj
-// ƒGƒ‰[‚È‚ç0(false)Aˆ—‚Å‚«‚½‚È‚ç1A
-// ƒpƒPƒbƒg’·‚ª‘«‚è‚È‚¯‚ê‚Î2‚ğ‚©‚¦‚³‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+// map server ã‹ã‚‰ã®é€šä¿¡ï¼ˆï¼‘ãƒ‘ã‚±ãƒƒãƒˆã®ã¿è§£æã™ã‚‹ã“ã¨ï¼‰
+// ã‚¨ãƒ©ãƒ¼ãªã‚‰0(false)ã€å‡¦ç†ã§ããŸãªã‚‰1ã€
+// ãƒ‘ã‚±ãƒƒãƒˆé•·ãŒè¶³ã‚Šãªã‘ã‚Œã°2ã‚’ã‹ãˆã•ãªã‘ã‚Œã°ãªã‚‰ãªã„
 int inter_parse_frommap (int fd)
 {
     int  cmd = RFIFOW (fd, 0);
     int  len = 0;
 
-    // interIŠÇŠ‚©‚ğ’²‚×‚é
+    // interé¯–ç®¡è½„ã‹ã‚’èª¿ã¹ã‚‹
     if (cmd < 0x3000
         || cmd >=
         0x3000 +
@@ -655,7 +655,7 @@ int inter_parse_frommap (int fd)
          sizeof (inter_recv_packet_length[0])))
         return 0;
 
-    // ƒpƒPƒbƒg’·‚ğ’²‚×‚é
+    // ãƒ‘ã‚±ãƒƒãƒˆé•·ã‚’èª¿ã¹ã‚‹
     if ((len =
          inter_check_length (fd,
                              inter_recv_packet_length[cmd - 0x3000])) == 0)
@@ -695,18 +695,18 @@ int inter_parse_frommap (int fd)
     return 1;
 }
 
-// RFIFO‚ÌƒpƒPƒbƒg’·Šm”F
-// •K—vƒpƒPƒbƒg’·‚ª‚ ‚ê‚ÎƒpƒPƒbƒg’·A‚Ü‚¾‘«‚è‚È‚¯‚ê‚Î0
+// RFIFOã®ãƒ‘ã‚±ãƒƒãƒˆé•·ç¢ºèª
+// å¿…è¦ãƒ‘ã‚±ãƒƒãƒˆé•·ãŒã‚ã‚Œã°ãƒ‘ã‚±ãƒƒãƒˆé•·ã€ã¾ã è¶³ã‚Šãªã‘ã‚Œã°0
 int inter_check_length (int fd, int length)
 {
     if (length == -1)
-    {                           // ‰Â•ÏƒpƒPƒbƒg’·
-        if (RFIFOREST (fd) < 4) // ƒpƒPƒbƒg’·‚ª–¢’…
+    {                           // å¯å¤‰ãƒ‘ã‚±ãƒƒãƒˆé•·
+        if (RFIFOREST (fd) < 4) // ãƒ‘ã‚±ãƒƒãƒˆé•·ãŒæœªç€
             return 0;
         length = RFIFOW (fd, 2);
     }
 
-    if (RFIFOREST (fd) < length)    // ƒpƒPƒbƒg‚ª–¢’…
+    if (RFIFOREST (fd) < length)    // ãƒ‘ã‚±ãƒƒãƒˆãŒæœªç€
         return 0;
 
     return length;
