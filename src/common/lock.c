@@ -4,10 +4,10 @@
 #include "lock.h"
 #include "socket.h"
 
-// ‘‚«‚İƒtƒ@ƒCƒ‹‚Ì•ÛŒìˆ—
-// i‘‚«‚İ‚ªI‚í‚é‚Ü‚ÅA‹Œƒtƒ@ƒCƒ‹‚ğ•ÛŠÇ‚µ‚Ä‚¨‚­j
+// æ›¸ãè¾¼ã¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿è­·å‡¦ç†
+// ï¼ˆæ›¸ãè¾¼ã¿ãŒçµ‚ã‚ã‚‹ã¾ã§ã€æ—§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿ç®¡ã—ã¦ãŠãï¼‰
 
-// V‚µ‚¢ƒtƒ@ƒCƒ‹‚Ì‘‚«‚İŠJn
+// æ–°ã—ã„ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸ãè¾¼ã¿é–‹å§‹
 FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unused)))
 {
     //+++ need check filename length?
@@ -19,7 +19,7 @@ FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unus
     FILE *fp;
     int  no = getpid ();
 
-    // ˆÀ‘S‚Èƒtƒ@ƒCƒ‹–¼‚ğ“¾‚éiè”²‚«j
+    // å®‰å…¨ãªãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¾—ã‚‹ï¼ˆæ‰‹æŠœãï¼‰
     do
     {
         sprintf (newfile, "%s_%d.tmp", filename, no++);
@@ -29,7 +29,7 @@ FILE *lock_fopen (const char *filename, int *info, int *cnt __attribute__ ((unus
     return fopen_ (newfile, "w");
 }
 
-// ‹Œƒtƒ@ƒCƒ‹‚ğíœ•Vƒtƒ@ƒCƒ‹‚ğƒŠƒl[ƒ€
+// æ—§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ï¼†æ–°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒªãƒãƒ¼ãƒ 
 int lock_fclose (FILE * fp, const char *filename, int *info, int *cnt)
 {
     //+++ need check filename length?

@@ -218,7 +218,7 @@ ATCOMMAND_FUNC (warpmob);
 ATCOMMAND_FUNC (runscript);    // [4144]
 
 /*==========================================
- *AtCommandInfo atcommand_info[]\‘¢‘Ì‚Ì’è‹`
+ *AtCommandInfo atcommand_info[]æ§‹é€ ä½“ã®å®šç¾©
  *------------------------------------------
  */
 
@@ -636,7 +636,7 @@ int e_mail_check (unsigned char *email)
 }
 
 /*==========================================
- * get_atcommand_level @ƒRƒ}ƒ“ƒh‚Ì•K—vƒŒƒxƒ‹‚ğæ“¾
+ * get_atcommand_level @ã‚³ãƒãƒ³ãƒ‰ã®å¿…è¦ãƒ¬ãƒ™ãƒ«ã‚’å–å¾—
  *------------------------------------------
  */
 int get_atcommand_level (const AtCommandType type)
@@ -725,7 +725,7 @@ void gm_log (const char *fmt, ...)
 }
 
 /*==========================================
- *is_atcommand @ƒRƒ}ƒ“ƒh‚É‘¶İ‚·‚é‚©‚Ç‚¤‚©Šm”F‚·‚é
+ *is_atcommand @ã‚³ãƒãƒ³ãƒ‰ã«å­˜åœ¨ã™ã‚‹ã‹ã©ã†ã‹ç¢ºèªã™ã‚‹
  *------------------------------------------
  */
 AtCommandType
@@ -1832,8 +1832,7 @@ int atcommand_speed (const int fd, struct map_session_data *sd,
     {
         sd->speed = speed;
         //sd->walktimer = x;
-        //‚±‚Ì•¶‚ğ’Ç‰Á by ‚ê‚
-        clif_updatestatus (sd, SP_SPEED);
+        //ã“ã®æ–‡ã‚’è¿½åŠ  by ã‚Œ        clif_updatestatus (sd, SP_SPEED);
         clif_displaymessage (fd, msg_table[8]); // Speed changed.
     }
     else
@@ -2533,7 +2532,7 @@ int atcommand_pvpoff (const int fd, struct map_session_data *sd,
         map[sd->bl.m].flag.pvp = 0;
         clif_send0199 (sd->bl.m, 0);
         for (i = 0; i < fd_max; i++)
-        {                       //l”•ªƒ‹[ƒv
+        {                       //äººæ•°åˆ†ãƒ«ãƒ¼ãƒ—
             if (session[i] && (pl_sd = session[i]->session_data)
                 && pl_sd->state.auth)
             {
@@ -2694,11 +2693,11 @@ int atcommand_model (const int fd, struct map_session_data *sd,
         hair_color >= MIN_HAIR_COLOR && hair_color <= MAX_HAIR_COLOR &&
         cloth_color >= MIN_CLOTH_COLOR && cloth_color <= MAX_CLOTH_COLOR)
     {
-        //•‚ÌF•ÏX
+        //æœã®è‰²å¤‰æ›´
         if (cloth_color != 0 && sd->status.sex == 1
             && (sd->status.class == 12 || sd->status.class == 17))
         {
-            //•‚ÌF–¢À‘•E‚Ì”»’è
+            //æœã®è‰²æœªå®Ÿè£…è·ã®åˆ¤å®š
             clif_displaymessage (fd, msg_table[35]);    // You can't use this command with this class.
             return -1;
         }
@@ -3389,8 +3388,8 @@ int atcommand_produce (const int fd, struct map_session_data *sd,
         tmp_item.card[0] = 0x00ff;
         tmp_item.card[1] = ((star * 5) << 8) + attribute;
         *((unsigned long *) (&tmp_item.card[2])) = sd->char_id;
-        clif_produceeffect (sd, 0, item_id);    // »‘¢ƒGƒtƒFƒNƒgƒpƒPƒbƒg
-        clif_misceffect (&sd->bl, 3);   // ‘¼l‚É‚à¬Œ÷‚ğ’Ê’m
+        clif_produceeffect (sd, 0, item_id);    // è£½é€ ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ‘ã‚±ãƒƒãƒˆ
+        clif_misceffect (&sd->bl, 3);   // ä»–äººã«ã‚‚æˆåŠŸã‚’é€šçŸ¥
         if ((flag = pc_additem (sd, &tmp_item, 1)))
             clif_additem (sd, 0, 0, flag);
     }
@@ -4797,7 +4796,7 @@ int atcommand_raisemap (const int fd, struct map_session_data *sd,
 }
 
 /*==========================================
- * atcommand_character_baselevel @charbaselvl‚Å‘ÎÛƒLƒƒƒ‰‚ÌƒŒƒxƒ‹‚ğã‚°‚é
+ * atcommand_character_baselevel @charbaselvlã§å¯¾è±¡ã‚­ãƒ£ãƒ©ã®ãƒ¬ãƒ™ãƒ«ã‚’ä¸Šã’ã‚‹
  *------------------------------------------
 */
 int atcommand_character_baselevel (const int fd, struct map_session_data *sd,
@@ -4891,11 +4890,11 @@ int atcommand_character_baselevel (const int fd, struct map_session_data *sd,
         return -1;
     }
 
-    return 0;                   //³íI—¹
+    return 0;                   //æ­£å¸¸çµ‚äº†
 }
 
 /*==========================================
- * atcommand_character_joblevel @charjoblvl‚Å‘ÎÛƒLƒƒƒ‰‚ÌJobƒŒƒxƒ‹‚ğã‚°‚é
+ * atcommand_character_joblevel @charjoblvlã§å¯¾è±¡ã‚­ãƒ£ãƒ©ã®Jobãƒ¬ãƒ™ãƒ«ã‚’ä¸Šã’ã‚‹
  *------------------------------------------
  */
 int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
@@ -4904,7 +4903,7 @@ int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
     struct map_session_data *pl_sd;
     char character[100];
     int  level = 0;
-    //“]¶‚â—{q‚Ìê‡‚ÌŒ³‚ÌE‹Æ‚ğZo‚·‚é
+    //è»¢ç”Ÿã‚„é¤Šå­ã®å ´åˆã®å…ƒã®è·æ¥­ã‚’ç®—å‡ºã™ã‚‹
     struct pc_base_job pl_s_class;
 
     if (!fd || !sd || !command)
@@ -4930,7 +4929,7 @@ int atcommand_character_joblevel (const int fd, struct map_session_data *sd,
 
             if (pl_s_class.job == 0)
                 max_level -= 40;
-            if ((pl_s_class.job == 23) || (pl_s_class.upper == 1 && pl_s_class.type == 2))  //ƒXƒpƒmƒr‚Æ“]¶E‚ÍJobƒŒƒxƒ‹‚ÌÅ‚‚ª70
+            if ((pl_s_class.job == 23) || (pl_s_class.upper == 1 && pl_s_class.type == 2))  //ã‚¹ãƒ‘ãƒãƒ“ã¨è»¢ç”Ÿè·ã¯Jobãƒ¬ãƒ™ãƒ«ã®æœ€é«˜ãŒ70
                 max_level += 20;
 
             if (level > 0)
@@ -5411,7 +5410,7 @@ int atcommand_agitend (const int fd, struct map_session_data *sd,
 }
 
 /*==========================================
- * @mapexit‚Åƒ}ƒbƒvƒT[ƒo[‚ğI—¹‚³‚¹‚é
+ * @mapexitã§ãƒãƒƒãƒ—ã‚µãƒ¼ãƒãƒ¼ã‚’çµ‚äº†ã•ã›ã‚‹
  *------------------------------------------
  */
 int atcommand_mapexit (const int fd, struct map_session_data *sd,
