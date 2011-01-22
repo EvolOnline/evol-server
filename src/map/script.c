@@ -205,7 +205,7 @@ static int parse_cmd_if = 0;
 static int parse_cmd;
 
 /*==========================================
- * ���[�J���v���g�^�C�v�錾 (�K�v�ȕ��̂�)
+ * ローカルプロトタイプ宣言 (必要な物のみ) 
  *------------------------------------------
  */
 unsigned char *parse_subexpr (unsigned char *, int);
@@ -1029,7 +1029,7 @@ static void check_event(struct script_state *st __attribute__ ((unused)), const 
 }
 
 /*==========================================
- * �������̃n�b�V�����v�Z
+ * 文字列のハッシュを計算 
  *------------------------------------------
  */
 static int calc_hash (const unsigned char *p)
@@ -1047,10 +1047,10 @@ static int calc_hash (const unsigned char *p)
 }
 
 /*==========================================
- * str_data�̒��ɖ��O�����邩�����
+ * str_dataの中に名前があるか検索する 
  *------------------------------------------
  */
-// �����̂ł����Δԍ��A��������-1
+// 既存のであれば番号、無ければ-1 
 static int search_str (const unsigned char *p)
 {
     if (!p)
@@ -1070,10 +1070,10 @@ static int search_str (const unsigned char *p)
 }
 
 /*==========================================
- * str_data�ɖ��O���o�^
+ * str_dataに名前を登録 
  *------------------------------------------
  */
-// �����̂ł����Δԍ��A�������Γo�^���ĐV�K�ԍ�
+// 既存のであれば番号、無ければ登録して新規番号 
 static int add_str (const unsigned char *p)
 {
     if (!p)
@@ -1137,7 +1137,7 @@ static int add_str (const unsigned char *p)
 }
 
 /*==========================================
- * �X�N���v�g�o�b�t�@�T�C�Y�̊m�F�Ɗg��
+ * スクリプトバッファサイズの確認と拡張 
  *------------------------------------------
  */
 static void check_script_buf (int size)
@@ -1152,7 +1152,7 @@ static void check_script_buf (int size)
 }
 
 /*==========================================
- * �X�N���v�g�o�b�t�@�ɂP�o�C�g��������
+ * スクリプトバッファに１バイト書き込む 
  *------------------------------------------
  */
 static void add_scriptb (int a)
@@ -1162,7 +1162,7 @@ static void add_scriptb (int a)
 }
 
 /*==========================================
- * �X�N���v�g�o�b�t�@�Ƀf�[�^�^�C�v�������
+ * スクリプトバッファにデータタイプを書き込む 
  *------------------------------------------
  */
 static void add_scriptc (int a)
@@ -1176,7 +1176,7 @@ static void add_scriptc (int a)
 }
 
 /*==========================================
- * �X�N���v�g�o�b�t�@�ɐ����������
+ * スクリプトバッファに整数を書き込む 
  *------------------------------------------
  */
 static void add_scripti (int a)
@@ -1190,10 +1190,10 @@ static void add_scripti (int a)
 }
 
 /*==========================================
- * �X�N���v�g�o�b�t�@�Ƀ��x��/�ϐ�/�֐��������
+ * スクリプトバッファにラベル/変数/関数を書き込む 
  *------------------------------------------
  */
-// �ő�16M�܂�
+// 最大16Mまで 
 static void add_scriptl (int l)
 {
     int  backpatch = str_data[l].backpatch;
@@ -1207,7 +1207,7 @@ static void add_scriptl (int l)
             add_scriptb (str_data[l].label >> 16);
             break;
         case C_NOP:
-            // ���x���̉\���������̂�backpatch�p�f�[�^���ߍ���
+               // ラベルの可能性があるのでbackpatch用データ埋め込み 
             add_scriptc (C_NAME);
             str_data[l].backpatch = script_pos;
             add_scriptb (backpatch);
@@ -1218,7 +1218,7 @@ static void add_scriptl (int l)
             add_scripti (str_data[l].val);
             break;
         default:
-            // �����̗p�r�Ɗm�肵�Ă��̂Ő�����̂܂�
+               // もう他の用途と確定してるので数字をそのまま 
             add_scriptc (C_NAME);
             add_scriptb (l);
             add_scriptb (l >> 8);
@@ -1228,7 +1228,7 @@ static void add_scriptl (int l)
 }
 
 /*==========================================
- * ���x���������
+ * ラベルを解決する 
  *------------------------------------------
  */
 void set_label (int l, int pos)
@@ -1249,7 +1249,7 @@ void set_label (int l, int pos)
 }
 
 /*==========================================
- * �X�y�[�X/�R�����g�ǂݔ��΂�
+ * スペース/コメント読み飛ばし 
  *------------------------------------------
  */
 static unsigned char *skip_space (unsigned char *p)
@@ -1281,7 +1281,7 @@ static unsigned char *skip_space (unsigned char *p)
 }
 
 /*==========================================
- * �P�P���X�L�b�v
+ * １単語スキップ 
  *------------------------------------------
  */
 static unsigned char *skip_word (unsigned char *p)
@@ -1291,15 +1291,15 @@ static unsigned char *skip_word (unsigned char *p)
 
     // prefix
     if (*p == '$')
-        p++;                    // MAP�I���L�ϐ��p
+        p++;                    // MAP鯖内共有変数用 
     if (*p == '@')
-        p++;                    // �ꎞ�I�ϐ��p(like weiss)
+        p++;                    // 一時的変数用(like weiss) 
     if (*p == '#')
-        p++;                    // account�ϐ��p
+        p++;                    // account変数用 
     if (*p == '#')
-        p++;                    // ���[���haccount�ϐ��p
+        p++;                    // ワールドaccount変数用 
     if (*p == 'l')
-        p++;                    // �ꎞ�I�ϐ��p(like weiss)
+        p++;                    // 一時的変数用(like weiss) 
 
     while (isalnum (*p) || *p == '_' || *p >= 0x81)
         if (*p >= 0x81 && p[1])
@@ -1311,7 +1311,7 @@ static unsigned char *skip_word (unsigned char *p)
 
     // postfix
     if (*p == '$')
-        p++;                    // �������ϐ�
+        p++;                    // 文字列変数 
 
     return p;
 }
@@ -1320,7 +1320,7 @@ static unsigned char *startptr;
 static int startline;
 
 /*==========================================
- * �G���[���b�Z�[�W�o��
+ * エラーメッセージ出力 
  *------------------------------------------
  */
 static void disp_error_message (const char *mes, const unsigned char *pos)
@@ -1363,7 +1363,7 @@ static void disp_error_message (const char *mes, const unsigned char *pos)
 }
 
 /*==========================================
- * ���̉���
+ * 項の解析 
  *------------------------------------------
  */
 unsigned char *parse_simpleexpr (unsigned char *p)
@@ -1436,14 +1436,14 @@ unsigned char *parse_simpleexpr (unsigned char *p)
         }
         p2 = skip_word (p);
         c = *p2;
-        *p2 = 0;                // ���O��add_str����
+        *p2 = 0;                //名前をadd_strする 
         l = add_str (p);
 
-        parse_cmd = l;          // warn_*_mismatch_paramnum�̂��߂ɕK�v
-        if (l == search_str ("if")) // warn_cmd_no_comma�̂��߂ɕK�v
+        parse_cmd = l;          // warn_*_mismatch_paramnumのために必要 
+        if (l == search_str ("if")) // warn_cmd_no_commaのために必要 
             parse_cmd_if++;
 /*
-		// �p�~�\����l14/l15,�����уv���t�B�b�N�X���̌x��
+		// 廃止予定のl14/l15,およびプレフィックスｌの警告 
 		if(	strcmp(str_buf+str_data[l].str,"l14")==0 ||
 			strcmp(str_buf+str_data[l].str,"l15")==0 ){
 			disp_error_message("l14 and l15 is DEPRECATED. use @menu instead of l15.",p);
@@ -1482,7 +1482,7 @@ unsigned char *parse_simpleexpr (unsigned char *p)
 }
 
 /*==========================================
- * ���̉���
+ * 式の解析 
  *------------------------------------------
  */
 unsigned char *parse_subexpr (unsigned char *p, int limit)
@@ -1605,7 +1605,7 @@ unsigned char *parse_subexpr (unsigned char *p, int limit)
 }
 
 /*==========================================
- * ���̕]��
+ * 式の評価 
  *------------------------------------------
  */
 unsigned char *parse_expr (unsigned char *p)
@@ -1639,7 +1639,7 @@ unsigned char *parse_expr (unsigned char *p)
 }
 
 /*==========================================
- * �s�̉���
+ * 行の解析 
  *------------------------------------------
  */
 unsigned char *parse_line (unsigned char *p)
@@ -1655,9 +1655,9 @@ unsigned char *parse_line (unsigned char *p)
     if (*p == ';')
         return p;
 
-    parse_cmd_if = 0;           // warn_cmd_no_comma�̂��߂ɕK�v
+    parse_cmd_if = 0;           // warn_cmd_no_commaのために必要 
 
-    // �ŏ��͊֐���
+    // 最初は関数名 
     p2 = p;
     p = parse_simpleexpr (p);
     p = skip_space (p);
@@ -1676,7 +1676,7 @@ unsigned char *parse_line (unsigned char *p)
 
         p = parse_expr (p);
         p = skip_space (p);
-        // �������؂���,����
+        // 引数区切りの,処理 
         if (*p == ',')
             p++;
         else if (*p != ';' && script_config.warn_cmd_no_comma
@@ -1714,7 +1714,7 @@ unsigned char *parse_line (unsigned char *p)
 }
 
 /*==========================================
- * �g�ݍ��݊֐��̒ǉ�
+ * 組み込み関数の追加 
  *------------------------------------------
  */
 static void add_buildin_func (void)
@@ -1730,7 +1730,7 @@ static void add_buildin_func (void)
 }
 
 /*==========================================
- * �萔�f�[�^�x�[�X�̓ǂݍ���
+ * 定数データベースの読み込み 
  *------------------------------------------
  */
 static void read_constdb (void)
@@ -1767,7 +1767,7 @@ static void read_constdb (void)
 }
 
 /*==========================================
- * �X�N���v�g�̉���
+ * スクリプトの解析 
  *------------------------------------------
  */
 unsigned char *parse_script (unsigned char *src, int line)
@@ -1802,7 +1802,7 @@ unsigned char *parse_script (unsigned char *src, int line)
         }
     }
 
-    // �O���plabel db�̏�����
+    // 外部用label dbの初期化 
     if (scriptlabel_db != NULL)
         strdb_final (scriptlabel_db, scriptlabel_final);
     scriptlabel_db = strdb_init (50);
@@ -1821,7 +1821,7 @@ unsigned char *parse_script (unsigned char *src, int line)
     for (p++; p && *p && *p != '}';)
     {
         p = skip_space (p);
-        // label������ꏈ��
+        // labelだけ特殊処理 
         tmpp = skip_space (skip_word (p));
         if (*tmpp == ':')
         {
@@ -1837,13 +1837,13 @@ unsigned char *parse_script (unsigned char *src, int line)
                 exit (1);
             }
             set_label (l, script_pos);
-            strdb_insert (scriptlabel_db, p, script_pos);   // �O���plabel db�o�^
+            strdb_insert (scriptlabel_db, p, script_pos);   // 外部用label db登録 
             *skip_word (p) = c;
             p = tmpp + 1;
             continue;
         }
 
-        // ���͑S���ꏏ����
+        // 他は全部一緒くた 
         p = parse_line (p);
         p = skip_space (p);
         add_scriptc (C_EOL);
@@ -1859,7 +1859,7 @@ unsigned char *parse_script (unsigned char *src, int line)
     script_size = script_pos;
     script_buf = (char *) aRealloc (script_buf, script_pos + 1);
 
-    // ����̃��x��������
+    // 未解決のラベルを解決 
     for (i = LABEL_START; i < str_num; i++)
     {
         if (str_data[i].type == C_NOP)
@@ -1894,13 +1894,13 @@ unsigned char *parse_script (unsigned char *src, int line)
 }
 
 //
-// ��s�n
+// 実行系 
 //
 enum
 { STOP = 1, END, RERUNLINE, GOTO, RETFUNC };
 
 /*==========================================
- * rid����sd�ւ̉���
+ * ridからsdへの解決 
  *------------------------------------------
  */
 struct map_session_data *script_rid2sd (struct script_state *st)
@@ -1917,7 +1917,7 @@ struct map_session_data *script_rid2sd (struct script_state *st)
 }
 
 /*==========================================
- * �ϐ��̓ǂݎ���
+ * 変数の読み取り 
  *------------------------------------------
  */
 int get_val (struct script_state *st, struct script_data *data)
@@ -2012,7 +2012,7 @@ int get_val (struct script_state *st, struct script_data *data)
 }
 
 /*==========================================
- * �ϐ��̓ǂݎ���2
+ * 変数の読み取り2 
  *------------------------------------------
  */
 void *get_val2 (struct script_state *st, int num)
@@ -2028,7 +2028,7 @@ void *get_val2 (struct script_state *st, int num)
 }
 
 /*==========================================
- * �ϐ��ݒ��p
+ * 変数設定用 
  *------------------------------------------
  */
 static int set_reg (struct map_session_data *sd, int num, char *name, void *v)
@@ -2054,7 +2054,7 @@ static int set_reg (struct map_session_data *sd, int num, char *name, void *v)
     }
     else
     {
-        // ���l
+        // 数値 
         int  val = (int) v;
         if (str_data[num & 0x00ffffff].type == C_PARAM)
         {
@@ -2084,7 +2084,7 @@ static int set_reg (struct map_session_data *sd, int num, char *name, void *v)
 }
 
 /*==========================================
- * �������ւ̕ϊ�
+ * 文字列への変換 
  *------------------------------------------
  */
 char *conv_str (struct script_state *st, struct script_data *data)
@@ -2101,7 +2101,7 @@ char *conv_str (struct script_state *st, struct script_data *data)
     }
     else if (data->type == C_NAME)
     {
-        // �e���|�����B�{�������͂�
+          // テンポラリ。本来無いはず 
         data->type = C_CONSTSTR;
         data->u.str = str_buf + str_data[data->u.num].str;
 #endif
@@ -2110,7 +2110,7 @@ char *conv_str (struct script_state *st, struct script_data *data)
 }
 
 /*==========================================
- * ���l�֕ϊ�
+ * 数値へ変換 
  *------------------------------------------
  */
 int conv_num (struct script_state *st, struct script_data *data)
@@ -2129,7 +2129,7 @@ int conv_num (struct script_state *st, struct script_data *data)
 }
 
 /*==========================================
- * �X�^�b�N�֐��l���v�b�V��
+ * スタックへ数値をプッシュ 
  *------------------------------------------
  */
 void push_val (struct script_stack *stack, int type, int val)
@@ -2152,7 +2152,7 @@ void push_val (struct script_stack *stack, int type, int val)
 }
 
 /*==========================================
- * �X�^�b�N�֕��������v�b�V��
+ * スタックへ文字列をプッシュ 
  *------------------------------------------
  */
 void push_str (struct script_stack *stack, int type, unsigned char *str)
@@ -2175,7 +2175,7 @@ void push_str (struct script_stack *stack, int type, unsigned char *str)
 }
 
 /*==========================================
- * �X�^�b�N�֕������v�b�V��
+ * スタックへ複製をプッシュ 
  *------------------------------------------
  */
 void push_copy (struct script_stack *stack, int pos)
@@ -2196,7 +2196,7 @@ void push_copy (struct script_stack *stack, int pos)
 }
 
 /*==========================================
- * �X�^�b�N�����|�b�v
+ * スタックからポップ 
  *------------------------------------------
  */
 void pop_stack (struct script_stack *stack, int start, int end)
@@ -2224,7 +2224,7 @@ void pop_stack (struct script_stack *stack, int start, int end)
 #define BUILDIN_FUNCU(x) int buildin_ ## x (struct script_state* st __attribute__ ((unused)))
 
 //
-// ���ߍ��݊֐�
+// 埋め込み関数 
 //
 /*==========================================
  *
@@ -2289,7 +2289,7 @@ BUILDIN_FUNC(goto)
 }
 
 /*==========================================
- * ���[�U�[���`�֐��̌Ăяo��
+ * ユーザー定義関数の呼び出し 
  *------------------------------------------
  */
 BUILDIN_FUNC(callfunc)
@@ -2309,10 +2309,10 @@ BUILDIN_FUNC(callfunc)
         for (i = st->start + 3, j = 0; i < st->end; i++, j++)
             push_copy (st->stack, i);
 
-        push_val (st->stack, C_INT, j); // �����̐����v�b�V��
-        push_val (st->stack, C_INT, st->defsp); // ���݂̊�X�^�b�N�|�C���^���v�b�V��
-        push_val (st->stack, C_INT, (int) st->script);  // ���݂̃X�N���v�g���v�b�V��
-        push_val (st->stack, C_RETINFO, st->pos);   // ���݂̃X�N���v�g�ʒu���v�b�V��
+        push_val (st->stack, C_INT, j); // 引数の数をプッシュ 
+        push_val (st->stack, C_INT, st->defsp);  // 現在の基準スタックポインタをプッシュ
+        push_val (st->stack, C_INT, (int) st->script);  // 現在のスクリプトをプッシュ 
+        push_val (st->stack, C_RETINFO, st->pos);       // 現在のスクリプト位置をプッシュ 
 
         st->pos = 0;
         st->script = scr;
@@ -2328,7 +2328,7 @@ BUILDIN_FUNC(callfunc)
 }
 
 /*==========================================
- * �T�u���[�e�B���̌Ăяo��
+ * サブルーティンの呼び出し 
  *------------------------------------------
  */
 BUILDIN_FUNC(callsub)
@@ -2338,10 +2338,10 @@ BUILDIN_FUNC(callsub)
     for (i = st->start + 3, j = 0; i < st->end; i++, j++)
         push_copy (st->stack, i);
 
-    push_val (st->stack, C_INT, j); // �����̐����v�b�V��
-    push_val (st->stack, C_INT, st->defsp); // ���݂̊�X�^�b�N�|�C���^���v�b�V��
-    push_val (st->stack, C_INT, (int) st->script);  // ���݂̃X�N���v�g���v�b�V��
-    push_val (st->stack, C_RETINFO, st->pos);   // ���݂̃X�N���v�g�ʒu���v�b�V��
+    push_val (st->stack, C_INT, j);                 // 引数の数をプッシュ 
+    push_val (st->stack, C_INT, st->defsp);         // 現在の基準スタックポインタをプッシュ 
+    push_val (st->stack, C_INT, (int) st->script);  // 現在のスクリプトをプッシュ 
+    push_val (st->stack, C_RETINFO, st->pos);       // 現在のスクリプト位置をプッシュ 
 
     st->pos = pos;
     st->defsp = st->start + 4 + j;
@@ -2350,7 +2350,7 @@ BUILDIN_FUNC(callsub)
 }
 
 /*==========================================
- * �����̏���
+ * 引数の所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getarg)
@@ -2377,13 +2377,13 @@ BUILDIN_FUNC(getarg)
 }
 
 /*==========================================
- * �T�u���[�`��/���[�U�[���`�֐��̏I��
+ * サブルーチン/ユーザー定義関数の終了 
  *------------------------------------------
  */
 BUILDIN_FUNC(return)
 {
     if (st->end > st->start + 2)
-    {                           // �߂��l�L��
+    {                           // 戻り値有り 
         push_copy (st->stack, st->start + 2);
     }
     st->state = RETFUNC;
@@ -2481,8 +2481,8 @@ BUILDIN_FUNC(menu)
         st->state = END;
     }
     else
-    {                           // goto����
-        // ragemu�݊��̂���
+    {                           // goto動作 
+        // ragemu互換のため 
         pc_setreg (sd, add_str ("l15"), sd->npc_menu);
         pc_setreg (sd, add_str ("@menu"), sd->npc_menu);
         sd->state.menu_or_input = 0;
@@ -2598,7 +2598,7 @@ BUILDIN_FUNC(warp)
         pc_randomwarp (sd, 3);
     else if (strcmp (str, "SavePoint") == 0)
     {
-        if (map[sd->bl.m].flag.noreturn)    // ���֎~
+        if (map[sd->bl.m].flag.noreturn)    // 蝶禁止 
             return 0;
 
         pc_setpos (sd, sd->status.save_point.map,
@@ -2606,7 +2606,7 @@ BUILDIN_FUNC(warp)
     }
     else if (strcmp (str, "Save") == 0)
     {
-        if (map[sd->bl.m].flag.noreturn)    // ���֎~
+        if (map[sd->bl.m].flag.noreturn)    // 蝶禁止 
             return 0;
 
         pc_setpos (sd, sd->status.save_point.map,
@@ -2618,7 +2618,7 @@ BUILDIN_FUNC(warp)
 }
 
 /*==========================================
- * �G���A�w�胏�[�v
+ * エリア指定ワープ 
  *------------------------------------------
  */
 int buildin_areawarp_sub (struct block_list *bl, va_list ap)
@@ -2744,9 +2744,9 @@ BUILDIN_FUNC(input)
         sd->state.menu_or_input = 0;
         if (postfix == '$')
         {
-            // ������
+            // 文字列 
             if (st->end > st->start + 2)
-            {                   // ����1��
+            {                   // 引数1個 
                 set_reg (sd, num, name, (void *) sd->npc_str);
             }
             else
@@ -2765,14 +2765,14 @@ BUILDIN_FUNC(input)
                 buildin_close (st); //** close
             }
 
-            // ���l
+            // 数値 
             if (st->end > st->start + 2)
-            {                   // ����1��
+            {                   // 引数1個 
                 set_reg (sd, num, name, (void *) sd->npc_amount);
             }
             else
             {
-                // ragemu�݊��̂���
+                // ragemu互換のため 
                 pc_setreg (sd, add_str ("l14"), sd->npc_amount);
             }
         }
@@ -2801,11 +2801,11 @@ BUILDIN_FUNC(if)
     if (!sel)
         return 0;
 
-    // �֐������R�s�[
+    // 関数名をコピー 
     push_copy (st->stack, st->start + 3);
-    // �ԂɈ����}�[�J��������
+    // 間に引数マーカを入れて 
     push_val (st->stack, C_ARG, 0);
-    // �c���̈������R�s�[
+    // 残りの引数をコピー 
     for (i = st->start + 4; i < st->end; i++)
     {
         push_copy (st->stack, i);
@@ -2816,7 +2816,7 @@ BUILDIN_FUNC(if)
 }
 
 /*==========================================
- * �ϐ��ݒ�
+ * 変数設定 
  *------------------------------------------
  */
 BUILDIN_FUNC(set)
@@ -2839,13 +2839,13 @@ BUILDIN_FUNC(set)
 
     if (postfix == '$')
     {
-        // ������
+        // 文字列 
         char *str = conv_str (st, &(st->stack->stack_data[st->start + 3]));
         set_reg (sd, num, name, (void *) str);
     }
     else
     {
-        // ���l
+        // 数値 
         int  val = conv_num (st, &(st->stack->stack_data[st->start + 3]));
         set_reg (sd, num, name, (void *) val);
     }
@@ -2854,7 +2854,7 @@ BUILDIN_FUNC(set)
 }
 
 /*==========================================
- * �z���ϐ��ݒ�
+ * 配列変数設定 
  *------------------------------------------
  */
 BUILDIN_FUNC(setarray)
@@ -2887,7 +2887,7 @@ BUILDIN_FUNC(setarray)
 }
 
 /*==========================================
- * �z���ϐ��N���A
+ * 配列変数クリア 
  *------------------------------------------
  */
 BUILDIN_FUNC(cleararray)
@@ -2920,7 +2920,7 @@ BUILDIN_FUNC(cleararray)
 }
 
 /*==========================================
- * �z���ϐ��R�s�[
+ * 配列変数コピー 
  *------------------------------------------
  */
 BUILDIN_FUNC(copyarray)
@@ -2956,7 +2956,7 @@ BUILDIN_FUNC(copyarray)
 }
 
 /*==========================================
- * �z���ϐ��̃T�C�Y����
+ * 配列変数のサイズ所得 
  *------------------------------------------
  */
 static int getarraysize (struct script_state *st, int num, int postfix)
@@ -2991,7 +2991,7 @@ BUILDIN_FUNC(getarraysize)
 }
 
 /*==========================================
- * �z���ϐ������v�f�폜
+ * 配列変数から要素削除 
  *------------------------------------------
  */
 BUILDIN_FUNC(deletearray)
@@ -3031,7 +3031,7 @@ BUILDIN_FUNC(deletearray)
 }
 
 /*==========================================
- * �w���v�f���\���l(�L�[)�������
+ * 指定要素を表す値(キー)を所得する 
  *------------------------------------------
  */
 BUILDIN_FUNC(getelementofarray)
@@ -3095,7 +3095,7 @@ BUILDIN_FUNC(cutin)
 }
 
 /*==========================================
- * �J�[�h�̃C���X�g���\������
+ * カードのイラストを表示する 
  *------------------------------------------
  */
 BUILDIN_FUNC(cutincard)
@@ -3179,7 +3179,7 @@ BUILDIN_FUNC(countitem)
 }
 
 /*==========================================
- * �d�ʃ`�F�b�N
+ * 重量チェック 
  *------------------------------------------
  */
 BUILDIN_FUNC(checkweight)
@@ -3260,7 +3260,7 @@ BUILDIN_FUNC(getitem)
     }
     //Violet Box, Blue Box, etc - random item pick
     if (nameid < 0)
-    {                           // �����_��
+    {                                // ランダム 
         nameid = itemdb_searchrandomid (-nameid);
         flag = 1;
     }
@@ -3273,10 +3273,10 @@ BUILDIN_FUNC(getitem)
             item_tmp.identify = 1;
         else
             item_tmp.identify = !itemdb_isequip3 (nameid);
-        if (st->end > st->start + 5)    //�A�C�e�����w�肵��ID�ɓn��
+        if (st->end > st->start + 5)    //アイテムを指定したIDに渡す 
             sd = map_id2sd (conv_num
                             (st, &(st->stack->stack_data[st->start + 5])));
-        if (sd == NULL)         //�A�C�e�����n�����肪���Ȃ�����炨�A��
+        if (sd == NULL)         //アイテムを渡す相手がいなかったらお帰り 
             return 0;
         if ((flag = pc_additem (sd, &item_tmp, amount)))
         {
@@ -3327,14 +3327,14 @@ BUILDIN_FUNC(getitem2)
     c2 = conv_num (st, &(st->stack->stack_data[st->start + 8]));
     c3 = conv_num (st, &(st->stack->stack_data[st->start + 9]));
     c4 = conv_num (st, &(st->stack->stack_data[st->start + 10]));
-    if (st->end > st->start + 11)   //�A�C�e�����w�肵��ID�ɓn��
+    if (st->end > st->start + 11)   //アイテムを指定したIDに渡す 
         sd = map_id2sd (conv_num
                         (st, &(st->stack->stack_data[st->start + 11])));
-    if (sd == NULL)             //�A�C�e�����n�����肪���Ȃ�����炨�A��
+    if (sd == NULL)             //アイテムを渡す相手がいなかったらお帰り 
         return 0;
 
     if (nameid < 0)
-    {                           // �����_��
+     {                                   // ランダム 
         nameid = itemdb_searchrandomid (-nameid);
         flag = 1;
     }
@@ -3420,7 +3420,7 @@ BUILDIN_FUNC(makeitem)
         m = map_mapname2mapid (mapname);
 
     if (nameid < 0)
-    {                           // �����_��
+     {                           // ランダム 
         nameid = itemdb_searchrandomid (-nameid);
         flag = 1;
     }
@@ -3517,7 +3517,7 @@ BUILDIN_FUNC(delitem)
 }
 
 /*==========================================
- *�L�����֌W�̃p�����[�^�擾
+ * キャラ関係のパラメータ取得 
  *------------------------------------------
  */
 BUILDIN_FUNC(readparam)
@@ -3544,7 +3544,7 @@ BUILDIN_FUNC(readparam)
 }
 
 /*==========================================
- *�L�����֌W��ID�擾
+ * キャラ関係のID取得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getcharid)
@@ -3575,7 +3575,7 @@ BUILDIN_FUNC(getcharid)
 }
 
 /*==========================================
- *�w��ID��PT���擾
+ * 指定IDのPT名取得 
  *------------------------------------------
  */
 char *buildin_getpartyname_sub (int party_id)
@@ -3611,7 +3611,7 @@ BUILDIN_FUNC(getpartyname)
 }
 
 /*==========================================
- *�w��ID��PT�l���ƃ����o�[ID�擾
+ * 指定IDのPT人数とメンバーID取得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getpartymember)
@@ -3641,7 +3641,7 @@ BUILDIN_FUNC(getpartymember)
 }
 
 /*==========================================
- *�w��ID�̃M���h���擾
+ * 指定IDのギルド名取得 
  *------------------------------------------
  */
 char *buildin_getguildname_sub (int guild_id)
@@ -3672,7 +3672,7 @@ BUILDIN_FUNC(getguildname)
 }
 
 /*==========================================
- *�w��ID��GuildMaster���擾
+ * 指定IDのGuildMaster名取得 
  *------------------------------------------
  */
 char *buildin_getguildmaster_sub (int guild_id)
@@ -3726,7 +3726,7 @@ BUILDIN_FUNC(getguildmasterid)
 }
 
 /*==========================================
- * �L�����N�^�̖��O
+ * キャラクタの名前 
  *------------------------------------------
  */
 BUILDIN_FUNC(strcharinfo)
@@ -3810,7 +3810,7 @@ BUILDIN_FUNC(getequipid)
 }
 
 /*==========================================
- * ����������i���B���j���[�p�j
+ * 装備名文字列（精錬メニュー用） 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequipname)
@@ -3912,7 +3912,7 @@ BUILDIN_FUNC(repair)
 }
 
 /*==========================================
- * �����`�F�b�N
+ * 装備チェック 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequipisequiped)
@@ -3936,7 +3936,7 @@ BUILDIN_FUNC(getequipisequiped)
 }
 
 /*==========================================
- * �����i���B�\�`�F�b�N
+ * 装備品精錬可能チェック 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequipisenableref)
@@ -3971,7 +3971,7 @@ BUILDIN_FUNC(getequipisenableref)
 }
 
 /*==========================================
- * �����i�Ӓ��`�F�b�N
+ * 装備品鑑定チェック 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequipisidentify)
@@ -4003,7 +4003,7 @@ BUILDIN_FUNC(getequipisidentify)
 }
 
 /*==========================================
- * �����i���B�x
+ * 装備品精錬度 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequiprefinerycnt)
@@ -4023,7 +4023,7 @@ BUILDIN_FUNC(getequiprefinerycnt)
 }
 
 /*==========================================
- * �����i����LV
+ * 装備品武器LV 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequipweaponlv)
@@ -4055,7 +4055,7 @@ BUILDIN_FUNC(getequipweaponlv)
 }
 
 /*==========================================
- * �����i���B������
+ * 装備品精錬成功率 
  *------------------------------------------
  */
 BUILDIN_FUNC(getequippercentrefinery)
@@ -4088,7 +4088,7 @@ BUILDIN_FUNC(getequippercentrefinery)
 }
 
 /*==========================================
- * ���B����
+ * 精錬成功 
  *------------------------------------------
  */
 BUILDIN_FUNC(successrefitem)
@@ -4123,7 +4123,7 @@ BUILDIN_FUNC(successrefitem)
 }
 
 /*==========================================
- * ���B���s
+ * 精錬失敗 
  *------------------------------------------
  */
 BUILDIN_FUNC(failedrefitem)
@@ -4144,10 +4144,10 @@ BUILDIN_FUNC(failedrefitem)
     {
         sd->status.inventory[i].refine = 0;
         pc_unequipitem (sd, i, 0);
-        // ���B���s�G�t�F�N�g�̃p�P�b�g
+        // 精錬失敗エフェクトのパケット 
         clif_refine (sd->fd, sd, 1, i, sd->status.inventory[i].refine);
         pc_delitem (sd, i, 1, 0);
-        // ���̐l�ɂ��s���ʒm
+        // 他の人にも失敗を通知 
         clif_misceffect (&sd->bl, 2);
     }
 
@@ -4188,7 +4188,7 @@ BUILDIN_FUNC(statusup2)
 }
 
 /*==========================================
- * �����i�ɂ����\�͒l�{�[�i�X
+ * 装備品による能力値ボーナス 
  *------------------------------------------
  */
 BUILDIN_FUNC(bonus)
@@ -4205,7 +4205,7 @@ BUILDIN_FUNC(bonus)
 }
 
 /*==========================================
- * �����i�ɂ����\�͒l�{�[�i�X
+ * 装備品による能力値ボーナス 
  *------------------------------------------
  */
 BUILDIN_FUNC(bonus2)
@@ -4223,7 +4223,7 @@ BUILDIN_FUNC(bonus2)
 }
 
 /*==========================================
- * �����i�ɂ����\�͒l�{�[�i�X
+ * 装備品による能力値ボーナス 
  *------------------------------------------
  */
 BUILDIN_FUNC(bonus3)
@@ -4242,7 +4242,7 @@ BUILDIN_FUNC(bonus3)
 }
 
 /*==========================================
- * �X�L������
+ * スキル所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(skill)
@@ -4284,7 +4284,7 @@ BUILDIN_FUNC(setskill)
 }
 
 /*==========================================
- * �M���h�X�L���擾
+ * ギルドスキル取得 
  *------------------------------------------
  */
 BUILDIN_FUNC(guildskill)
@@ -4305,7 +4305,7 @@ BUILDIN_FUNC(guildskill)
 }
 
 /*==========================================
- * �X�L�����x������
+ * スキルレベル所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getskilllv)
@@ -4596,7 +4596,7 @@ BUILDIN_FUNC(guildchangegm)
 }
 
 /*==========================================
- * �J�[�g���t����
+ * カートを付ける 
  *------------------------------------------
  */
 BUILDIN_FUNC(setcart)
@@ -4633,7 +4633,7 @@ BUILDIN_FUNC(checkfalcon)
 }
 
 /*==========================================
- * �����t����
+ * 鷹を付ける 
  *------------------------------------------
  */
 BUILDIN_FUNC(setfalcon)
@@ -4670,7 +4670,7 @@ BUILDIN_FUNC(checkriding)
 }
 
 /*==========================================
- * �y�R�y�R����
+ * ペコペコ乗り 
  *------------------------------------------
  */
 BUILDIN_FUNC(setriding)
@@ -4684,7 +4684,7 @@ BUILDIN_FUNC(setriding)
 }
 
 /*==========================================
- *	�Z�[�u�|�C���g�̕ۑ�
+ * セーブポイントの保存 
  *------------------------------------------
  */
 BUILDIN_FUNC(savepoint)
@@ -4812,7 +4812,7 @@ BUILDIN_FUNC(gettimestr)
 }
 
 /*==========================================
- * �J�v���q�ɂ��J��
+ * カプラ倉庫を開く 
  *------------------------------------------
  */
 BUILDIN_FUNC(openstorage)
@@ -4849,7 +4849,7 @@ BUILDIN_FUNC(guildopenstorage)
 }
 
 /*==========================================
- * �A�C�e���ɂ����X�L������
+ * アイテムによるスキル発動 
  *------------------------------------------
  */
 BUILDIN_FUNC(itemskill)
@@ -4862,7 +4862,7 @@ BUILDIN_FUNC(itemskill)
     lv = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     str = conv_str (st, &(st->stack->stack_data[st->start + 4]));
 
-    // �r�����ɃX�L���A�C�e���͎g�p�ł��Ȃ�
+    // 詠唱中にスキルアイテムは使用できない 
     if (sd->skilltimer != -1)
         return 0;
 
@@ -4875,7 +4875,7 @@ BUILDIN_FUNC(itemskill)
 }
 
 /*==========================================
- * NPC�Ōo���l�グ��
+ * NPCで経験値上げる 
  *------------------------------------------
  */
 BUILDIN_FUNC(getexp)
@@ -4894,7 +4894,7 @@ BUILDIN_FUNC(getexp)
 }
 
 /*==========================================
- * �����X�^�[����
+ * モンスター発生 
  *------------------------------------------
  */
 BUILDIN_FUNC(monster)
@@ -4917,7 +4917,7 @@ BUILDIN_FUNC(monster)
 }
 
 /*==========================================
- * �����X�^�[����
+ * モンスター発生 
  *------------------------------------------
  */
 BUILDIN_FUNC(areamonster)
@@ -4942,7 +4942,7 @@ BUILDIN_FUNC(areamonster)
 }
 
 /*==========================================
- * �����X�^�[�폜
+ * モンスター削除 
  *------------------------------------------
  */
 int buildin_killmonster_sub (struct block_list *bl, va_list ap)
@@ -5009,7 +5009,7 @@ BUILDIN_FUNC(killmonsterall)
 }
 
 /*==========================================
- * �C�x���g��s
+ * イベント実行 
  *------------------------------------------
  */
 BUILDIN_FUNC(doevent)
@@ -5025,7 +5025,7 @@ BUILDIN_FUNC(doevent)
 }
 
 /*==========================================
- * NPC���̃C�x���g��s
+ * NPC主体イベント実行 
  *------------------------------------------
  */
 BUILDIN_FUNC(donpcevent)
@@ -5041,7 +5041,7 @@ BUILDIN_FUNC(donpcevent)
 }
 
 /*==========================================
- * �C�x���g�^�C�}�[�ǉ�
+ * イベントタイマー追加 
  *------------------------------------------
  */
 BUILDIN_FUNC(addtimer)
@@ -5055,7 +5055,7 @@ BUILDIN_FUNC(addtimer)
 }
 
 /*==========================================
- * �C�x���g�^�C�}�[�폜
+ * イベントタイマー削除 
  *------------------------------------------
  */
 BUILDIN_FUNC(deltimer)
@@ -5067,7 +5067,7 @@ BUILDIN_FUNC(deltimer)
 }
 
 /*==========================================
- * �C�x���g�^�C�}�[�̃J�E���g�l�ǉ�
+ * イベントタイマーのカウント値追加 
  *------------------------------------------
  */
 BUILDIN_FUNC(addtimercount)
@@ -5081,7 +5081,7 @@ BUILDIN_FUNC(addtimercount)
 }
 
 /*==========================================
- * NPC�^�C�}�[������
+ * NPCタイマー初期化 
  *------------------------------------------
  */
 BUILDIN_FUNC(initnpctimer)
@@ -5099,7 +5099,7 @@ BUILDIN_FUNC(initnpctimer)
 }
 
 /*==========================================
- * NPC�^�C�}�[�J�n
+ * NPCタイマー開始 
  *------------------------------------------
  */
 BUILDIN_FUNC(startnpctimer)
@@ -5116,7 +5116,7 @@ BUILDIN_FUNC(startnpctimer)
 }
 
 /*==========================================
- * NPC�^�C�}�[���~
+ * NPCタイマー停止 
  *------------------------------------------
  */
 BUILDIN_FUNC(stopnpctimer)
@@ -5133,7 +5133,7 @@ BUILDIN_FUNC(stopnpctimer)
 }
 
 /*==========================================
- * NPC�^�C�}�[���񏊓�
+ * NPCタイマー情報所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getnpctimer)
@@ -5178,7 +5178,7 @@ BUILDIN_FUNC(getnpctimer)
 }
 
 /*==========================================
- * NPC�^�C�}�[�l�ݒ�
+ * NPCタイマー値設定 
  *------------------------------------------
  */
 BUILDIN_FUNC(setnpctimer)
@@ -5197,7 +5197,7 @@ BUILDIN_FUNC(setnpctimer)
 }
 
 /*==========================================
- * �V�̐��A�i�E���X
+ * 天の声アナウンス 
  *------------------------------------------
  */
 BUILDIN_FUNC(announce)
@@ -5219,7 +5219,7 @@ BUILDIN_FUNC(announce)
 }
 
 /*==========================================
- * �V�̐��A�i�E���X�i����}�b�v�j
+ * 天の声アナウンス（特定マップ） 
  *------------------------------------------
  */
 int buildin_mapannounce_sub (struct block_list *bl, va_list ap)
@@ -5254,7 +5254,7 @@ BUILDIN_FUNC(mapannounce)
 }
 
 /*==========================================
- * �V�̐��A�i�E���X�i����G���A�j
+ * 天の声アナウンス（特定エリア） 
  *------------------------------------------
  */
 BUILDIN_FUNC(areaannounce)
@@ -5281,7 +5281,7 @@ BUILDIN_FUNC(areaannounce)
 }
 
 /*==========================================
- * ���[�U�[������
+ * ユーザー数所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getusers)
@@ -5310,7 +5310,7 @@ BUILDIN_FUNC(getusers)
 }
 
 /*==========================================
- * �}�b�v�w�胆�[�U�[������
+ * マップ指定ユーザー数所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getmapusers)
@@ -5328,7 +5328,7 @@ BUILDIN_FUNC(getmapusers)
 }
 
 /*==========================================
- * �G���A�w�胆�[�U�[������
+ * エリア指定ユーザー数所得 
  *------------------------------------------
  */
 int buildin_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
@@ -5364,7 +5364,7 @@ BUILDIN_FUNC(getareausers)
 }
 
 /*==========================================
- * �G���A�w���h���b�v�A�C�e��������
+ * エリア指定ドロップアイテム数所得 
  *------------------------------------------
  */
 int buildin_getareadropitem_sub (struct block_list *bl, va_list ap)
@@ -5422,7 +5422,7 @@ BUILDIN_FUNC(getareadropitem)
 }
 
 /*==========================================
- * NPC�̗L����
+ * NPCの有効化 
  *------------------------------------------
  */
 BUILDIN_FUNC(enablenpc)
@@ -5434,7 +5434,7 @@ BUILDIN_FUNC(enablenpc)
 }
 
 /*==========================================
- * NPC�̖�����
+ * NPCの無効化 
  *------------------------------------------
  */
 BUILDIN_FUNC(disablenpc)
@@ -5473,7 +5473,7 @@ BUILDIN_FUNC(disablearena)  // Added by RoVeRT
 }
 
 /*==========================================
- * �B���Ă���NPC�̕\��
+ * 隠れているNPCの表示 
  *------------------------------------------
  */
 BUILDIN_FUNC(hideoffnpc)
@@ -5485,7 +5485,7 @@ BUILDIN_FUNC(hideoffnpc)
 }
 
 /*==========================================
- * NPC���n�C�f�B���O
+ * NPCをハイディング 
  *------------------------------------------
  */
 BUILDIN_FUNC(hideonnpc)
@@ -5497,7 +5497,7 @@ BUILDIN_FUNC(hideonnpc)
 }
 
 /*==========================================
- * ���Ԉُ��ɂ�����
+ * 状態異常にかかる 
  *------------------------------------------
  */
 BUILDIN_FUNC(sc_start)
@@ -5507,7 +5507,7 @@ BUILDIN_FUNC(sc_start)
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     tick = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     val1 = conv_num (st, &(st->stack->stack_data[st->start + 4]));
-    if (st->end > st->start + 5)    //�w�肵���L���������Ԉُ��ɂ���
+    if (st->end > st->start + 5)        //指定したキャラを状態異常にする 
         bl = map_id2bl (conv_num
                         (st, &(st->stack->stack_data[st->start + 5])));
     else
@@ -5530,7 +5530,7 @@ BUILDIN_FUNC(sc_startv2)
     tick = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     val1 = conv_num (st, &(st->stack->stack_data[st->start + 4]));
     val2 = conv_num (st, &(st->stack->stack_data[st->start + 5]));
-    if (st->end > st->start + 6)    //�w�肵���L���������Ԉُ��ɂ���
+    if (st->end > st->start + 6)    //指定したキャラを状態異常にする 
         bl = map_id2bl (conv_num
                         (st, &(st->stack->stack_data[st->start + 6])));
     else
@@ -5546,7 +5546,7 @@ BUILDIN_FUNC(sc_startv2)
 }
 
 /*==========================================
- * ���Ԉُ��ɂ�����(�m���w��)
+ * 状態異常にかかる(確率指定) 
  *------------------------------------------
  */
 BUILDIN_FUNC(sc_start2)
@@ -5557,7 +5557,7 @@ BUILDIN_FUNC(sc_start2)
     tick = conv_num (st, &(st->stack->stack_data[st->start + 3]));
     val1 = conv_num (st, &(st->stack->stack_data[st->start + 4]));
     per = conv_num (st, &(st->stack->stack_data[st->start + 5]));
-    if (st->end > st->start + 6)    //�w�肵���L���������Ԉُ��ɂ���
+    if (st->end > st->start + 6)    //指定したキャラを状態異常にする 
         bl = map_id2bl (conv_num
                         (st, &(st->stack->stack_data[st->start + 6])));
     else
@@ -5574,7 +5574,7 @@ BUILDIN_FUNC(sc_start2)
 }
 
 /*==========================================
- * ���Ԉُ킪����
+ * 状態異常が直る 
  *------------------------------------------
  */
 BUILDIN_FUNC(sc_end)
@@ -5617,7 +5617,7 @@ BUILDIN_FUNC(sc_check)
 }
 
 /*==========================================
- * ���Ԉُ��ϐ����v�Z�����m�����Ԃ�
+ * 状態異常耐性を計算した確率を返す 
  *------------------------------------------
  */
 BUILDIN_FUNC(getscrate)
@@ -5628,7 +5628,7 @@ BUILDIN_FUNC(getscrate)
 
     type = conv_num (st, &(st->stack->stack_data[st->start + 2]));
     rate = conv_num (st, &(st->stack->stack_data[st->start + 3]));
-    if (st->end > st->start + 4)    //�w�肵���L�����̑ϐ����v�Z����
+    if (st->end > st->start + 4)    //指定したキャラの耐性を計算する 
         bl = map_id2bl (conv_num
                         (st, &(st->stack->stack_data[st->start + 6])));
     else
@@ -5684,7 +5684,7 @@ BUILDIN_FUNC(resetlvl)
 }
 
 /*==========================================
- * �X�e�[�^�X���Z�b�g
+ * ステータスリセット 
  *------------------------------------------
  */
 BUILDIN_FUNC(resetstatus)
@@ -5696,7 +5696,7 @@ BUILDIN_FUNC(resetstatus)
 }
 
 /*==========================================
- * �X�L�����Z�b�g
+ * スキルリセット 
  *------------------------------------------
  */
 BUILDIN_FUNC(resetskill)
@@ -5730,7 +5730,7 @@ BUILDIN_FUNC(changebase)
         return 0;
 
 //  if(vclass==22) {
-//      pc_unequipitem(sd,sd->equip_index[9],0);    // �����O
+//      pc_unequipitem(sd,sd->equip_index[9],0);    // 装備外 
 //  }
 
     sd->view_class = vclass;
@@ -5739,7 +5739,7 @@ BUILDIN_FUNC(changebase)
 }
 
 /*==========================================
- * ���ʕϊ�
+ * 性別変換 
  *------------------------------------------
  */
 BUILDIN_FUNC(changesex)
@@ -5769,7 +5769,7 @@ BUILDIN_FUNC(changesex)
 }
 
 /*==========================================
- * npc�`���b�g�쐬
+ * npcチャット作成 
  *------------------------------------------
  */
 BUILDIN_FUNC(waitingroom)
@@ -5790,20 +5790,20 @@ BUILDIN_FUNC(waitingroom)
 
         if (data->type == C_INT)
         {
-            // �VAthena�d�l(��Athena�d�l�ƌ݊�������)
+            // 新Athena仕様(旧Athena仕様と互換性あり) 
             ev = conv_str (st, &(st->stack->stack_data[st->start + 4]));
             trigger = conv_num (st, &(st->stack->stack_data[st->start + 5]));
         }
         else
         {
-            // eathena�d�l
+            // eathena仕様 
             trigger = conv_num (st, &(st->stack->stack_data[st->start + 4]));
             ev = conv_str (st, &(st->stack->stack_data[st->start + 5]));
         }
     }
     else
     {
-        // ��Athena�d�l
+        // 旧Athena仕様 
         if (st->end > st->start + 4)
             ev = conv_str (st, &(st->stack->stack_data[st->start + 4]));
     }
@@ -5813,7 +5813,7 @@ BUILDIN_FUNC(waitingroom)
 }
 
 /*==========================================
- * npc�`���b�g�폜
+ * npcチャット削除 
  *------------------------------------------
  */
 BUILDIN_FUNC(delwaitingroom)
@@ -5829,7 +5829,7 @@ BUILDIN_FUNC(delwaitingroom)
 }
 
 /*==========================================
- * npc�`���b�g�S���R���o��
+ * npcチャット全員蹴り出す 
  *------------------------------------------
  */
 BUILDIN_FUNC(waitingroomkickall)
@@ -5851,7 +5851,7 @@ BUILDIN_FUNC(waitingroomkickall)
 }
 
 /*==========================================
- * npc�`���b�g�C�x���g�L����
+ * npcチャットイベント有効化 
  *------------------------------------------
  */
 BUILDIN_FUNC(enablewaitingroomevent)
@@ -5873,7 +5873,7 @@ BUILDIN_FUNC(enablewaitingroomevent)
 }
 
 /*==========================================
- * npc�`���b�g�C�x���g������
+ * npcチャットイベント無効化 
  *------------------------------------------
  */
 BUILDIN_FUNC(disablewaitingroomevent)
@@ -5895,7 +5895,7 @@ BUILDIN_FUNC(disablewaitingroomevent)
 }
 
 /*==========================================
- * npc�`���b�g���ԏ���
+ * npcチャット状態所得 
  *------------------------------------------
  */
 BUILDIN_FUNC(getwaitingroomstate)
@@ -5955,7 +5955,7 @@ BUILDIN_FUNC(getwaitingroomstate)
 }
 
 /*==========================================
- * �`���b�g�����o�[(�K���l��)���[�v
+ * チャットメンバー(規定人数)ワープ 
  *------------------------------------------
  */
 BUILDIN_FUNC(warpwaitingpc)
@@ -5979,7 +5979,7 @@ BUILDIN_FUNC(warpwaitingpc)
 
     for (i = 0; i < n; i++)
     {
-        struct map_session_data *sd = cd->usersd[0];    // ���X�g�擪��PC��X�ɁB
+        struct map_session_data *sd = cd->usersd[0];    // リスト先頭のPCを次々に。 
 
         mapreg_setreg (add_str ("$@warpwaitingpc") + (i << 24), sd->bl.id);
 
@@ -5987,7 +5987,7 @@ BUILDIN_FUNC(warpwaitingpc)
             pc_randomwarp (sd, 3);
         else if (strcmp (str, "SavePoint") == 0)
         {
-            if (map[sd->bl.m].flag.noteleport)  // �e���|�֎~
+            if (map[sd->bl.m].flag.noteleport)  // テレポ禁止 
                 return 0;
 
             pc_setpos (sd, sd->status.save_point.map,
@@ -6001,7 +6001,7 @@ BUILDIN_FUNC(warpwaitingpc)
 }
 
 /*==========================================
- * RID�̃A�^�b�`
+ * RIDのアタッチ 
  *------------------------------------------
  */
 BUILDIN_FUNC(attachrid)
@@ -6012,7 +6012,7 @@ BUILDIN_FUNC(attachrid)
 }
 
 /*==========================================
- * RID�̃f�^�b�`
+ * RIDのデタッチ 
  *------------------------------------------
  */
 BUILDIN_FUNC(detachrid)
@@ -6022,7 +6022,7 @@ BUILDIN_FUNC(detachrid)
 }
 
 /*==========================================
- * ���݃`�F�b�N
+ * 存在チェック 
  *------------------------------------------
  */
 BUILDIN_FUNC(isloggedin)
@@ -6234,7 +6234,7 @@ BUILDIN_FUNC(pvpon)
             return 0;
 
         for (i = 0; i < fd_max; i++)
-        {                       //�l�������[�v
+        {                       //人数分ループ 
             if (session[i] && (pl_sd = session[i]->session_data)
                 && pl_sd->state.auth)
             {
@@ -6272,7 +6272,7 @@ BUILDIN_FUNC(pvpoff)
 
         int  i;
         for (i = 0; i < fd_max; i++)
-        {                       //�l�������[�v
+        {                       //人数分ループ 
             if (session[i] && (pl_sd = session[i]->session_data)
                 && pl_sd->state.auth)
             {
@@ -6326,7 +6326,7 @@ BUILDIN_FUNC(gvgoff)
 }
 
 /*==========================================
- *	NPC�G���[�V����
+ * NPCエモーション 
  *------------------------------------------
  */
 
@@ -6701,7 +6701,7 @@ BUILDIN_FUNC(setcastledata)
 }
 
 /* =====================================================================
- * �M���h�������v������
+ * ギルド情報を要求する 
  * ---------------------------------------------------------------------
  */
 BUILDIN_FUNC(requestguildinfo)
@@ -6718,7 +6718,7 @@ BUILDIN_FUNC(requestguildinfo)
 }
 
 /* =====================================================================
- * �J�[�h�̐��𓾂�
+ * カードの数を得る 
  * ---------------------------------------------------------------------
  */
 BUILDIN_FUNC(getequipcardcnt)
@@ -6741,7 +6741,7 @@ BUILDIN_FUNC(getequipcardcnt)
     }
     i = pc_checkequip (sd, equip[num - 1]);
     if (sd->status.inventory[i].card[0] == 0x00ff)
-    {                           // ���������̓J�[�h�Ȃ�
+    {                           // 製造武器はカードなし 
         push_val (st->stack, C_INT, 0);
         return 0;
     }
@@ -6761,7 +6761,7 @@ BUILDIN_FUNC(getequipcardcnt)
 }
 
 /* ================================================================
- * �J�[�h�����O������
+ * カード取り外し成功 
  * ----------------------------------------------------------------
  */
 BUILDIN_FUNC(successremovecards)
@@ -6817,7 +6817,7 @@ BUILDIN_FUNC(successremovecards)
             0, item_tmp.card[3] = 0;
         pc_delitem (sd, i, 1, 0);
         if ((flag = pc_additem (sd, &item_tmp, 1)))
-        {                       // ���ĂȂ��Ȃ��h���b�v
+          {                           // もてないならドロップ 
             clif_additem (sd, 0, 0, flag);
             map_addflooritem (&item_tmp, 1, sd->bl.m, sd->bl.x, sd->bl.y,
                               NULL, NULL, NULL, 0);
@@ -6829,8 +6829,8 @@ BUILDIN_FUNC(successremovecards)
 }
 
 /* ================================================================
- * �J�[�h�����O�����s slot,type
- * type=0: ���������A1:�J�[�h�����A2:������A3:��������
+ * カード取り外し失敗 slot,type 
+ * type=0: 両方損失、1:カード損失、2:武具損失、3:損失無し 
  * ----------------------------------------------------------------
  */
 BUILDIN_FUNC(failedremovecards)
@@ -6862,7 +6862,7 @@ BUILDIN_FUNC(failedremovecards)
             cardflag = 1;
 
             if (typefail == 2)
-            {                   // �����̂ݑ����Ȃ��A�J�[�h�͎󂯎��点��
+            {                   // 武具のみ損失なら、カードは受け取らせる 
                 item_tmp.id = 0, item_tmp.nameid =
                     sd->status.inventory[i].card[c - 1];
                 item_tmp.equip = 0, item_tmp.identify = 1, item_tmp.refine =
@@ -6885,13 +6885,13 @@ BUILDIN_FUNC(failedremovecards)
     {
 
         if (typefail == 0 || typefail == 2)
-        {                       // �����
+        {                       // 武具損失 
             pc_delitem (sd, i, 1, 0);
             clif_misceffect (&sd->bl, 2);
             return 0;
         }
         if (typefail == 1)
-        {                       // �J�[�h�̂ݑ����i�������Ԃ��j
+          {                             // カードのみ損失（武具を返す） 
             flag = 0;
             item_tmp.id = 0, item_tmp.nameid = sd->status.inventory[i].nameid;
             item_tmp.equip = 0, item_tmp.identify = 1, item_tmp.refine =
@@ -7154,7 +7154,7 @@ BUILDIN_FUNC(guardianinfo)
 }
 
 /*==========================================
- * ID����Item��
+ * IDからItem名 
  *------------------------------------------
  */
 BUILDIN_FUNC(getitemname)
@@ -7228,7 +7228,7 @@ BUILDIN_FUNC(getpartnerid)
 }
 
 /*==========================================
- * PC�̏����i�����ǂݎ���
+ * PCの所持品情報読み取り 
  *------------------------------------------
  */
 BUILDIN_FUNC(getinventorylist)
@@ -7434,9 +7434,9 @@ BUILDIN_FUNC(clearitem)
 }
 
 /*==========================================
- * NPC�N���X�`�F���W
- * class�͕ς��肽��class
- * type�͒ʏ�0�Ȃ̂��ȁH
+ * NPCクラスチェンジ 
+ * classは変わりたいclass 
+ * typeは通常0なのかな？ 
  *------------------------------------------
  */
 BUILDIN_FUNC(classchange)
@@ -7510,7 +7510,7 @@ BUILDIN_FUNC(misceffect)
 }
 
 /*==========================================
- * �T�E���h�G�t�F�N�g
+ * サウンドエフェクト 
  *------------------------------------------
  */
 BUILDIN_FUNC(soundeffect)
@@ -9053,10 +9053,10 @@ BUILDIN_FUNC(setlang)
 
 
 //
-// ��s��main
+// 実行部main 
 //
 /*==========================================
- * �R�}���h�̓ǂݎ���
+ * コマンドの読み取り 
  *------------------------------------------
  */
 static int unget_com_data = -1;
@@ -9084,7 +9084,7 @@ int get_com (unsigned char *script, int *pos)
 }
 
 /*==========================================
- * �R�}���h�̃v�b�V���o�b�N
+ * コマンドのプッシュバック 
  *------------------------------------------
  */
 void unget_com (int c)
@@ -9098,7 +9098,7 @@ void unget_com (int c)
 }
 
 /*==========================================
- * ���l�̏���
+ * 数値の所得 
  *------------------------------------------
  */
 int get_num (unsigned char *script, int *pos)
@@ -9115,7 +9115,7 @@ int get_num (unsigned char *script, int *pos)
 }
 
 /*==========================================
- * �X�^�b�N�����l�������o��
+ * スタックから値を取り出す 
  *------------------------------------------
  */
 int pop_val (struct script_state *st)
@@ -9132,7 +9132,7 @@ int pop_val (struct script_state *st)
 #define isstr(c) ((c).type==C_STR || (c).type==C_CONSTSTR)
 
 /*==========================================
- * ��Z���Z�q
+ * 加算演算子 
  *------------------------------------------
  */
 void op_add (struct script_state *st)
@@ -9153,7 +9153,7 @@ void op_add (struct script_state *st)
             st->stack->stack_data[st->stack->sp].u.num;
     }
     else
-    {                           // ss�̗\��
+    {                           // ssの予定 
         char *buf;
         buf =
             (char *)
@@ -9178,7 +9178,7 @@ void op_add (struct script_state *st)
 }
 
 /*==========================================
- * �񍀉��Z�q(������)
+ * 二項演算子(文字列) 
  *------------------------------------------
  */
 void op_2str (struct script_state *st, int op, int sp1, int sp2)
@@ -9221,7 +9221,7 @@ void op_2str (struct script_state *st, int op, int sp1, int sp2)
 }
 
 /*==========================================
- * �񍀉��Z�q(���l)
+ * 二項演算子(数値) 
  *------------------------------------------
  */
 void op_2num (struct script_state *st, int op, int i1, int i2)
@@ -9292,7 +9292,7 @@ void op_2num (struct script_state *st, int op, int i1, int i2)
 }
 
 /*==========================================
- * �񍀉��Z�q
+ * 二項演算子 
  *------------------------------------------
  */
 void op_2 (struct script_state *st, int op)
@@ -9327,7 +9327,7 @@ void op_2 (struct script_state *st, int op)
 }
 
 /*==========================================
- * �P�����Z�q
+ * 単項演算子 
  *------------------------------------------
  */
 void op_1num (struct script_state *st, int op)
@@ -9352,7 +9352,7 @@ void op_1num (struct script_state *st, int op)
 }
 
 /*==========================================
- * �֐��̎�s
+ * 関数の実行 
  *------------------------------------------
  */
 int run_func (struct script_state *st)
@@ -9431,11 +9431,11 @@ int run_func (struct script_state *st)
 
     if (st->state == RETFUNC)
     {
-        // ���[�U�[���`�֐������̕��A
+          // ユーザー定義関数からの復帰 
         int  olddefsp = st->defsp;
         int  i;
 
-        pop_stack (st->stack, st->defsp, start_sp); // ���A�Ɏז��ȃX�^�b�N�폜
+        pop_stack (st->stack, st->defsp, start_sp); // 復帰に邪魔なスタック削除 
         if (st->defsp < 4
             || st->stack->stack_data[st->defsp - 1].type != C_RETINFO)
         {
@@ -9444,12 +9444,12 @@ int run_func (struct script_state *st)
             st->state = END;
             return 0;
         }
-        i = conv_num (st, &(st->stack->stack_data[st->defsp - 4])); // �����̐�����
-        st->pos = conv_num (st, &(st->stack->stack_data[st->defsp - 1]));   // �X�N���v�g�ʒu�̕���
-        st->script = (char *) conv_num (st, &(st->stack->stack_data[st->defsp - 2]));   // �X�N���v�g�𕜌�
-        st->defsp = conv_num (st, &(st->stack->stack_data[st->defsp - 3])); // ��X�^�b�N�|�C���^�𕜌�
+        i = conv_num (st, &(st->stack->stack_data[st->defsp - 4]));                     // 引数の数所得 
+        st->pos = conv_num (st, &(st->stack->stack_data[st->defsp - 1]));               // スクリプト位置の復元 
+        st->script = (char *) conv_num (st, &(st->stack->stack_data[st->defsp - 2]));   // スクリプトを復元 
+        st->defsp = conv_num (st, &(st->stack->stack_data[st->defsp - 3]));             // 基準スタックポインタを復元 
 
-        pop_stack (st->stack, olddefsp - 4 - i, olddefsp);  // �v���Ȃ��Ȃ���X�^�b�N(�����ƕ��A�p�f�[�^)�폜
+        pop_stack (st->stack, olddefsp - 4 - i, olddefsp);                              // 要らなくなったスタック(引数と復帰用データ)削除 
 
         st->state = GOTO;
     }
@@ -9458,7 +9458,7 @@ int run_func (struct script_state *st)
 }
 
 /*==========================================
- * �X�N���v�g�̎�s���C������
+ * スクリプトの実行メイン部分 
  *------------------------------------------
  */
 int run_script_main (unsigned char *script, int pos,
@@ -9586,7 +9586,7 @@ int run_script_main (unsigned char *script, int pos,
 
     if (st->state != END)
     {
-        // �ĊJ���邽�߂ɃX�^�b�N�������ۑ�
+        // 再開するためにスタック情報を保存 
         struct map_session_data *sd = map_id2sd (st->rid);
         if (sd /* && sd->npc_stackbuf==NULL */ )
         {
@@ -9612,7 +9612,7 @@ int run_script_main (unsigned char *script, int pos,
 }
 
 /*==========================================
- * �X�N���v�g�̎�s
+ * スクリプトの実行 
  *------------------------------------------
  */
 int run_script (unsigned char *script, int pos, int rid, int oid)
@@ -9633,7 +9633,7 @@ int run_script_l (unsigned char *script, int pos, int rid, int oid,
 
     if (sd && sd->npc_stackbuf && sd->npc_scriptroot == (char *) rootscript)
     {
-        // �O���̃X�^�b�N�𕜋A
+        // 前回のスタックを復帰 
         script = sd->npc_script;
         stack.sp = sd->npc_stack;
         stack.sp_max = sd->npc_stackmax;
@@ -9647,7 +9647,7 @@ int run_script_l (unsigned char *script, int pos, int rid, int oid,
     }
     else
     {
-        // �X�^�b�N������
+           // スタック初期化 
         stack.sp = 0;
         stack.sp_max = 64;
         stack.stack_data =
@@ -9673,7 +9673,7 @@ int run_script_l (unsigned char *script, int pos, int rid, int oid,
 }
 
 /*==========================================
- * �}�b�v�ϐ��̕ύX
+ * マップ変数の変更 
  *------------------------------------------
  */
 int mapreg_setreg (int num, int val)
@@ -9688,7 +9688,7 @@ int mapreg_setreg (int num, int val)
 }
 
 /*==========================================
- * �������^�}�b�v�ϐ��̕ύX
+ * 文字列型マップ変数の変更 
  *------------------------------------------
  */
 int mapreg_setregstr (int num, const char *str)
@@ -9712,7 +9712,7 @@ int mapreg_setregstr (int num, const char *str)
 }
 
 /*==========================================
- * �i���I�}�b�v�ϐ��̓ǂݍ���
+ * 永続的マップ変数の読み込み 
  *------------------------------------------
  */
 static int script_load_mapreg ()
@@ -9759,7 +9759,7 @@ static int script_load_mapreg ()
 }
 
 /*==========================================
- * �i���I�}�b�v�ϐ��̏�������
+ * 永続的マップ変数の書き込み 
  *------------------------------------------
  */
 static int script_save_mapreg_intsub (void *key, void *data, va_list ap)
@@ -9893,7 +9893,7 @@ int script_config_read (char *cfgName)
 }
 
 /*==========================================
- * �I��
+ * 終了 
  *------------------------------------------
  */
 static int mapreg_db_final (void *key __attribute__ ((unused)),
@@ -9950,7 +9950,7 @@ int do_final_script ()
 }
 
 /*==========================================
- * ������
+ * 初期化 
  *------------------------------------------
  */
 int do_init_script ()
