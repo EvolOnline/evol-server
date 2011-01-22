@@ -4885,7 +4885,7 @@ static int pc_walk (int tid, unsigned int tick, int id, int data)
                     sd->party_hp = -1;
             }
         }
-        if (sd->status.option & 4)  クローキングの消滅検査 
+        if (sd->status.option & 4) // クローキングの消滅検査 
             skill_check_cloaking (&sd->bl);
           /* ディボーション検査 */ 
         for (i = 0; i < 5; i++)
