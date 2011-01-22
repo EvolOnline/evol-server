@@ -6,6 +6,7 @@ endif
 
 #STATIC=-static
 #MAPPROFILE=-pg -fno-inline
+#CHARPROFILE=-pg -fno-inline
 
 LEX=flex
 BISON=bison
