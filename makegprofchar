@@ -1,0 +1,4 @@
+#!/bin/sh
+
+gprof char-server >gprof.txt
+cat gprof.txt | tools/gprof2dot.py | dot -Tpng -o gprof.png
