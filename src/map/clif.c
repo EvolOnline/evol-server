@@ -7346,7 +7346,7 @@ void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd)
                 send = 1;
             }
 
-            if (send)
+            if (send && account_id != sd->status.account_id)
             {
                 WFIFOW (fd, 0) = 0x195;
                 WFIFOL (fd, 2) = account_id;
