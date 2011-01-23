@@ -2460,7 +2460,7 @@ int clif_updatestatus (struct map_session_data *sd, int type)
             WFIFOL (fd, 4) = sd->status.base_level;
             break;
         case SP_JOBLEVEL:
-            WFIFOL (fd, 4) = 0;
+            WFIFOL (fd, 4) = sd->status.job_level;
             break;
         case SP_MANNER:
             WFIFOL (fd, 4) = sd->status.manner;
