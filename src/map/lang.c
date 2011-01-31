@@ -138,7 +138,7 @@ static int langsdb_readdb (void)
     return 0;
 }
 
-const char* lang_trans(const char *str, int lng)
+const char* lang_trans(const char *str, int lng, int flg)
 {
     if (!str)
         return 0;
@@ -149,13 +149,15 @@ const char* lang_trans(const char *str, int lng)
     char **strings = strdb_search (translate_db, str);
     if (!strings)
     {
-        printf ("no translations for: %s\n", str);
+        if (flg)
+            printf ("no translations for: %s\n", str);
         return str;
     }
 
     if (!strings[lng])
     {
-        printf ("no lang string (%s) for: %s\n", lang_langs[lng], str);
+        if (flg)
+            printf ("no lang string (%s) for: %s\n", lang_langs[lng], str);
         return str;
     }
 
@@ -165,9 +167,14 @@ const char* lang_trans(const char *str, int lng)
 const char* lang_pctrans(const char *str, TBL_PC *sd)
 {
     int lng = 0;
+    int flg = 1;
+    if (!str)
+        return 0;
 
+    if (*str == '#')
+        flg = 0;
     if (sd)
         lng = sd->status.language;
 
-    return lang_trans(str, lng);
+    return lang_trans(str, lng, flg);
 }

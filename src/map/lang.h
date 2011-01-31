@@ -14,7 +14,7 @@ extern struct dbt *translate_db;
 
 void do_init_langs ();
 
-const char* lang_trans(const char *str, int lng);
+const char* lang_trans(const char *str, int lng, int flg);
 
 const char* lang_pctrans(const char *str, TBL_PC *sd);
 
