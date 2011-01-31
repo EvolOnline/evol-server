@@ -18,6 +18,8 @@ typedef unsigned int in_addr_t;
 void clif_setip (char *);
 void clif_setport (int);
 
+void clif_eof(int fd);
+
 in_addr_t clif_getip (void);
 int  clif_getport (void);
 int  clif_countusers (void);

@@ -4912,7 +4912,7 @@ static int pc_walk (int tid, unsigned int tick, int id, int data)
         if (map_getcell (sd->bl.m, x, y) & 0x80)
             npc_touch_areanpc (sd, sd->bl.m, x, y);
         else
-            sd->areanpc_id = 0;
+            npc_untouch_areanpc(sd);
     }
     if ((i = calc_next_walk_step (sd)) > 0)
     {
@@ -5021,7 +5021,7 @@ void pc_touch_all_relevant_npcs (struct map_session_data *sd)
     if (map_getcell (sd->bl.m, sd->bl.x, sd->bl.y) & 0x80)
         npc_touch_areanpc (sd, sd->bl.m, sd->bl.x, sd->bl.y);
     else
-        sd->areanpc_id = 0;
+        npc_untouch_areanpc(sd);
 }
 
 /*==========================================

@@ -80,6 +80,8 @@ int npc_enable_sub (struct block_list *bl, va_list ap)
         memcpy (name, nd->name, sizeof(nd->name));
         if (sd->areanpc_id == nd->bl.id)
             return 1;
+        if (sd->areanpc_id)
+            npc_untouch_areanpc(sd);
         sd->areanpc_id = nd->bl.id;
         npc_event (sd, strcat (name, "::OnTouch"), 0);
     }
@@ -785,7 +787,7 @@ int npc_event (struct map_session_data *sd, const char *eventname,
 
     xs = nd->u.scr.xs;
     ys = nd->u.scr.ys;
-    if (mob_kill != 2 && xs >= 0 && ys >= 0)
+    if (mob_kill != 2 && mob_kill != 3 && xs >= 0 && ys >= 0)
     {
         if (nd->bl.m != sd->bl.m)
             return 1;
@@ -942,6 +944,9 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
             char *name = (char *) aCalloc (50, sizeof (char));
             memcpy (name, map[m].npc[i]->name, 24);
 
+            if (sd->areanpc_id)
+                npc_untouch_areanpc(sd);
+
             sd->areanpc_id = map[m].npc[i]->bl.id;
             if (npc_event (sd, strcat (name, "::OnTouch"), 0) > 0)
                 npc_click (sd, map[m].npc[i]->bl.id, 0);
@@ -951,6 +956,34 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
         default:
             break;
     }
+    return 0;
+}
+
+int npc_untouch_areanpc (struct map_session_data *sd)
+{
+    nullpo_retr (1, sd);
+
+    struct npc_data *nd;
+
+    if (sd->npc_id || !sd->areanpc_id)
+        return 1;
+
+    nd = (struct npc_data *) map_id2bl (sd->areanpc_id);
+    if (!nd || nd->bl.subtype != SCRIPT)
+    {
+        sd->areanpc_id = 0;
+        return 1;
+    }
+
+    char *name = (char *) aCalloc (50, sizeof (char));
+    memcpy (name, nd->name, 24);
+
+    npc_event (sd, strcat (name, "::OnUnTouch"), 3);
+
+    free (name);
+
+    sd->areanpc_id = 0;
+
     return 0;
 }
 

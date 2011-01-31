@@ -1208,7 +1208,7 @@ int chrif_parse (int fd)
             if (r == 2)
                 return 0;       // intifで処理したが、データが足りない
 
-            session[fd]->eof = 1;
+            clif_eof(fd);
             return 0;
         }
         packet_len = packet_len_table[cmd - 0x2af8];
@@ -1284,7 +1284,7 @@ int chrif_parse (int fd)
                 if (battle_config.error_log)
                     printf ("chrif_parse : unknown packet %d %d\n", fd,
                             RFIFOW (fd, 0));
-                session[fd]->eof = 1;
+                clif_eof(fd);
                 return 0;
         }
         RFIFOSKIP (fd, packet_len);

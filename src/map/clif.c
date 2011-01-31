@@ -1565,10 +1565,20 @@ static int clif_waitclose (int tid __attribute__ ((unused)),
                            unsigned int tick __attribute__ ((unused)),
                            int id, int data __attribute__ ((unused)))
 {
-    if (session[id])
-        session[id]->eof = 1;
-
+    clif_eof(id);
     return 0;
+}
+
+void clif_eof(int fd)
+{
+    if (!session[fd])
+        return;
+
+    struct map_session_data *sd = session[fd]->session_data;
+    if (sd && sd->areanpc_id)
+        npc_untouch_areanpc(sd);
+
+    session[fd]->eof = 1;
 }
 
 /*==========================================
@@ -10255,7 +10265,7 @@ int clif_check_packet_flood(fd, cmd)
             printf("packet flood detected from %s [0x%x]\n", sd->status.name, cmd);
             if (battle_config.packet_spam_kick)
             {
-                session[fd]->eof = 1; // Kick
+                clif_eof(fd);   // Kick
                 return 1;
             }
             sd->packet_flood_in = 0;
@@ -10415,11 +10425,11 @@ static int clif_parse (int fd)
     {
         if (RFIFOREST (fd) < 2)
         {                       // too small a packet disconnect
-            session[fd]->eof = 1;
+            clif_eof(fd);
         }
         if (RFIFOW (fd, 0) != 0x72)
         {                       // first packet not auth, disconnect
-            session[fd]->eof = 1;
+            clif_eof(fd);
         }
     }
 
@@ -10470,7 +10480,7 @@ static int clif_parse (int fd)
                 RFIFOSKIP (fd, 2);
                 break;
             case 0x7532:       // 接続の切断 
-                session[fd]->eof = 1;
+                clif_eof(fd);
                 break;
         }
         return 0;
@@ -10489,7 +10499,7 @@ static int clif_parse (int fd)
         packet_len = RFIFOW (fd, 2);
         if (packet_len < 4 || packet_len > 32768)
         {
-            session[fd]->eof = 1;
+            clif_eof(fd);
             return 0;           // Runt packet (variable out of bounds)
         }
     }
