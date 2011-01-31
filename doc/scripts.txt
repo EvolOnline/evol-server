@@ -1,14 +1,15 @@
-
 todo add script functions
+
+mesn text
+    show message like: [text]
+
+
+mesq text
+    show message like: "text"
+
 
 geta (variable, index)
     get bit at given index.
-
-    each value can be 0 - 1
-
-
-seta variable, index, value
-    set bit at given index
 
     each value can be 0 - 1
 
@@ -17,6 +18,12 @@ geta2 (variable, index)
     get two bits at given index
 
     each value can be 0 - 3
+
+
+seta variable, index, value
+    set bit at given index
+
+    each value can be 0 - 1
 
 
 seta2 variable, index, value
