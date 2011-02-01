@@ -457,6 +457,7 @@ int  buildin_atoi (struct script_state *st);
 int  buildin_rid2name (struct script_state *st);
 int  buildin_setnpcclass (struct script_state *st); // [4144]
 int  buildin_getnpcclass (struct script_state *st); // [4144]
+int  buildin_settempnpcclass (struct script_state *st); // [4144]
 int  buildin_l (struct script_state *st); // [4144]
 int  buildin_setlang (struct script_state *st); // [4144]
 int  buildin_getlang (struct script_state *st); // [4144]
@@ -969,6 +970,8 @@ struct
     buildin_setnpcclass, "setnpcclass", "*"}, // [4144]
     {
     buildin_getnpcclass, "getnpcclass", "*"}, // [4144]
+    {
+    buildin_settempnpcclass, "settempnpcclass", "*"}, // [4144]
     {
     buildin_l, "l", "s"}, // [4144]
     {
@@ -8981,6 +8984,36 @@ BUILDIN_FUNC(setnpcclass)
     npc_enable (nd->name, 0);
     npc_enable (nd->name, 1);
 
+    return 0;
+}
+
+BUILDIN_FUNC(settempnpcclass)
+{
+    int  newsprite;
+    int  oldsprite;
+    struct npc_data *nd = 0;
+
+    if (script_hasdata(st, 3))
+    {
+        nd = npc_name2id (script_getstr(st, 2));
+        newsprite = script_getnum(st, 3);
+    }
+    else if (script_hasdata(st, 2))
+    {
+        if (!st->oid)
+            return 1;
+
+        nd = (struct npc_data *) map_id2bl (st->oid);
+        newsprite = script_getnum(st, 2);
+    }
+    if (!nd)
+        return 1;
+
+    oldsprite = nd->class;
+    nd->class = newsprite;
+    npc_enable (nd->name, 0);
+    npc_enable (nd->name, 1);
+    nd->class = oldsprite;
     return 0;
 }
 
