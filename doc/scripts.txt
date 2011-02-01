@@ -1,3 +1,20 @@
+geta (variable, index)
+    get bit at given index.
+
+    index can 0 - 31
+    each value can be 0 - 1
+
+
+geta2 (variable, index)
+    get two bits at given index
+
+    index can 0 - 15
+    each value can be 0 - 3
+
+
+getnpcclass [name]
+    return npc class id
+
 l (text)
     translate text to player language
 
@@ -10,26 +27,23 @@ mesq text
     show message like: "text"
 
 
-geta (variable, index)
-    get bit at given index.
-
-    each value can be 0 - 1
-
-
-geta2 (variable, index)
-    get two bits at given index
-
-    each value can be 0 - 3
-
-
 seta variable, index, value
     set bit at given index
 
+    index can 0 - 31
     each value can be 0 - 1
 
 
 seta2 variable, index, value
     set two bit at given index
 
+    index can 0 - 15
     each value can be 0 - 3
 
+
+setnpcclass [name,] n
+    set npc class to given value
+
+
+settempnpcclass [name,] n
+    temporary set npc class to given value
