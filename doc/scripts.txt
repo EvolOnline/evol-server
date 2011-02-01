@@ -1,4 +1,6 @@
-todo add script functions
+l (text)
+    translate text to player language
+
 
 mesn text
     show message like: [text]
