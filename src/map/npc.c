@@ -959,10 +959,27 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
     return 0;
 }
 
+int npc_untouch_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
+                              va_list ap)
+{
+    if (!ap)
+        return 0;
+    int *users = va_arg (ap, int *);
+    if (users)
+    {
+        (*users)++;
+        return 1;
+    }
+
+    return 0;
+}
+
 int npc_untouch_areanpc (struct map_session_data *sd)
 {
     nullpo_retr (1, sd);
 
+    int xs, ys;
+    int users = 0;
     struct npc_data *nd;
 
     if (sd->npc_id || !sd->areanpc_id)
@@ -978,7 +995,27 @@ int npc_untouch_areanpc (struct map_session_data *sd)
     char *name = (char *) aCalloc (50, sizeof (char));
     memcpy (name, nd->name, 24);
 
-    npc_event (sd, strcat (name, "::OnUnTouch"), 3);
+    strcat (name, "::OnUnTouchAll");
+    struct event_data *ev = strdb_search (ev_db, name);
+    if (ev)
+    {
+        xs = nd->u.scr.xs;
+        ys = nd->u.scr.ys;
+        map_foreachinarea_cond (npc_untouch_getareausers_sub,
+            nd->bl.m, nd->bl.x - (xs / 2), nd->bl.y -  (ys / 2),
+            nd->bl.x - xs / 2 + xs, nd->bl.y - ys / 2 + ys, BL_PC, &users);
+
+        if (!users)
+            npc_event (sd, name, 3);
+        else
+            ev = 0;
+    }
+
+    if (!ev)
+    {
+        memcpy (name, nd->name, 24);
+        npc_event (sd, strcat (name, "::OnUnTouch"), 3);
+    }
 
     free (name);
 
