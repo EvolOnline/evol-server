@@ -872,6 +872,37 @@ int npc_command (struct map_session_data *sd __attribute__ ((unused)),
     return 0;
 }
 
+int npc_untouch_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
+                              va_list ap)
+{
+    if (!ap)
+        return 0;
+    int *users = va_arg (ap, int *);
+    if (users)
+    {
+        (*users)++;
+        return 1;
+    }
+
+    return 0;
+}
+
+int npc_touch_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
+                              va_list ap)
+{
+    if (!ap)
+        return 0;
+    int *users = va_arg (ap, int *);
+    if (users)
+    {
+        (*users)++;
+        if (*users > 1)
+            return 1;
+    }
+
+    return 0;
+}
+
 /*==========================================
  * 接触型のNPC処理 
  *------------------------------------------
@@ -880,6 +911,8 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
 {
     int  i, f = 1;
     int  xs, ys;
+    int users = 0;
+    struct npc_data *nd;
 
     nullpo_retr (1, sd);
 
@@ -927,50 +960,55 @@ int npc_touch_areanpc (struct map_session_data *sd, int m, int x, int y)
         return 1;
     }
     nullpo_retr (1, map[m].npc[i]);
+    nd = (struct npc_data *) map[m].npc[i];
 
-    switch (map[m].npc[i]->bl.subtype)
+    switch (nd->bl.subtype)
     {
         case WARP:
             skill_stop_dancing (&sd->bl, 0);
-            pc_setpos (sd, map[m].npc[i]->u.warp.name,
-                       map[m].npc[i]->u.warp.x, map[m].npc[i]->u.warp.y, 0);
+            pc_setpos (sd, nd->u.warp.name, nd->u.warp.x, nd->u.warp.y, 0);
             break;
         case MESSAGE:
         case SCRIPT:
         {
-            if (sd->areanpc_id == map[m].npc[i]->bl.id)
+            if (sd->areanpc_id == nd->bl.id)
                 return 1;
-
-            char *name = (char *) aCalloc (50, sizeof (char));
-            memcpy (name, map[m].npc[i]->name, 24);
 
             if (sd->areanpc_id)
                 npc_untouch_areanpc(sd);
 
-            sd->areanpc_id = map[m].npc[i]->bl.id;
-            if (npc_event (sd, strcat (name, "::OnTouch"), 0) > 0)
-                npc_click (sd, map[m].npc[i]->bl.id, 0);
+            char *name = (char *) aCalloc (50, sizeof (char));
+            memcpy (name, nd->name, 24);
+            strcat (name, "::OnTouchFirst");
+            struct event_data *ev = strdb_search (ev_db, name);
+            if (ev)
+            {
+                xs = nd->u.scr.xs;
+                ys = nd->u.scr.ys;
+                map_foreachinarea_cond (npc_touch_getareausers_sub,
+                    nd->bl.m, nd->bl.x - (xs / 2), nd->bl.y -  (ys / 2),
+                    nd->bl.x - xs / 2 + xs, nd->bl.y - ys / 2 + ys, BL_PC, &users);
+
+                sd->areanpc_id = nd->bl.id;
+                if (users == 1)
+                    npc_event (sd, name, 0);
+                else
+                    ev = 0;
+            }
+            if (!ev)
+            {
+                memcpy (name, nd->name, 24);
+                sd->areanpc_id = nd->bl.id;
+                if (npc_event (sd, strcat (name, "::OnTouch"), 0) > 0)
+                    npc_click (sd, nd->bl.id, 0);
+            }
+
             free (name);
             break;
         }
         default:
             break;
     }
-    return 0;
-}
-
-int npc_untouch_getareausers_sub (struct block_list *bl __attribute__ ((unused)),
-                              va_list ap)
-{
-    if (!ap)
-        return 0;
-    int *users = va_arg (ap, int *);
-    if (users)
-    {
-        (*users)++;
-        return 1;
-    }
-
     return 0;
 }
 
