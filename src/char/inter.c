@@ -106,6 +106,7 @@ int inter_accreg_fromstr (const char *str, struct accreg *reg)
     int  j, v, n;
     char buf[128];
     const char *p = str;
+    buf[0] = 0;
 
     if (sscanf (p, "%d\t%n", &reg->account_id, &n) != 1
         || reg->account_id <= 0)

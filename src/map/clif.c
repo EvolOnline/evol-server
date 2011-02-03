@@ -7331,7 +7331,7 @@ void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd)
             struct guild *g = NULL;
             struct party *p = NULL;
 
-            char *guild_name = "", *guild_pos = "", *party_name = "";
+            char *guild_name = 0, *guild_pos = 0, *party_name = 0;
 
             int send = 0;
 
@@ -7360,12 +7360,25 @@ void clif_parse_GetCharNameRequest (int fd, struct map_session_data *sd)
             {
                 WFIFOW (fd, 0) = 0x195;
                 WFIFOL (fd, 2) = account_id;
-                memcpy (WFIFOP (fd, 6), party_name, 24);
-                memcpy (WFIFOP (fd, 30), guild_name, 24);
-                memcpy (WFIFOP (fd, 54), guild_pos, 24);
-                memcpy (WFIFOP (fd, 78), guild_pos, 24); // We send this value twice because the client expects it
+                if (party_name)
+                    memcpy (WFIFOP (fd, 6), party_name, 24);
+                else
+                    *(WFIFOP (fd, 6)) = 0;
+                if (guild_name)
+                    memcpy (WFIFOP (fd, 30), guild_name, 24);
+                else
+                    *(WFIFOP (fd, 30)) = 0;
+                if (guild_pos)
+                {
+                    memcpy (WFIFOP (fd, 54), guild_pos, 24);
+                    memcpy (WFIFOP (fd, 78), guild_pos, 24); // We send this value twice because the client expects it
+                }
+                else
+                {
+                    *(WFIFOP (fd, 54)) = 0;
+                    *(WFIFOP (fd, 78)) = 0;
+                }
                 WFIFOSET (fd, packet_len_table[0x195]);
-
             }
 
 #if 0

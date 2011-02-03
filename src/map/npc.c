@@ -1016,7 +1016,6 @@ int npc_untouch_areanpc (struct map_session_data *sd)
 {
     nullpo_retr (1, sd);
 
-    int xs, ys;
     int users = 0;
     struct npc_data *nd;
 
@@ -1037,6 +1036,7 @@ int npc_untouch_areanpc (struct map_session_data *sd)
     struct event_data *ev = strdb_search (ev_db, name);
     if (ev)
     {
+        int xs, ys;
         xs = nd->u.scr.xs;
         ys = nd->u.scr.ys;
         map_foreachinarea_cond (npc_untouch_getareausers_sub,
