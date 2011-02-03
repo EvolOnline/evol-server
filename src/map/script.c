@@ -465,6 +465,7 @@ int  buildin_geta (struct script_state *st); // [4144]
 int  buildin_seta (struct script_state *st); // [4144]
 int  buildin_geta2 (struct script_state *st); // [4144]
 int  buildin_seta2 (struct script_state *st); // [4144]
+int  buildin_getclientversion (struct script_state *st); // [4144]
 
 void push_val (struct script_stack *stack, int type, int val);
 int  run_func (struct script_state *st);
@@ -987,6 +988,8 @@ struct
     buildin_geta2, "geta2", "si"}, // [4144]
     {
     buildin_seta2, "seta2", "sii"}, // [4144]
+    {
+    buildin_getclientversion, "getclientversion", "*"}, // [4144]
     {
 NULL, NULL, NULL},};
 
@@ -9255,6 +9258,21 @@ BUILDIN_FUNC(geta2)
     val = (var & (3 << (idx * 2))) >> (idx * 2);
     script_pushint(st, val);
 
+    return 0;
+}
+
+BUILDIN_FUNC(getclientversion)
+{
+    TBL_PC *sd = NULL;
+
+    sd = script_rid2sd(st);
+    if (sd == NULL)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    script_pushint(st, sd->tmw_version);
     return 0;
 }
 
