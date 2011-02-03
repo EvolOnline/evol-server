@@ -1,3 +1,7 @@
+g (female, male)
+    return string depend on player gender.
+
+
 geta (variable, index)
     get bit at given index.
 
