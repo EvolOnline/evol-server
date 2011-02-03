@@ -1861,10 +1861,16 @@ static int map_readmap (int m, char *fn, char *alias __attribute__ ((unused)))
 //    int  wh;
     size_t size;
 
+    if (!fn)
+        return -1;
+
     // read & convert fn
     gat = grfio_read (fn);
     if (gat == NULL)
+    {
+        printf ("Cant read map %s\n", fn);
         return -1;
+    }
 
     printf ("\rLoading Maps [%d/%d]: %-50s  ", m, map_num, fn);
     fflush (stdout);

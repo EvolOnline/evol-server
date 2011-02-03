@@ -748,7 +748,7 @@ void *grfio_reads (char *fname, int *size)
     free (buf2);
     if (in != NULL)
         fclose_ (in);
-    exit (1);                   //return NULL;
+    return NULL;
 }
 
 /*==========================================
@@ -1036,6 +1036,11 @@ static void grfio_resourcecheck ()
     FILELIST *entry;
 
     buf = grfio_reads ("data\\resnametable.txt", &size);
+    if (!buf)
+    {
+        printf ("Cant read resnametable.txt\n");
+        exit(1);
+    }
     buf[size] = 0;
 
     for (ptr = buf; ptr - buf < size;)
