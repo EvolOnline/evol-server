@@ -111,7 +111,10 @@ int  start_weapon = 1201;
 int  start_armor = 1202;
 
 // Initial position (it's possible to set it in conf file)
-struct point start_point = { "new_1-1.gat", 53, 111 };
+struct point start_point[3] = {
+    { "002-3.gat", 16, 18 },
+    { "002-3.gat", 16, 18 },
+    { "002-3.gat", 16, 18 }};
 
 struct gm_account *gm_account = NULL;
 int  GM_num = 0;
@@ -1176,8 +1179,9 @@ int make_new_char (int fd, unsigned char *dat)
     char_dat[i].head_top = 0;
     char_dat[i].head_mid = 0;
     char_dat[i].head_bottom = 0;
-    memcpy (&char_dat[i].last_point, &start_point, sizeof (start_point));
-    memcpy (&char_dat[i].save_point, &start_point, sizeof (start_point));
+    int idx = MRAND(4);
+    memcpy (&char_dat[i].last_point, &start_point[idx], sizeof (start_point[0]));
+    memcpy (&char_dat[i].save_point, &start_point[idx], sizeof (start_point[0]));
     char_num++;
 
     return i;
@@ -3824,6 +3828,20 @@ int check_connect_login_server (int tid __attribute__ ((unused)),
     return 0;
 }
 
+void readStartPoint(const char *w2, int idx)
+{
+    char map[32];
+    int  x, y;
+    if (sscanf (w2, "%16[^,],%d,%d", map, &x, &y) < 3)
+        return;
+    if (strstr (map, ".gat") != NULL)
+    {                   // Verify at least if '.gat' is in the map name
+        memcpy (start_point[idx].map, map, 16);
+        start_point[idx].x = x;
+        start_point[idx].y = y;
+    }
+}
+
 //----------------------------------------------------------
 // Return numerical value of a switch configuration by [Yor]
 // on/off, english, fran�ais, deutsch, espanol
@@ -4096,16 +4114,15 @@ int char_config_read (const char *cfgName)
         }
         else if (strcmpi (w1, "start_point") == 0)
         {
-            char map[32];
-            int  x, y;
-            if (sscanf (w2, "%16[^,],%d,%d", map, &x, &y) < 3)
-                continue;
-            if (strstr (map, ".gat") != NULL)
-            {                   // Verify at least if '.gat' is in the map name
-                memcpy (start_point.map, map, 16);
-                start_point.x = x;
-                start_point.y = y;
-            }
+            readStartPoint(w2, 0);
+        }
+        else if (strcmpi (w1, "start_point2") == 0)
+        {
+            readStartPoint(w2, 1);
+        }
+        else if (strcmpi (w1, "start_point3") == 0)
+        {
+            readStartPoint(w2, 2);
         }
         else if (strcmpi (w1, "start_zeny") == 0)
         {
