@@ -16,6 +16,27 @@ geta2 (variable, index)
     each value can be 0 - 3
 
 
+geta4 (variable, index)
+    get four bits at given index
+
+    index can 0 - 7
+    each value can be 0 - 7
+
+
+geta8 (variable, index)
+    get eight bits at given index
+
+    index can 0 - 3
+    each value can be 0 - 255
+
+
+geta16 (variable, index)
+    get sixteen bits at given index
+
+    index can 0 - 1
+    each value can be 0 - 65535
+
+
 getnpcclass [name]
     return npc class id
 
@@ -43,6 +64,27 @@ seta2 variable, index, value
 
     index can 0 - 15
     each value can be 0 - 3
+
+
+seta4 variable, index, value
+    set four bit at given index
+
+    index can 0 - 7
+    each value can be 0 - 7
+
+
+seta8 variable, index, value
+    set four bit at given index
+
+    index can 0 - 3
+    each value can be 0 - 255
+
+
+seta16 variable, index, value
+    set four bit at given index
+
+    index can 0 - 1
+    each value can be 0 - 65535
 
 
 setnpcclass [name,] n

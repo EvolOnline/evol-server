@@ -465,6 +465,12 @@ int  buildin_geta (struct script_state *st); // [4144]
 int  buildin_seta (struct script_state *st); // [4144]
 int  buildin_geta2 (struct script_state *st); // [4144]
 int  buildin_seta2 (struct script_state *st); // [4144]
+int  buildin_geta4 (struct script_state *st); // [4144]
+int  buildin_seta4 (struct script_state *st); // [4144]
+int  buildin_geta8 (struct script_state *st); // [4144]
+int  buildin_seta8 (struct script_state *st); // [4144]
+int  buildin_geta16 (struct script_state *st); // [4144]
+int  buildin_seta16 (struct script_state *st); // [4144]
 int  buildin_getclientversion (struct script_state *st); // [4144]
 int  buildin_g (struct script_state *st); // [4144]
 
@@ -989,6 +995,18 @@ struct
     buildin_geta2, "geta2", "si"}, // [4144]
     {
     buildin_seta2, "seta2", "sii"}, // [4144]
+    {
+    buildin_geta4, "geta4", "si"}, // [4144]
+    {
+    buildin_seta4, "seta4", "sii"}, // [4144]
+    {
+    buildin_geta8, "geta8", "si"}, // [4144]
+    {
+    buildin_seta8, "seta8", "sii"}, // [4144]
+    {
+    buildin_geta16, "geta16", "si"}, // [4144]
+    {
+    buildin_seta16, "seta16", "sii"}, // [4144]
     {
     buildin_getclientversion, "getclientversion", "*"}, // [4144]
     {
@@ -9259,6 +9277,240 @@ BUILDIN_FUNC(geta2)
     }
 
     val = (var & (3 << (idx * 2))) >> (idx * 2);
+    script_pushint(st, val);
+
+    return 0;
+}
+
+BUILDIN_FUNC(seta4)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+    int tmp;
+    TBL_PC *sd = NULL;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+        return 0;
+
+    if (not_server_variable(*varname))
+    {
+        sd = script_rid2sd(st);
+        if (sd == NULL)
+        {
+            ShowError("script:seta: no player attached for player variable '%s'\n", varname);
+            return 0;
+        }
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 7)
+        return 0;
+
+    val = script_getnum(st, 4);
+    if (val < 0)
+        val = 0;
+    else if (val > 15)
+        val = 15;
+
+    tmp = var & (15 << (idx * 4));
+    var ^= tmp;
+
+    var = (var | (val << (idx * 4)));
+
+    setd_sub(sd, varname, 0, (void *)var);
+
+    return 0;
+}
+
+BUILDIN_FUNC(geta4)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 7)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    val = (var & (15 << (idx * 4))) >> (idx * 4);
+    script_pushint(st, val);
+
+    return 0;
+}
+
+BUILDIN_FUNC(seta8)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+    int tmp;
+    TBL_PC *sd = NULL;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+        return 0;
+
+    if (not_server_variable(*varname))
+    {
+        sd = script_rid2sd(st);
+        if (sd == NULL)
+        {
+            ShowError("script:seta: no player attached for player variable '%s'\n", varname);
+            return 0;
+        }
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 3)
+        return 0;
+
+    val = script_getnum(st, 4);
+    if (val < 0)
+        val = 0;
+    else if (val > 255)
+        val = 255;
+
+    tmp = var & (255 << (idx * 8));
+    var ^= tmp;
+
+    var = (var | (val << (idx * 8)));
+
+    setd_sub(sd, varname, 0, (void *)var);
+
+    return 0;
+}
+
+BUILDIN_FUNC(geta8)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 3)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    val = (var & (255 << (idx * 8))) >> (idx * 8);
+    script_pushint(st, val);
+
+    return 0;
+}
+
+BUILDIN_FUNC(seta16)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+    int tmp;
+    TBL_PC *sd = NULL;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+        return 0;
+
+    if (not_server_variable(*varname))
+    {
+        sd = script_rid2sd(st);
+        if (sd == NULL)
+        {
+            ShowError("script:seta: no player attached for player variable '%s'\n", varname);
+            return 0;
+        }
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 1)
+        return 0;
+
+    val = script_getnum(st, 4);
+    if (val < 0)
+        val = 0;
+    else if (val > 65535)
+        val = 65535;
+
+    tmp = var & (65535 << (idx * 16));
+    var ^= tmp;
+
+    var = (var | (val << (idx * 16)));
+
+    setd_sub(sd, varname, 0, (void *)var);
+
+    return 0;
+}
+
+BUILDIN_FUNC(geta16)
+{
+    unsigned var;
+    char *varname;
+    int idx;
+    int val;
+
+    int  num = st->stack->stack_data[st->start + 2].u.num;
+    varname = str_buf + str_data[num & 0x00ffffff].str;
+
+    if (!varname || strlen(varname) < 1 || varname[strlen(varname) - 1] == '$')
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    var = (unsigned)get_val2(st, add_str(varname));
+
+    idx = script_getnum(st, 3);
+    if (idx < 0 || idx > 1)
+    {
+        script_pushint(st, 0);
+        return 0;
+    }
+
+    val = (var & (65535 << (idx * 16))) >> (idx * 16);
     script_pushint(st, val);
 
     return 0;
