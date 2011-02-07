@@ -7465,6 +7465,13 @@ void clif_parse_GlobalMessage (int fd, struct map_session_data *sd)
 
     if (!magic_message (sd, buf, msg_len, 1))
     {
+        /* ignore incorrect magic commands */
+        if (message && strlen(message) > 3 && *message == '#' && *(message + 1) != '#')
+        {
+            free (buf);
+            return;
+        }
+
         /* Don't send chat that results in an automatic ban. */
         if (tmw_CheckChatSpam (sd, message))
         {
