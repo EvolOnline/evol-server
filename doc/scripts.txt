@@ -1,3 +1,9 @@
+format (str, [p,])
+    return formatted string:
+    example: format("test @@ #@@", "line", 1);
+    result: test line #1
+
+
 g (female, male)
     return string depend on player gender.
 
@@ -37,8 +43,13 @@ geta16 (variable, index)
     each value can be 0 - 65535
 
 
+getitemlink ([id/name])
+    return link to item
+
+
 getnpcclass [name]
     return npc class id
+
 
 l (text)
     translate text to player language
@@ -93,3 +104,8 @@ setnpcclass [name,] n
 
 settempnpcclass [name,] n
     temporary set npc class to given value
+
+
+ver (old, new)
+    return string depend on is client old or new.
+    old client protocol version < 2
